@@ -1,0 +1,103 @@
+#!/bin/sh
+# postinst script for fs2ram
+#
+# see: dh_installdeb(1)
+
+set -e
+. /usr/share/debconf/confmodule
+
+set_perms() {
+	USER=$1
+	GROUP=$2
+	MODE=$3
+	FILE=$4
+	if ! dpkg-statoverride --list $FILE > /dev/null 2>&1; then
+		chown $USER:$GROUP $FILE
+		chmod $MODE $FILE
+	fi
+}
+
+set_rcs_param() {
+    file="$1"
+    key="$2"
+    new_value="$3"
+    (
+    if grep -qe "^$key=" $file ; then
+        unset $key
+        . $file
+        eval "current_value=\$$key"
+        if [ "$current_value" != "$new_value" ]; then
+            sed -e "s/^$key=.*/$key=$new_value/" -i $file
+        fi
+    else
+        echo "$key=$new_value" >> $file
+    fi
+    )
+}
+
+
+case "$1" in
+    configure)
+        if [ "$2" != "" ]; then
+            # Upgrade old installation
+            if $(dpkg --compare-versions $2 lt 0.3.7); then
+                if [ -f '/etc/fs2ram.conf' ]; then
+                    echo "Moving the default configuration file to /etc/fs2ram/fs2ram.conf."
+                    mv -f /etc/fs2ram.conf /etc/fs2ram/fs2ram.conf
+                fi
+            fi
+        fi
+
+        db_get fs2ram/main_install_type
+        install_type="$RET"
+        case "$install_type" in
+            "Content-preserving")
+                fs2ram_conffile=/usr/share/doc/fs2ram/examples/fs2ram.conf.wear
+                ;;
+
+            "Structure-preserving")
+                fs2ram_conffile=/usr/share/doc/fs2ram/examples/fs2ram.conf.privacy
+                ;;
+
+            *)
+                # Include the case "No configuration"
+                fs2ram_conffile=/usr/share/doc/fs2ram/examples/fs2ram.conf.empty
+                ;;
+        esac
+        # Handle fs2ram.conf with ucf
+        ucf --debconf-ok $fs2ram_conffile /etc/fs2ram/fs2ram.conf
+            
+        # Support also squeeze (for backports)
+        initscripts_version=$(dpkg-query -W initscripts | cut -f 2)
+        if dpkg --compare-versions "$initscripts_version" lt "2.88dsf-13.3" ; then
+            [ -f "/etc/default/rcS" ] && . /etc/default/rcS
+            if [ "$RAMRUN" != "yes" ]; then
+                echo " Making /var/run available as ram file system (By default, the changes take effect after the next reboot) ..."
+                set_rcs_param /etc/default/rcS RAMRUN yes
+            fi
+        fi
+
+        # Execute the unmount scripts once to be sure to keep data accross the
+        # next reboot.
+        echo " Executing the unmount scripts ..."
+        fs2ram execute-unmount-script -a  > /dev/null || true
+
+        # Fix some permissions
+        set_perms root root 700 /var/lib/fs2ram/mount-scripts
+        set_perms root root 700 /etc/fs2ram/unmount-scripts
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+db_stop
+
+#DEBHELPER#
+
+exit 0

@@ -1,0 +1,71 @@
+# Czech PO debconf template translation of fs2ram.
+# Copyright (C) 2012 Michal Simunek <michal.simunek@gmail.com>
+# This file is distributed under the same license as the fs2ram package.
+# Michal Simunek <michal.simunek@gmail.com>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: fs2ram 0.3.12\n"
+"Report-Msgid-Bugs-To: fs2ram@packages.debian.org\n"
+"POT-Creation-Date: 2012-07-11 08:07-0600\n"
+"PO-Revision-Date: 2012-07-13 19:31+0200\n"
+"Last-Translator: Michal Simunek <michal.simunek@gmail.com>\n"
+"Language-Team: Czech <debian-l10n-czech@lists.debian.org>\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: select
+#. Choices
+#: ../templates:2001
+msgid "Content-preserving"
+msgstr "Zachovávání obsahu"
+
+#. Type: select
+#. Choices
+#: ../templates:2001
+msgid "Structure-preserving"
+msgstr "Zachovávání struktury"
+
+#. Type: select
+#. Choices
+#: ../templates:2001
+msgid "Unconfigured"
+msgstr "Nenastaveno"
+
+#. Type: select
+#. Description
+#: ../templates:2002
+msgid "Configuration for fs2ram:"
+msgstr "Nastavení pro fs2ram:"
+
+#. Type: select
+#. Description
+#: ../templates:2002
+msgid "Please select the fs2ram configuration that best meets your needs."
+msgstr ""
+"Vyberte si prosím nastavení fs2ram, které nejlépe odpovídá vašim potřebám."
+
+#. Type: select
+#. Description
+#: ../templates:2002
+msgid ""
+" * Content-preserving: /var/tmp, /var/cache, and /var/log will be in\n"
+"   RAM, reducing writes to the hard drive, and fs2ram will preserve the\n"
+"   contents of these file systems across reboots.\n"
+" * Structure-preserving: /var/tmp, /var/cache, and /var/log will be in\n"
+"   RAM, but fs2ram will only preserve their directory structures across\n"
+"   reboots, not their (potentially private) contents.\n"
+" * Unconfigured: the fs2ram configuration file will be left empty and\n"
+"   must be filled manually."
+msgstr ""
+" * Zachovávání obsahu: /var/tmp, /var/cache a /var/log budou v RAM,\n"
+"   což snižuje zapisování na pevný disk, fs2ram zachová obsah těchto\n"
+"   souborových systémů navzdory restartům počítače.\n"
+" * Zachovávání struktury: /var/tmp, /var/cache a /var/log budou v RAM,\n"
+"   fs2ram však zachová pouze jejich adresářovou strukturu navzdory\n"
+"   restartům počítače, ne jejich (možný osobní) obsah.\n"
+" * Nenastaveno: konfigurační soubory pro fs2ram budou ponechány prázdné\n"
+"   a bude nutné je doplnit ručně."
+

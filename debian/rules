@@ -1,0 +1,15 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+PACKAGE = $(shell dh_listpackages)
+TMP     = $(CURDIR)/debian/$(PACKAGE)
+
+
+%:
+	dh $@
+
+override_dh_installinit:
+	dh_installinit --no-start --name=fs2ram -- "start 36 S . start 39 0 6 ."
+
+override_dh_compress:
+	dh_compress -Xexamples/fs2ram.conf

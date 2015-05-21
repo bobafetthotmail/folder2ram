@@ -1,0 +1,102 @@
+# fs2ram po-debconf translation to Spanish
+# Copyright (C) 2012 Software in the Public Interest, SPI Inc.
+# This file is distributed under the same license as the fs2ram package.
+#
+# Changes:
+# - Initial translation
+#       Javier Fernández-Sanguino <jfs@debian.org> , 2012
+#
+#
+#  Traductores, si no conoce el formato PO, merece la pena leer la 
+#  documentación de gettext, especialmente las secciones dedicadas a este
+#  formato, por ejemplo ejecutando:
+#         info -n '(gettext)PO Files'
+#         info -n '(gettext)Header Entry'
+#
+# Equipo de traducción al español, por favor lean antes de traducir
+# los siguientes documentos:
+#
+# - El proyecto de traducción de Debian al español
+#   http://www.debian.org/intl/spanish/
+#   especialmente las notas y normas de traducción en
+#   http://www.debian.org/intl/spanish/notas
+#
+# - La guía de traducción de po's de debconf:
+#   /usr/share/doc/po-debconf/README-trans
+#   o http://www.debian.org/intl/l10n/po-debconf/README-trans
+#
+# Si tiene dudas o consultas sobre esta traducción consulte con el último
+# traductor (campo Last-Translator) y ponga en copia a la lista de
+# traducción de Debian al español (<debian-l10n-spanish@lists.debian.org>)
+msgid ""
+msgstr ""
+"Project-Id-Version: fs2ram\n"
+"Report-Msgid-Bugs-To: fs2ram@packages.debian.org\n"
+"POT-Creation-Date: 2012-07-11 08:07-0600\n"
+"PO-Revision-Date: 2012-07-23 22:23+0200\n"
+"Last-Translator: Javier Fernández-Sanguino <jfs@debian.org>\n"
+"Language-Team: Debian Spanish <debian-l10n-spanish@lists.debian.org>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-POFile-SpellExtra: tmp fs log lock ram reinicios var tmpfs\n"
+
+#. Type: select
+#. Choices
+#: ../templates:2001
+msgid "Content-preserving"
+msgstr "Preservando contenido"
+
+#. Type: select
+#. Choices
+#: ../templates:2001
+msgid "Structure-preserving"
+msgstr "Preservando estructura"
+
+#. Type: select
+#. Choices
+#: ../templates:2001
+msgid "Unconfigured"
+msgstr "No configurado"
+
+#. Type: select
+#. Description
+#: ../templates:2002
+msgid "Configuration for fs2ram:"
+msgstr "Configuración para fs2ram:"
+
+#. Type: select
+#. Description
+#: ../templates:2002
+msgid "Please select the fs2ram configuration that best meets your needs."
+msgstr ""
+"Seleccione la configuración de fs2ram que mejor se adapte a sus necesidades."
+
+#. Type: select
+#. Description
+#: ../templates:2002
+msgid ""
+" * Content-preserving: /var/tmp, /var/cache, and /var/log will be in\n"
+"   RAM, reducing writes to the hard drive, and fs2ram will preserve the\n"
+"   contents of these file systems across reboots.\n"
+" * Structure-preserving: /var/tmp, /var/cache, and /var/log will be in\n"
+"   RAM, but fs2ram will only preserve their directory structures across\n"
+"   reboots, not their (potentially private) contents.\n"
+" * Unconfigured: the fs2ram configuration file will be left empty and\n"
+"   must be filled manually."
+msgstr ""
+" * Preservando contenido: se mantendrán «/var/tmp», «/var/cache», y «/var/"
+"log»\n"
+"   en RAM, reduciendo el número de escrituras en el disco duro, y fs2ram \n"
+"   preservará los contenidos de estos sistemas de ficheros entre cada\n"
+"   reinicio del sistema.\n"
+" * Preservando estructura: se mantendrán /var/tmp, /var/cache, y /var/log "
+"en\n"
+"   RAM, pero fs2ram sólo preservará la estructura de directorios entre\n"
+"   cada reinicio del sistema y no sus contenidos (potencialmente privados).\n"
+" * No configurado: el archivo de configuración de fs2ram se dejará vacío y\n"
+"   deberá rellenarse manualmente."
+
+#~ msgid "fs2ram configuration"
+#~ msgstr "Configuración de fs2ram"

@@ -1,0 +1,5 @@
+sbin/fs2ram
+etc/apt/apt.conf.d/05fs2ram
+lib/fs2ram/unmount-scripts/*
+lib/init/*
+usr/share/doc/fs2ram/examples/*

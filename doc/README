@@ -1,0 +1,19 @@
+## Information
+
+See fs2ram manual (man fs2ram).
+
+## How to
+
+To use it, you need to :
+
+  - Define the mountpoints that will be handled by fs2ram in '/etc/fs2ram/fs2ram.conf'.
+    You can find an example at /usr/share/fs2ram/doc/examples
+
+  - Adjust the pre-unmount scripts if needed. The default scripts are
+    located in /usr/share/fs2ram/unmount-scripts.
+
+## Inspiration
+
+Some ideas were taken from the etckeeper package maintained by Joey Hess (how
+to store the file permissions).
+

@@ -1,0 +1,99 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH FS2RAM 8 "September 17, 2010"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+fs2ram \- manage post-mount/pre-mount scripts
+.SH SYNOPSIS
+\fBfs2ram\fP \fIaction\fP \fB\-a\fP [\fB\-f\fP] [\fB\-q\fP]
+.PP
+\fBfs2ram\fP \fIaction\fP <mountpoint> [\fB\-f\fP] [\fB\-q\fP]
+.PP
+\fBfs2ram\fP \fB\-h\fP
+.PP
+.SH DESCRIPTION
+\fBfs2ram\fP manages temporary file systems across reboots. Each tmpfs
+<mountpoint> can be associated with a pre-mount script, which is executed by
+\fBfs2ram\fP at each shutdown/reboot before the file system is unmounted. The
+pre-unmount script must print a post-mount script on standard output, which is
+saved and then run at boot time after \fBfs2ram\fP mounts the corresponding
+file system.  
+
+.SH OPTIONS
+.TP
+\fIaction\fP
+This option specifies the action to execute. It could be :
+.RS
+.TP .4i
+\fBunmount\fP:
+This action first \fBexecute-unmount-script\fP and then \fBunmount\fP.
+.TP
+\fBmount\fP:
+This action first \fBmount-only\fP and then \fBexecute-mount-script\fP.
+.TP
+\fBmount-only\fP:
+This action mounts the filesystem given in parameters.
+.TP
+\fBunmount-only\fP:
+This action unmounts the filesystem given in parameters.
+.TP
+\fBexecute-unmount-script\fP:
+This action executes the unmount script corresponding to the mountpoint given in parameters.
+.TP
+\fBexecute-mount-script\fP:
+This action executes the mount script corresponding to the mountpoint given in parameters.
+.RE
+.TP
+\fB\-a\fP
+This option tells to do \fIaction\fP for each <mountpoint> specified in /etc/fs2ram/fs2ram.conf
+.TP
+\fB\-q\fP
+This option tells to be quiet (only warning/error).
+.TP
+\fB\-h\fP
+This option tells to display the command usage.
+.TP
+\fB\-f\fP
+For the action \fBunmount\fP and \fBmount\fP, this option tells
+to proceed execute-mount-script/unmount respectively even if
+mount/execute-unmount-script failed. This option has no effect for the other options.
+.SH DEFAULTS
+By default, \fBfs2ram\fP won't make /var/run, /var/lock or /tmp available as
+ram filesystems. Since \fBsysvinit\fP provides a way to achieve this, it is
+preferable to use it. See \fBtmpfs\fP(5) for more information.
+.SH UNMOUNT SCRIPTS 
+An unmount script has to produce to the standard output the mount script that
+fs2ram will execute at boot. The unmount script takes two arguments. The first
+one is the concerned mountpoint. The second one, optional, is the options given
+to the script.
+The default unmount scripts are in /lib/fs2ram/unmount-scripts/
+.SH FILES
+.PP
+.IP "/etc/fs2ram/fs2ram.conf"
+Mountpoints configuration file,
+.IP "/lib/fs2ram/unmount-scripts/*"
+Default unmount scripts used by fs2ram,
+.IP "/etc/fs2ram/unmount-scripts/*"
+User-defined unmount scripts used by fs2ram,
+.IP "/etc/init.d/fs2ram
+Script executed at runlevels S/0/6,
+.IP "/var/lib/fs2ram/mount-scripts/*"
+Mount scripts created by fs2ram.
+.SH SEE ALSO
+\fBmount\fP(8), \fBtmpfs\fP(5), \fBrcS\fP(5).
+.SH AUTHOR
+fs2ram was written by Philippe Le Brouster <plb@nebkha.net> for the Debian
+project (and may be used by others).
