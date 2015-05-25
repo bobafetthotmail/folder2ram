@@ -1,36 +1,36 @@
 #! /bin/sh
 
 ### BEGIN INIT INFO
-# Provides:          fs2ram
+# Provides:          folder2ram
 # Required-Start:    mountall
 # Required-Stop:     umountfs
 # X-Start-Before:    mountall-bootclean
 # X-Stop-After:      rsyslog syslog-ng umountnfs
 # Default-Start:     S
 # Default-Stop:      0 6
-# Short-Description: mount/unmount mountpoints handled by fs2ram.
-# Description:       mount/unmount mountpoints handled by fs2ram. This include
+# Short-Description: mount/unmount mountpoints handled by folder2ram.
+# Description:       mount/unmount mountpoints handled by folder2ram. This include
 #                    executing unmount/mount scripts for each handled
 #                    mountpoints
 ### END INIT INFO
 . /lib/lsb/init-functions
-. /lib/init/fs2ram-functions.sh
+. /lib/init/folder2ram-functions.sh
 
 PATH=/sbin:/bin
-NAME=fs2ram
-DESC=fs2ram
+NAME=folder2ram
+DESC=folder2ram
 
 set -e
 
 case "$1" in
     start)
-        log_action_begin_msg "fs2ram: mount and execute the mount script for each handled mountpoints"
-        fs2ram mount -a -q
+        log_action_begin_msg "folder2ram: mount and execute the mount script for each handled mountpoints"
+        folder2ram mount -a -q
         log_action_end_msg $?
         ;;
     stop)
-        log_action_begin_msg "fs2ram: execute the unmount script and unmount for each handled mountpoints"
-        fs2ram unmount -a -q
+        log_action_begin_msg "folder2ram: execute the unmount script and unmount for each handled mountpoints"
+        folder2ram unmount -a -q
         log_action_end_msg $?
         ;;
     restart|force-reload)

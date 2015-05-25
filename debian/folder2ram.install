@@ -1,0 +1,5 @@
+sbin/folder2ram
+etc/apt/apt.conf.d/05folder2ram
+lib/folder2ram/unmount-scripts/*
+lib/init/*
+usr/share/doc/folder2ram/examples/*

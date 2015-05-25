@@ -1,10 +1,10 @@
 # author:
 #
-#     Philippe Le Brouster <plb@nebkha.net>
+#     Alberto Bursi <starshipeleven@hotmail.it>
 #
 # Copyright:
 #
-#     Copyright (C) 2009 - 2010 Philippe Le Brouster <plb@nebkha.net>
+#     
 #
 # License:
 #
@@ -24,10 +24,10 @@
 # On Debian systems, the complete text of the GNU General
 # Public License version 3 can be found in `/usr/share/common-licenses/GPL-3'.
 
-FS2RAM_ETCFILE=/etc/fs2ram/fs2ram.conf
-FS2RAM_UNMOUNT_SCRIPT_ETCDIR=/etc/fs2ram/unmount-scripts
-FS2RAM_UNMOUNT_SCRIPT_DIR=/lib/fs2ram/unmount-scripts
-FS2RAM_MOUNT_SCRIPT_VARDIR=/var/lib/fs2ram/mount-scripts
+ETCFILE=/etc/folder2ram/folder2ram.conf
+UNMOUNT_SCRIPT_ETCDIR=/etc/folder2ram/unmount-scripts
+UNMOUNT_SCRIPT_DIR=/lib/folder2ram/unmount-scripts
+MOUNT_SCRIPT_VARDIR=/var/lib/folder2ram/mount-scripts
 
 
 log_info_message() {
@@ -61,9 +61,9 @@ do_mountpoint() {
     force="$3"
     quiet="$4"
 
-    if [ -f "$FS2RAM_ETCFILE" ]; then
+    if [ -f "$ETCFILE" ]; then
 
-        # the fs2ram config file use almost the same syntax than /etc/fstab.
+        # the folder2ram config file use almost the same syntax than /etc/fstab.
         # There is two more columns more called 'script' and 'script_opts'
         while read tab_dev tab_mountpoint tab_script tab_script_opts tab_type tab_opts
         do
@@ -78,7 +78,7 @@ do_mountpoint() {
                 tmpfs) : ;;
 
                 *)
-                    log_warning_message "fs2ram: $tab_type type for $tab_mountpoint unsupported"
+                    log_warning_message "folder2ram: $tab_type type for $tab_mountpoint unsupported"
                     continue
                     ;;
             esac
@@ -125,7 +125,7 @@ do_mountpoint() {
                     ;;
 
                 *)
-                    log_warning_message "fs2ram : the action $action is not defined"
+                    log_warning_message "folder2ram : the action $action is not defined"
                     ;;
 
             esac
@@ -135,7 +135,7 @@ do_mountpoint() {
         done < $FS2RAM_ETCFILE
     fi
 
-    [ "$action_done" != "true" ] && [ -n "$mtpt" ] && log_warning_message "fs2ram: can't find $mtpt in $FS2RAM_ETCFILE"
+    [ "$action_done" != "true" ] && [ -n "$mtpt" ] && log_warning_message "folder2ram: can't find $mtpt in $ETCFILE"
 
     return 0
 }
@@ -152,15 +152,15 @@ mount_mountpoint() {
     if  is_mounted "$mtpt"; then
         # Skip if already mounted
         if is_tmpfs "$mtpt"; then
-            log_warning_message "fs2ram: $mtpt is already mounted with tmpfs"
+            log_warning_message "folder2ram: $mtpt is already mounted with tmpfs"
         else
-            log_warning_message "fs2ram: $mtpt is already mounted with another type than tmpfs"
+            log_warning_message "folder2ram: $mtpt is already mounted with another type than tmpfs"
         fi
         return 1
     else
-        [ "$quiet" != "true" ] && log_info_message "fs2ram: mounting $mtpt ($type)."
+        [ "$quiet" != "true" ] && log_info_message "folder2ram: mounting $mtpt ($type)."
         if ! mount -t "$type" -o "$opts" "$dev" "$mtpt"; then
-            log_error_message "fs2ram: Unable to mount $mtpt."
+            log_error_message "folder2ram: Unable to mount $mtpt."
             return 1
         fi
     fi
@@ -179,26 +179,26 @@ execute_unmount_script() {
 
     if [ -n "$script" ] && [ -z "$unmount_script" ]; then
         # Unmount script not found.
-        log_warning_message "fs2ram: the unmount script '$script' was not found either in '$FS2RAM_UNMOUNT_SCRIPT_ETCDIR' or in '$FS2RAM_UNMOUNT_SCRIPT_DIR'"
+        log_warning_message "folder2ram: the unmount script '$script' was not found either in '$UNMOUNT_SCRIPT_ETCDIR' or in '$UNMOUNT_SCRIPT_DIR'"
         return 0
     fi
 
     if [ ! -x "$unmount_script" ]; then
         # Unmount script not executable
-        log_warning_message "fs2ram: '$unmount_script' is not executable."
+        log_warning_message "folder2ram: '$unmount_script' is not executable."
         return 0
     fi
 
     tmp_mount_script=$(get_tmp_mount_script "$mtpt")
     if [ ! -x "$tmp_mount_script" ]; then
-        log_error_message "fs2ram: unable to create tempory mount script file for the mountpoint '$mtpt'"
+        log_error_message "folder2ram: unable to create tempory mount script file for the mountpoint '$mtpt'"
         [ -e "$tmp_mount_script" ] && rm -f "$tmp_mount_script"
         return 1
     fi
 
-    [ "$quiet" != "true" ] && log_info_message "fs2ram: executing the unmount script for the mountpoint '$mtpt'."
+    [ "$quiet" != "true" ] && log_info_message "folder2ram: executing the unmount script for the mountpoint '$mtpt'."
     if ! $unmount_script $mtpt $script_opts > "$tmp_mount_script"; then
-        log_error_message "fs2ram: the unmount script '$unmount_script $script_opts' for the mountpoint '$mtpt' failed."
+        log_error_message "folder2ram: the unmount script '$unmount_script $script_opts' for the mountpoint '$mtpt' failed."
         [ -e "$tmp_mount_script" ] && rm -f "$tmp_mount_script"
         return 1
     fi
@@ -214,13 +214,13 @@ execute_mount_script() {
     mount_script=$(get_mount_script "$mtpt")
 
     if [ ! -x "$mount_script" ]; then
-        log_error_message "fs2ram: the mount script '$mount_script' for the mountpoint '$mtpt' is either not found or not executable. Aborting."
+        log_error_message "folder2ram: the mount script '$mount_script' for the mountpoint '$mtpt' is either not found or not executable. Aborting."
         return 1
     fi
 
-    [ "$quiet" != "true" ] && log_info_message "fs2ram: executing the mount script for the mountpoint '$mtpt'."
+    [ "$quiet" != "true" ] && log_info_message "folder2ram: executing the mount script for the mountpoint '$mtpt'."
     if ! $mount_script; then
-        log_error_message "fs2ram: the mount script for the mountpount '$mtpt' failed."
+        log_error_message "folder2ram: the mount script for the mountpount '$mtpt' failed."
         return 1
     fi
 }
@@ -240,9 +240,9 @@ unmount_mountpoint() {
         return 1
     fi
 
-    [ "$quiet" != "true" ] && log_info_message "fs2ram: unmounting $tab_mountpoint ($type)."
+    [ "$quiet" != "true" ] && log_info_message "folder2ram: unmounting $tab_mountpoint ($type)."
     if ! umount "$mtpt"; then
-        log_error_message "fs2ram: Unable to unmount $mtpt."
+        log_error_message "folder2ram: Unable to unmount $mtpt."
         return 1
     fi
     return 0
@@ -261,12 +261,12 @@ get_unmount_script() {
         echo "/$script"
     
     # Check if it is a user-defined script in /etc
-    elif [ -x "$FS2RAM_UNMOUNT_SCRIPT_ETCDIR/$script" ]; then
-        echo "$FS2RAM_UNMOUNT_SCRIPT_ETCDIR/$script"
+    elif [ -x "$UNMOUNT_SCRIPT_ETCDIR/$script" ]; then
+        echo "$UNMOUNT_SCRIPT_ETCDIR/$script"
     
     # Check if it is a default unmount script
-    elif [ -x "$FS2RAM_UNMOUNT_SCRIPT_DIR/$script" ]; then
-        echo "$FS2RAM_UNMOUNT_SCRIPT_DIR/$script"
+    elif [ -x "$UNMOUNT_SCRIPT_DIR/$script" ]; then
+        echo "$UNMOUNT_SCRIPT_DIR/$script"
     fi
 }
 
@@ -274,11 +274,11 @@ get_unmount_script() {
 get_mount_script() {
     local mtpt
     mtpt=$(echo "$1" | sed -e "s'%'%%'g;s'/'%'g")
-    echo "$FS2RAM_MOUNT_SCRIPT_VARDIR/$mtpt"
+    echo "$MOUNT_SCRIPT_VARDIR/$mtpt"
 }
 get_tmp_mount_script() {
     local mtpt
     mtpt=$(echo "$1" | sed -e "s'%'%%'g;s'/'%'g")
-    echo "$(tempfile -d "$FS2RAM_MOUNT_SCRIPT_VARDIR" -p "$mtpt" -m 0700)"
+    echo "$(tempfile -d "$MOUNT_SCRIPT_VARDIR" -p "$mtpt" -m 0700)"
 }
 

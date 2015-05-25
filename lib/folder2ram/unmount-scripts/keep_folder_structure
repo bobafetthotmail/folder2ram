@@ -1,6 +1,6 @@
 #! /bin/sh
 
-. /lib/fs2ram/unmount-scripts/common.sh
+. /lib/folder2ram/unmount-scripts/common.sh
 
 dir="$1"
 shift

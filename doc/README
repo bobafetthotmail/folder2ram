@@ -1,19 +1,20 @@
 ## Information
 
-See fs2ram manual (man fs2ram).
+See folder2ram manual (man folder2ram).
 
 ## How to
 
 To use it, you need to :
 
-  - Define the mountpoints that will be handled by fs2ram in '/etc/fs2ram/fs2ram.conf'.
-    You can find an example at /usr/share/fs2ram/doc/examples
+  - Define the mountpoints that will be handled by folder2ram in '/etc/folder2ram/folder2ram.conf'.
+    You can find an example at /usr/share/folder2ram/doc/examples
 
   - Adjust the pre-unmount scripts if needed. The default scripts are
-    located in /usr/share/fs2ram/unmount-scripts.
+    located in /usr/share/folder2ram/unmount-scripts.
 
 ## Inspiration
 
 Some ideas were taken from the etckeeper package maintained by Joey Hess (how
 to store the file permissions).
 
+folder2ram is a fork of fs2ram.

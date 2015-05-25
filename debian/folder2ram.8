@@ -16,20 +16,20 @@
 .\" .sp <n>    insert n+1 empty lines
 .\" for manpage-specific macros, see man(7)
 .SH NAME
-fs2ram \- manage post-mount/pre-mount scripts
+folder2ram \- manage post-mount/pre-mount scripts
 .SH SYNOPSIS
-\fBfs2ram\fP \fIaction\fP \fB\-a\fP [\fB\-f\fP] [\fB\-q\fP]
+\fBfolder2ram\fP \fIaction\fP \fB\-a\fP [\fB\-f\fP] [\fB\-q\fP]
 .PP
-\fBfs2ram\fP \fIaction\fP <mountpoint> [\fB\-f\fP] [\fB\-q\fP]
+\fBfolder2ram\fP \fIaction\fP <mountpoint> [\fB\-f\fP] [\fB\-q\fP]
 .PP
-\fBfs2ram\fP \fB\-h\fP
+\fBfolder2ram\fP \fB\-h\fP
 .PP
 .SH DESCRIPTION
-\fBfs2ram\fP manages temporary file systems across reboots. Each tmpfs
+\fBfolder2ram\fP relocates and manages folders into tmpfs across reboots. Each tmpfs
 <mountpoint> can be associated with a pre-mount script, which is executed by
-\fBfs2ram\fP at each shutdown/reboot before the file system is unmounted. The
+\fBfolder2ram\fP at each shutdown/reboot before the file system is unmounted. The
 pre-unmount script must print a post-mount script on standard output, which is
-saved and then run at boot time after \fBfs2ram\fP mounts the corresponding
+saved and then run at boot time after \fBfolder2ram\fP mounts the corresponding
 file system.  
 
 .SH OPTIONS
@@ -58,7 +58,7 @@ This action executes the mount script corresponding to the mountpoint given in p
 .RE
 .TP
 \fB\-a\fP
-This option tells to do \fIaction\fP for each <mountpoint> specified in /etc/fs2ram/fs2ram.conf
+This option tells to do \fIaction\fP for each <mountpoint> specified in /etc/folder2ram/folder2ram.conf
 .TP
 \fB\-q\fP
 This option tells to be quiet (only warning/error).
@@ -71,29 +71,29 @@ For the action \fBunmount\fP and \fBmount\fP, this option tells
 to proceed execute-mount-script/unmount respectively even if
 mount/execute-unmount-script failed. This option has no effect for the other options.
 .SH DEFAULTS
-By default, \fBfs2ram\fP won't make /var/run, /var/lock or /tmp available as
+By default, \fBfolder2ram\fP won't make /var/run, /var/lock or /tmp available as
 ram filesystems. Since \fBsysvinit\fP provides a way to achieve this, it is
 preferable to use it. See \fBtmpfs\fP(5) for more information.
 .SH UNMOUNT SCRIPTS 
 An unmount script has to produce to the standard output the mount script that
-fs2ram will execute at boot. The unmount script takes two arguments. The first
+folder2ram will execute at boot. The unmount script takes two arguments. The first
 one is the concerned mountpoint. The second one, optional, is the options given
 to the script.
-The default unmount scripts are in /lib/fs2ram/unmount-scripts/
+The default unmount scripts are in /lib/folder2ram/unmount-scripts/
 .SH FILES
 .PP
-.IP "/etc/fs2ram/fs2ram.conf"
+.IP "/etc/folder2ram/folder2ram.conf"
 Mountpoints configuration file,
-.IP "/lib/fs2ram/unmount-scripts/*"
-Default unmount scripts used by fs2ram,
-.IP "/etc/fs2ram/unmount-scripts/*"
-User-defined unmount scripts used by fs2ram,
-.IP "/etc/init.d/fs2ram
+.IP "/lib/folder2ram/unmount-scripts/*"
+Default unmount scripts used by folder2ram,
+.IP "/etc/folder2ram/unmount-scripts/*"
+User-defined unmount scripts used by folder2ram,
+.IP "/etc/init.d/folder2ram
 Script executed at runlevels S/0/6,
-.IP "/var/lib/fs2ram/mount-scripts/*"
-Mount scripts created by fs2ram.
+.IP "/var/lib/folder2ram/mount-scripts/*"
+Mount scripts created by folder2ram.
 .SH SEE ALSO
 \fBmount\fP(8), \fBtmpfs\fP(5), \fBrcS\fP(5).
 .SH AUTHOR
-fs2ram was written by Philippe Le Brouster <plb@nebkha.net> for the Debian
-project (and may be used by others).
+folder2ram was based on fs2ram, written by Philippe Le Brouster <plb@nebkha.net>.
+the author of folder2ram is Alberto Bursi <starshipeleven@hotmail.it>

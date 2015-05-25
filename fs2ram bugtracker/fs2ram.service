@@ -1,0 +1,37 @@
+### BEGIN INIT INFO
+# Provides:          fs2ram
+# Required-Start:    mountall
+# Required-Stop:     umountfs
+# X-Start-Before:    mountall-bootclean
+# X-Stop-After:      rsyslog syslog-ng umountnfs
+# Default-Start:     S
+# Default-Stop:      0 6
+# Short-Description: mount/unmount mountpoints handled by fs2ram.
+# Description:       mount/unmount mountpoints handled by fs2ram. This include
+#                    executing unmount/mount scripts for each handled
+#                    mountpoints
+### END INIT INFO
+
+[Unit]
+Description=mount/unmount mountpoints handled by fs2ram.
+# mountall equivalent
+After=local-fs.target
+Requires=local-fs.target
+# systemd-tmpfiles-clean.timer replaces mountall-bootclean? The latter
+# is masked off in any case
+
+# before as in before on boot, but after when stopping
+Before=syslog-ng.service
+Before=syslog.service
+Before=rsyslog.service
+
+# before as in stop before unmounting
+Before=umount.target
+Conflicts=umount.target
+
+[Service] 
+ExecStart=/sbin/fs2ram mount -a 
+ExecStop=/sbin/fs2ram unmount -a 
+
+[Install]
+WantedBy=basic.target

@@ -2,11 +2,11 @@
 
 # Author:
 #
-#     Philippe Le Brouster <plb@nebkha.net>
+#     Alberto Bursi <starshipeleven@hotmail.it>
 #
 # Copyright:
 #
-#     Copyright (C) 2009 - 2010 Philippe Le Brouster <plb@nebkha.net>
+#     
 #
 # License:
 #
@@ -26,7 +26,7 @@
 # On Debian systems, the complete text of the GNU General
 # Public License version 3 can be found in `/usr/share/common-licenses/GPL-3'.
 
-. /lib/init/fs2ram-functions.sh
+. /lib/init/folder2ram-functions.sh
 
 
 print_usage() {
@@ -47,7 +47,7 @@ print_usage() {
     echo "                            this will unmount even if backup failed. "
     echo ""
     echo "-a"
-    echo "    This means that the <action> given will be proceeded for all the mountpoints defined in /etc/fs2ram/fs2ram.conf."
+    echo "    This means that the <action> given will be proceeded for all the mountpoints defined in /etc/folder2ram/folder2ram.conf."
     echo "-h"
     echo "    Display the command usage for $0."
 }

@@ -9,7 +9,7 @@ TMP     = $(CURDIR)/debian/$(PACKAGE)
 	dh $@
 
 override_dh_installinit:
-	dh_installinit --no-start --name=fs2ram -- "start 36 S . start 39 0 6 ."
+	dh_installinit --no-start --name=folder2ram -- "start 36 S . start 39 0 6 ."
 
 override_dh_compress:
-	dh_compress -Xexamples/fs2ram.conf
+	dh_compress -Xexamples/folder2ram.conf

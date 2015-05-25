@@ -1,0 +1,69 @@
+
+From: Andreas Beckmann <anbe@debian.org>
+To: Debian Bug Tracking System <submit@bugs.debian.org>
+Subject: fs2ram: postinst uses /usr/share/doc content (Policy 12.3): /usr/share/doc/fs2ram/examples/fs2ram.conf.wear
+Date: Sat, 01 Jun 2013 13:46:28 +0200
+
+[Message part 1 (text/plain, inline)]
+
+Package: fs2ram
+Version: 0.3.12
+Severity: serious
+User: debian-qa@lists.debian.org
+Usertags: piuparts
+
+Hi,
+
+a test with piuparts revealed that your package uses files from
+/usr/share/doc in its maintainer scripts which is a violation of
+Policy 12.3: "Packages must not require the existence of any files in
+/usr/share/doc/ in order to function."
+http://www.debian.org/doc/debian-policy/ch-docs.html#s12.3
+
+These files must be moved to /usr/share/$PACKAGE and may be symlinked
+from /usr/share/doc/$PACKAGE.
+
+This piuparts test prevents the installation of (most) files into
+/usr/share/doc with 'dpkg --path-exclude=...'.
+
+>From the attached log (scroll to the bottom...):
+
+  Selecting previously unselected package fs2ram.
+  (Reading database ... 6690 files and directories currently installed.)
+  Unpacking fs2ram (from .../archives/fs2ram_0.3.12_all.deb) ...
+  Setting up fs2ram (0.3.12) ...
+  Error: The new file /usr/share/doc/fs2ram/examples/fs2ram.conf.wear does not exist!
+  dpkg: error processing fs2ram (--configure):
+   subprocess installed post-installation script returned error exit status 1
+  Errors were encountered while processing:
+   fs2ram
+
+
+
+From: martin f krafft <madduck@debian.org>
+To: Debian Bug Tracking System <submit@bugs.debian.org>
+Subject: fails to mount over existing mount
+Date: Tue, 9 Sep 2014 15:50:54 +0200
+
+[Message part 1 (text/plain, inline)]
+
+Package: fs2ram
+Version: 0.3.12
+Severity: normal
+
+fishbowl:~log% sudo fs2ram mount /tmp
+fs2ram: /tmp is already mounted with another type than tmpfs
+
+Yes, it is:
+
+fishbowl:~log% df /tmp
+Filesystem               1K-blocks  Used Available Use% Mounted on
+/dev/mapper/fishbowl-tmp    943128  1228    876776   1% /tmp
+
+But why should that matter? I have my reasons never to want /tmp on
+the root filesystem, even across reboots.
+
+What is the purpose of this check?
+
+
+
