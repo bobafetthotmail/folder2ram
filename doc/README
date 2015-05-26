@@ -10,7 +10,7 @@ To use it, you need to :
     You can find an example at /usr/share/folder2ram/doc/examples
 
   - Adjust the pre-unmount scripts if needed. The default scripts are
-    located in /usr/share/folder2ram/unmount-scripts.
+    located in /etc/folder2ram/unmount-scripts.
 
 ## Inspiration
 

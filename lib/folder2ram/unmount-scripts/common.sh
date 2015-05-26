@@ -69,3 +69,4 @@ generate_file_content() {
     tar czf - -C "$dir" --exclude="$exclude_pattern" $include_pattern | base64
     echo "EOF"
 }
+

@@ -1,0 +1,3422 @@
+From: <Saved by UnMHT Ver.7.3.0.5>
+Subject: A transient /var/log
+Date: Tue, 26 May 2015 09:37:01 +0200
+MIME-Version: 1.0
+X-UnMHT-Save-State: Current-State
+Content-Type: multipart/related;
+	boundary="----=_Part_34485EE6_C1A32548.14D8F27362B";
+	type="text/html"
+
+------=_Part_34485EE6_C1A32548.14D8F27362B
+Content-Location: https://www.debian-administration.org/article/661/A_transient_/var/log
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html;
+	charset="UTF-8"
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org=
+/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" dir=3D"ltr" lang=3D"en"><head>=
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DUTF-8" />
+ =20
+  <meta http-equiv=3D"Content-Language" content=3D"en" />
+  <meta content=3D"Tips for a Debian GNU/Linux System Administrator." name=
+=3D"description" />
+<meta content=3D"Debian System Administration News, Debian Sysadmin, Linux =
+Administration, Linux Sysadmin, Sysadmin" name=3D"keywords" />
+<meta content=3D"(c) 2004-2014 Debian Administration" name=3D"copyright" />
+<meta content=3D"Debian Administration" name=3D"author" />
+<meta content=3D"index,follow" name=3D"robots" />
+<meta content=3D"document" name=3D"resource-type" />
+<meta content=3D"Personal" name=3D"classification" />
+<meta content=3D"en" name=3D"language" />
+<link href=3D"/favicon.ico" rel=3D"icon" />
+<link href=3D"/favicon.ico" rel=3D"shortcut icon" />
+<link href=3D"/" rel=3D"top" title=3D"home" />
+<link href=3D"/css/view.css" media=3D"screen" rel=3D"stylesheet" title=3D"S=
+ite Layout" type=3D"text/css" />
+<link href=3D"/about/search" rel=3D"search" title=3D"Search" />
+<link href=3D"/articles.rdf" rel=3D"alternate" title=3D"Debian Administrati=
+on RSS" type=3D"application/rdf+xml" />
+<link href=3D"/atom.xml" rel=3D"alternate" title=3D"Atom" type=3D"applicati=
+on/atom+xml" />
+
+
+ =20
+
+  <link href=3D"http://www.debian-administration.org/article/661/A_transien=
+t_/var/log" rel=3D"canonincal" />
+
+
+  <title>A transient /var/log</title>
+
+  <!--[if lte IE 6]>
+   <style type=3D'text/css'>
+    * html #main, * html #container {height:1%}
+   </style>
+  <![endif]-->
+  <!--[if !lt IE 6]><!-->
+  <link href=3D"/css/jquery.socialshareprivacy.min.css" rel=3D"stylesheet" =
+type=3D"text/css" />
+<!-- jQuery: remotely, then locally -->
+    <link href=3D"/css/jquery.autocomplete.css" rel=3D"stylesheet" type=3D"=
+text/css" />
+    <script src=3D"/js/jquery-1.9.0.min.js" type=3D"text/javascript"></scri=
+pt>
+    <script src=3D"/js/jquery.autocomplete.js" type=3D"text/javascript"></s=
+cript>
+    <script src=3D"/js/jquery.autogrow.js" type=3D"text/javascript"></scrip=
+t>
+  <script type=3D"text/javascript">
+/* <![CDATA[ */
+    (function() {
+        var s =3D document.createElement('script'), t =3D document.getEleme=
+ntsByTagName('script')[0];
+        s.type =3D 'text/javascript';
+        s.async =3D true;
+        s.src =3D '//api.flattr.com/js/0.6/load.js?mode=3Dauto';
+        t.parentNode.insertBefore(s, t);
+    })();
+/* ]]> */
+  </script>
+  <script src=3D"/js/jquery.sidebarToggler.102.js" type=3D"text/javascript"=
+></script>
+  <script type=3D"text/javascript">
+<!--//--><![CDATA[//><!--
+$(function() {
+  $("#rightcol").toggleSidebar({animation: "queuedEffects",
+				initState:"shown",
+				event:"click",
+				triggerShow: "Menu"});
+});
+//--><!]]>
+   </script>
+<!--<![endif]-->
+
+
+<script type=3D"text/javascript">
+
+      var _gaq =3D _gaq || [];
+        _gaq.push(['_setAccount', 'UA-37997217-1']);
+          _gaq.push(['_trackPageview']);
+
+            (function() {
+                var ga =3D document.createElement('script'); ga.type =3D 't=
+ext/javascript'; ga.async =3D true;
+                    ga.src =3D ('https:' =3D=3D document.location.protocol =
+? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                        var s =3D document.getElementsByTagName('script')[0=
+]; s.parentNode.insertBefore(ga, s);
+                          })();
+
+                      </script>
+ <base href=3D"https://www.debian-administration.org/article/661/A_transien=
+t_/var/" /></head>
+ <body>
+   <div id=3D"header">
+     <h1><a href=3D"/">Debian Administration</a></h1>
+     <ul>
+       <li><a href=3D"/about/Debian%20Administration">About</a></li>
+       <li><a href=3D"/archive/">Archive</a></li>
+       <li><a href=3D"/about/Contribute">Contribute</a></li>
+       <li><a href=3D"/about/FAQ">FAQ</a></li>
+       <li><a href=3D"/about/Search">Search</a></li>
+       <li><a href=3D"/tag/">Tags</a></li>
+     </ul>
+   </div>
+    <div id=3D"wrapper">
+      <div id=3D"content">
+        <div id=3D"container">
+            <div id=3D"inner">
+                <div id=3D"main">
+
+
+<script src=3D"/js/jquery.socialshareprivacy.min.js" type=3D"text/javascrip=
+t"></script>
+<script type=3D"text/javascript">
+  <!--//--><![CDATA[//><!--
+$.fn.socialSharePrivacy.settings.path_prefix =3D '/';
+
+$(function() {
+     $('.share').socialSharePrivacy();
+});
+  //--><!]]>
+</script>
+
+
+       <div class=3D"article">
+       <!-- headline + section name -->
+       <h2 class=3D"title">A transient /var/log</h2>
+
+       <div class=3D"tagline"><p>Posted by  <a href=3D"/users/mcortese">mco=
+rtese</a> on Thu 18 Nov 2010  at 20:01 </p></div>
+
+
+<!-- tag start -->
+  <script>
+function addTag(url)
+{
+    $("#current_tags").load( url,
+                             function() {
+                                 $("#new_tag").val( "" )
+                                 $("#add_tag").hide()
+                             })
+
+}
+
+ $(document).ready(function(){
+    $("#new_tag").autocomplete("/ajax/complete");
+    $('a#toggle').click(function() {
+       $('#add_tag').toggle(400);
+     })
+
+} )
+</script>
+<div class=3D"tags">
+  <span id=3D"current_tags">Tags:=20
+
+<a href=3D"/tag/initscripts" rel=3D"tag" title=3D"Find more content with th=
+is tag">initscripts</a>,=20
+
+<a href=3D"/tag/logfiles" rel=3D"tag" title=3D"Find more content with this =
+tag">logfiles</a>,=20
+
+<a href=3D"/tag/syslog" rel=3D"tag" title=3D"Find more content with this ta=
+g">syslog</a>
+
+</span>
+ =20
+</div>
+
+<!-- tag end -->
+
+       <p>So you&#x27;re afraid of wearing out your SSD.  Or you don&#x27;t=
+ want to spin up a sleeping hard disk just to write a line of log.  Or mayb=
+e you&#x27;re just looking for some use for the disproportionate amount of =
+RAM you&#x27;ve got.  Whatever your case is, what you need is a way to keep=
+ the log files in memory as long as the system is up, and write them down t=
+o the regular storage just before shutdown.</p>
+
+<h3>Starting</h3>
+
+<p>The concept itself is pretty simple: mount a tmpfs on top of <code>/var/=
+log</code>.
+</p><pre>mount -t tmpfs -o nosuid,noexec,nodev,mode=3D0755,size=3D16M \
+      transientlog /var/log
+</pre>
+Feel free to tune the <code>size</code> and <code>mode</code> parameters
+according to your actual needs.
+
+<p>
+The problem of mounting a new file system on top of a non-empty directory,
+is that it hides the previous contents of such directory: they are still
+there, but you cannot access them any more.
+To overcome this drawback, you have to relocate <code>/var/log</code> to an=
+other
+place before mounting the tmpfs. The best way to do this is via a &quot;bind
+mount&quot;.
+</p><pre>mount --bind /var/log /var/my_true_log
+</pre>
+
+<p>
+The next thing to do is to populate the newly created directory with the
+contents from the old one so that the logging facilities can continue to
+work as if nothing happened.
+</p><pre>cp -rfp /var/my_true_log -T /var/log
+</pre>
+
+<p>If you want to create a script to automate all this, you must be
+prepared to handle the exceptions:
+in case the copy should fail, just unmount everything in the reverse order.
+And before anything else, ensure that you are root,
+that the
+directories actually exist, and that the transient log is not already
+running.
+The latter can be handled with a lock file.
+So this will be the preamble to your script.
+</p><pre>[ -f /var/lock/transientlog.lock ] &amp;&amp; return 1
+[ `id -u` -eq 0 ] || return 2
+[ -d /var/log ] || return 2
+[ -d /var/my_true_log ] || mkdir -p /var/my_true_log
+</pre>
+
+<p>And this will be the complete function.
+
+</p><pre>do_start()
+{
+        # Return
+        #   0 if transient log has been started
+        #   1 if transient log was already running
+        #   2 if transient log could not be started
+
+        [ -f /var/lock/transientlog.lock ] &amp;&amp; return 1
+        [ `id -u` -eq 0 ] || return 2
+        [ -d /var/log ] || return 2
+        [ -d /var/my_true_log ] || mkdir -p /var/my_true_log
+        mount --bind /var/log /var/my_true_log
+        mount -t tmpfs -o nosuid,noexec,nodev,mode=3D0755,size=3D16M \
+              transientlog /var/log
+        if [ $? -eq 0 ]; then
+		if cp -rfp /var/my_true_log -T /var/log; then
+			touch /var/lock/transientlog.lock
+			return 0
+		fi
+		# Rollback the mount
+		umount /var/log
+	fi
+        # Rollback the directory mangling
+        umount /var/my_true_log
+        return 2
+}
+</pre>
+
+
+<h3>Stopping</h3>
+
+<p>At shut down, the log files need to be copied back to the permanent
+storage
+before unmounting the tmpfs. Using <code>cp</code> with the option
+<code>-u</code> is an effective way to restrict the copy to only those
+files that were actually changed, thus minimizing the writes to the disk.
+The option <code>-l</code> to <code>umount</code>, known as <em>lazy</em>
+unmount, tells the kernel to delay the execution as long there are
+processes with an open file on that file system.
+</p><pre>cp -rfup /var/log -T /var/my_true_log
+umount -l /var/log
+umount -l /var/my_true_log
+</pre>
+
+<p>Be aware that a race condition can happen here, because a process may de=
+cide to start
+writing to <code>/var/log</code> right between the copy and the unmount.
+There is little you can do about it, except
+trying to stop the transient log after everything else. Be prepared to risk
+losing the last messages of those processes that are still running!
+
+
+</p><p>After adding the usual sanity checks, the final look of the stop rou=
+tine
+is the following.
+
+</p><pre>do_stop() {
+        # Return
+        #   0 if transient log has been stopped
+        #   1 if transient log was already stopped
+        #   2 if transient log could not be stopped
+        #   other if a failure occurred
+
+        [ -f /var/lock/transientlog.lock ] || return 1
+
+        # Check if I am root
+        [ `id -u` -eq 0 ] || return 2
+
+        # Merge back to permanent storage
+        cp -rfup /var/log -T /var/my_true_log
+
+        umount -l /var/log
+        umount -l /var/my_true_log
+        rm -r /var/lock/transientlog.lock
+        return 0
+}
+</pre>
+
+<h3>When a refresh is needed</h3>
+
+<p>Now you have two independent log directories, one static and one
+dynamic, that exchange data only at boot and shutdown.  It would be a nice
+feature to allow the two directories to be synchronized at will.  A
+wise administrator could then add a cron rule to periodically ensure
+consistency between the transient and permanent directories.
+
+</p><p>The idea is simple: just duplicate the concept seen for the stopping
+phase, leaving out the unmounts. Without any further delay, this is
+your whole routine (called <code>do_reload()</code> for reasons you will
+soon understand).
+</p><pre>do_reload() {
+        # Return
+        #   0 if transient log has been reloaded
+        #   1 if transient log was not running
+        #   2 if transient log could not be reloaded
+
+        [ -f /var/lock/transientlog.lock ] || return 1
+       =20
+        # Check if I am root
+        [ `id -u` -eq 0 ] || return 2
+
+        # Merge back to permanent storage
+        cp -rfup /var/log -T /var/my_true_log
+        touch /var/lock/transientlog.lock
+        return 0
+}
+</pre>
+
+<h3>The initscript</h3>
+
+<p>In order to have the transient log automatically started at boot time an=
+d stopped
+at shutdown, you need to shape everything into an initscript. You can
+use the skeleton in <code>/etc/init.d</code> as a starting point and merge
+the three functions defined above, namely <code>do_start()</code>,
+<code>do_stop()</code> and <code>do_reload()</code>.
+
+</p><p>What you do have to change, though, are the so-called LSB headers. T=
+hese
+are nothing but comments at the beginning of an initscript, which define the
+relative dependences with other initscripts. Setting up the right headers
+saves you from the heavy task of finding the correct order of initscripts,
+because insserv will do it for you (it is, in fact, the only way to handle
+the init sequence from Debian Squeeze on).
+
+</p><p>Transient log must be started before and stopped after any service t=
+hat
+writes to <code>/var/log</code>, and you can reasonably assume that the
+first of such services is syslog. The following lines express these
+relationships.
+
+</p><pre># X-Start-Before:  $syslog
+# X-Stop-After:    $syslog
+</pre>
+
+<p>Now, this sounds reasonable, and is indeed the best approximation you
+can have. But for sake of completeness, you must be aware that, while
+sysolg is for sure the first program to access <code>/var/log</code>, there
+are so many processes writing log files that you can hardly tell which will
+be still running at shutdown. This issue has no easy solution, not under
+Debian&#x27;s runlevels model. Things may change if Debian moves to other b=
+oot
+schemes, but for the moment you have to live with it.  At least, the lazy
+unmount seen above prevents the system from hanging forever if some
+process keeps <code>/var/log</code> busy at shutdown.
+
+</p><p>Another LSB header that you might want to deploy is this Debian-spec=
+ific
+keyword:
+
+</p><pre># X-Interactive:   yes
+</pre>
+
+Although yours is definitely not an interactive script, this keyword
+instructs insserv that it has to be executed alone, not in parallel to
+other startup scripts. This is of course to avoid (or at least minimize) the
+race conditions mentioned above.<p></p>
+
+<p>There should be no doubts in which runlevels transient log is
+supposed to run and in which not:
+</p><pre># Default-Start:    2 3 4 5
+# Default-Stop:     0 1 6
+</pre>
+
+<p>Add some descriptions and your whole LSB header will look like this:
+</p><pre>### BEGIN INIT INFO
+# Provides: transientlog
+# X-Start-Before:       $syslog
+# X-Stop-After:         $syslog
+# X-Interactive:        yes
+# Default-Start:        2 3 4 5
+# Default-Stop:         0 1 6
+# Short-Description:    Keeps /var/log in RAM
+# Description: Moves the contents of /var/log to RAM during boot
+#              and keeps it there until shutdown/reboot, when it
+#              copies the contents back to permanent storage.
+### END INIT INFO
+</pre>
+
+<p>The rest of the script can be left mostly untouched.
+A finished version can be found
+<a href=3D"http://pastebin.com/download.php?i=3D8u0FNYJh" rel=3D"nofollow">=
+here</a> (<a href=3D"http://www.debian-administration.org/articles/661/tran=
+sientlog">Local Mirror</a>).=20
+Save it as
+<code>/etc/init.d/transientlog</code>, make it executable, then let
+insserv create the symbolic links in the relevant runlevels.
+
+</p><pre class=3D"terminal"><span class=3D"prompt">#</span> <span class=3D"=
+input">chmod a+x /etc/init.d/transientlog</span>
+<span class=3D"prompt">#</span> <span class=3D"input">insserv transientlog<=
+/span>
+</pre>
+
+<p>If you have an older Debian without insserv, you must find out yourself
+reasonable sequence numbers for the start and stop actions. Assuming 00 for
+start and 99 for stop, the following command will create the symbolic links
+that you need.
+
+</p><pre class=3D"terminal"><span class=3D"prompt">#</span> <span class=3D"=
+input">update-rc.d transientlog start 00 2 3 4 5 . stop 99 0 1 6 .</span>=20
+</pre>
+
+<h3>The cron job</h3>
+
+<p>The initscript seen in the previous section can be called with the
+<code>reload</code> argument in order to force the synchronization of the
+transient and permanent directories.
+You might want to invoke it periodically, for example once a day: just write
+a script like the following and put it in <code>/etc/cron.daily</code>
+
+</p><pre>#!/bin/sh
+
+[ -x /etc/init.d/transientlog ] || exit 0
+[ -f /var/lock/transientlog.lock ] || exit 0
+/etc/init.d/transientlog reload
+</pre>
+
+
+
+
+<div style=3D"text-align: right;">
+</div>
+
+
+<div class=3D"navigation">
+	<div class=3D"row">
+        <span class=3D"left">
+	<a href=3D"/comment/onarticle/661">Add Comment</a>
+ <a href=3D"/comment/feed/onarticle/661"><img alt=3D"XML logo" height=3D"14=
+" src=3D"/images/xml.gif" title=3D"Subscribe to comments on this article." =
+width=3D"36" /></a></span>
+         <span class=3D"right">
+         </span>
+	<div class=3D"spacer"> </div>
+	</div>
+
+
+	<p>&#xa0;</p>
+         <div class=3D"row">
+	  <span class=3D"left">
+          =20
+            <a href=3D"/article/660/Publishing_host_services_to_OpenPGP_wit=
+h_Monkeysphere">&lt;&lt;&lt; Publishing host services to OpenPGP with Monke=
+ysphere</a>
+          =20
+          </span>
+          <span class=3D"right">
+          =20
+            <a href=3D"/article/662/Enabling_HTTP_Strict_Transport_Security=
+_on_debian_servers">Enabling HTTP Strict Transport Security on debian serve=
+rs &gt;&gt;&gt;</a>
+          =20
+          </span>
+	<div class=3D"spacer"> </div>
+        </div>
+
+	</div>
+</div>
+
+<p>&#xa0;</p>
+ <div class=3D"share"></div>
+<p>&#xa0;</p>
+
+
+
+=09
+	<p></p>
+	<div class=3D"advert">
+	<center>
+	<script type=3D"text/javascript"><!--
+	google_ad_client =3D "pub-1910202134166551";
+	google_ad_width =3D 728;
+	google_ad_height =3D 90;
+	google_ad_format =3D "728x90_as";
+	google_ad_type =3D "text_image";
+	google_ad_channel =3D"4454478967";
+	//--></script>
+=09
+	</center>
+
+       =20
+	  <p style=3D"text-align: right;"><a href=3D"/about/FAQ%20:%20Site%20Adver=
+ts">Why are these adverts here?</a></p>
+       =20
+	</div>
+=09
+
+
+
+ <hr />
+=20
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_1">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_1">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/Anonymous">Anonymous</a>  (89.103.xx.xx) on Th=
+u 18 Nov 2010  at 20:24 <br />
+</div>
+
+ <div class=3D"body">
+  Thanks for your script. I wanted to give it a try, but insserv complains =
+about missing entries Required-Start and Required-Stop. Are those important?
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  Parent
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/1">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+ <div class=3D"indent">
+ =20
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_2">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_2">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/Anonymous">Anonymous</a>  (84.221.xx.xx) on Th=
+u 18 Nov 2010  at 21:05 <br />
+</div>
+
+ <div class=3D"body">
+  Instead of copying /var/log to the temporary dir why didn&#x27;t you use =
+a union mount?
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  <a href=3D"#comment_1">Parent</a>
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/2">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+ </div>
+ =20
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+ <div class=3D"indent">
+ =20
+
+ <div class=3D"indent">
+ =20
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_10">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_10">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/mcortese">mcortese</a>  (93.39.xx.xx) on Sun 2=
+8 Nov 2010  at 21:34 <br />
+[ <a href=3D"/users/mcortese/weblog">View Weblogs</a> ]</div>
+
+ <div class=3D"body">
+  Sounds like a good idea. I need to elaborate on this...
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  <a href=3D"#comment_2">Parent</a>
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/10">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+ </div>
+ =20
+
+ </div>
+ =20
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+ <div class=3D"indent">
+ =20
+
+ <div class=3D"indent">
+ =20
+
+ <div class=3D"indent">
+ =20
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_16">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_16">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/banchieri">banchieri</a>  (2a01:0xx:0xx:0xxx:0=
+xxx:0xxx:xx) on Wed 19 Jan 2011  at 22:25 <br />
+[ <a href=3D"/users/banchieri/weblog">View Weblogs</a> ]</div>
+
+ <div class=3D"body">
+  <p>It <strong>is</strong> a good idea: Mount an aufs with a ramfs as writ=
+able top branch onto /var/log and during shutdown, use aubrsync to save the=
+ changes back to the original /var/log.
+ </p></div>
+
+<p class=3D"foot">
+ [
+=20
+  <a href=3D"#comment_10">Parent</a>
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/16">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+ </div>
+ =20
+
+ </div>
+ =20
+
+ </div>
+ =20
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+ <div class=3D"indent">
+ =20
+
+ <div class=3D"indent">
+ =20
+
+ <div class=3D"indent">
+ =20
+
+ <div class=3D"indent">
+ =20
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_17">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_17">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/mcortese">mcortese</a>  (20.142.xx.xx) on Mon =
+14 Feb 2011  at 16:59 <br />
+[ <a href=3D"/users/mcortese/weblog">View Weblogs</a> ]</div>
+
+ <div class=3D"body">
+  I thought aufs had been rejected by the Linux kernel team.
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  <a href=3D"#comment_16">Parent</a>
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/17">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+ </div>
+ =20
+
+ </div>
+ =20
+
+ </div>
+ =20
+
+ </div>
+ =20
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_3">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_3">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/lpenz">lpenz</a>  (189.74.xx.xx) on Thu 18 Nov=
+ 2010  at 23:20 <br />
+</div>
+
+ <div class=3D"body">
+  You can also completely disable logging. <br /><br />busybox has an inter=
+esting solution: all log is stored in a circular buffer in RAM.
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  Parent
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/3">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_4">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_4">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/Anonymous">Anonymous</a>  (193.178.xx.xx) on F=
+ri 19 Nov 2010  at 08:02 <br />
+</div>
+
+ <div class=3D"body">
+  Correct me if I&#x27;m wrong: right after mounting over existing var log =
+all processes have FD on old mounted partition (on disk) so it will write t=
+o it until i restart logging process ?
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  Parent
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/4">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+ <div class=3D"indent">
+ =20
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_13">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_13">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/mcortese">mcortese</a>  (93.39.xx.xx) on Sun 2=
+8 Nov 2010  at 22:22 <br />
+[ <a href=3D"/users/mcortese/weblog">View Weblogs</a> ]</div>
+
+ <div class=3D"body">
+  Correct. That&#x27;s why it has to be started before anything that writes=
+ to /var/log.
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  <a href=3D"#comment_4">Parent</a>
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/13">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+ </div>
+ =20
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_5">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_5">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/Anonymous">Anonymous</a>  (59.167.xx.xx) on Fr=
+i 19 Nov 2010  at 11:15 <br />
+</div>
+
+ <div class=3D"body">
+  Why not configure the syslogd to not do synchronous writes and then use t=
+he commit=3D mount option (for ext3/4 filesystems) to allow the data to be =
+stored in cache for longer periods and thus allow fewer and bigger writes? =
+<br /><br />The approach described here will lose all logs if the system cr=
+ashes before writing back while configuring a filesystem to delay writes by=
+ a minute will just risk losing the last minute&#x27;s worth of logs and no=
+t require any special cron jobs.
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  Parent
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/5">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+ <div class=3D"indent">
+ =20
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_12">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_12">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/mcortese">mcortese</a>  (93.39.xx.xx) on Sun 2=
+8 Nov 2010  at 22:17 <br />
+[ <a href=3D"/users/mcortese/weblog">View Weblogs</a> ]</div>
+
+ <div class=3D"body">
+  Alas, syslogd is just one of the several programs which write to <code>/v=
+ar/log</code>: configuring all of them can be painful. Furthermore your com=
+ment seems to assume that <code>/var/log</code> is a file system on its own=
+, which is not usually true. <p>As in many similar situations, the risk of =
+losing <i>n</i> minutes worth of logs is inversely proportional to the rate=
+ of writes to disk. You might go from entirely skipping the cron part (and =
+risk loosing all log files since last boot), to configuring syslogd to sync=
+ the disk after each write, and even to logging to two redundant remote mac=
+hines, like someone else suggested in the comments. It depends on how much =
+you value the log files and how you use them: it&#x27;s up to you to tune t=
+he system and find the balance that suits you (someone even suggested you s=
+hould get rid of log files in the first place).
+ </p></div>
+
+<p class=3D"foot">
+ [
+=20
+  <a href=3D"#comment_5">Parent</a>
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/12">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+ </div>
+ =20
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_6">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_6">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/Anonymous">Anonymous</a>  (190.3.xx.xx) on Fri=
+ 19 Nov 2010  at 14:06 <br />
+</div>
+
+ <div class=3D"body">
+  Great article! I&#x27;m thinking in doing a similar approach for an embed=
+ded proxy server running Squid. <br />With the enough amount of ram, you ca=
+n store all Squid&#x27;s cache in ram without installing a hard disk. <br /=
+><br />Thanks!
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  Parent
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/6">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_7">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_7">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/vegiVamp">vegiVamp</a>  (81.246.xx.xx) on Mon =
+22 Nov 2010  at 13:09 <br />
+</div>
+
+ <div class=3D"body">
+  Umm... What&#x27;s the point of logs? Oh, right, to see what happened AFT=
+ER THINGS WENT HORRIBLY WRONG. <br /><br />When things go horribly wrong, h=
+ow likely would you say it is that your stopscript has a chance to run? Clo=
+se to zero, I&#x27;d say. <br /><br />No, you want your logs to not bother =
+your SSD or sleeping harddisk, simply get one of the teensie USB sticks - t=
+hey go up to 128G these days - and mount that at /var/log. Alternatively, a=
+nd it is what I do, dedicate a machine (or two if you want redundancy) to r=
+emote syslogging, and turn of local logging. All log entries get sent over =
+UDP to a single destination, where they can additionally easily be parsed b=
+y something like logcheck, which then mails you any anomalies.
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  Parent
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/7">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+ <div class=3D"indent">
+ =20
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_8">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_8">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/Anonymous">Anonymous</a>  (93.125.xx.xx) on Mo=
+n 22 Nov 2010  at 20:38 <br />
+</div>
+
+ <div class=3D"body">
+  I&#x27;m with vegiVamp. Matteo, you must be mad to want to implement a tr=
+ansient /var/log. This is the worst idea ever.
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  <a href=3D"#comment_7">Parent</a>
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/8">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+ </div>
+ =20
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+ <div class=3D"indent">
+ =20
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_9">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_9">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/Anonymous">Anonymous</a>  (87.127.xx.xx) on Fr=
+i 26 Nov 2010  at 08:16 <br />
+</div>
+
+ <div class=3D"body">
+  &gt; Umm... What&#x27;s the point of logs? <br /><br />Erm ... debug, inf=
+o, notice, warning, warn, error, err, crit, alert, emerg; <br />plenty ther=
+e not worth panicking about.
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  <a href=3D"#comment_7">Parent</a>
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/9">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+ </div>
+ =20
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+ <div class=3D"indent">
+ =20
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_11">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_11">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/mcortese">mcortese</a>  (93.39.xx.xx) on Sun 2=
+8 Nov 2010  at 21:58 <br />
+[ <a href=3D"/users/mcortese/weblog">View Weblogs</a> ]</div>
+
+ <div class=3D"body">
+  Well, if you really think that log files are only useful in case of disas=
+ter, then yes, this solution is not for you. And neither the one you propos=
+e about an external USB stick: you really need log files recorded on a diff=
+erent machine, like you finally suggest. Unfortunately, that solution may b=
+e difficult to implement if you are not continuously connected to a well-kn=
+own, stable network or for a home installation without a second PC to spare=
+. <p>Granted, the solution I propose is <strong>NOT</strong> safe in a lot =
+of circumstances, including if your hardware catches fire and so on. I woul=
+d not recommend it for a server or a mission-critical system. </p><p>But if=
+ you have a netbook for personal use and just browse through log files now =
+and then, for example to see why that new application failed to start, or w=
+hat that new driver is complaining about, then it may perfectly suit your n=
+eeds.
+ </p></div>
+
+<p class=3D"foot">
+ [
+=20
+  <a href=3D"#comment_7">Parent</a>
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/11">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+ </div>
+ =20
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+ <div class=3D"indent">
+ =20
+
+ <div class=3D"indent">
+ =20
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_14">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_14">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/vegiVamp">vegiVamp</a>  (81.246.xx.xx) on Mon =
+29 Nov 2010  at 11:53 <br />
+</div>
+
+ <div class=3D"body">
+  I never said they were useful *only* for the worst-case, but as an admini=
+strator, that *is* their primary purpose for me, yes. What will you do if t=
+he new driver complains by causing a kernel panic? <br /><br />Things aren&=
+#x27;t black and white; the USB stick solution is a good intermediate where=
+ you both don&#x27;t wear out the SSD *and* don&#x27;t lose your logs in th=
+e event of catastrophic failure. Well, unless the failure is more than cata=
+strophic and destroys your actual hardware, at which point it&#x27;s probab=
+ly more a matter of finding out who dropped your laptop into the large hadr=
+on collider. <br /><br />Drives like this aren&#x27;t even in the way on a =
+laptop: <a href=3D"http://www.2dayblog.com/2009/03/04/elecoms-mf-su2-series=
+-thumbdrive/" rel=3D"nofollow"></a><a href=3D"http://www.2dayblog.com/2009/=
+03/04/elecoms-mf-su2-series-thumbdrive/" rel=3D"nofollow">http://www.2daybl=
+og.com/2009/03/04/elecoms-mf-su2-series-thumbdri ve/</a><br />
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  <a href=3D"#comment_11">Parent</a>
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/14">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+ </div>
+ =20
+
+ </div>
+ =20
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+ <div class=3D"indent">
+ =20
+
+ <div class=3D"indent">
+ =20
+
+ <div class=3D"indent">
+ =20
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_15">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_15">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/linulin">linulin</a>  (91.202.xx.xx) on Sun 12=
+ Dec 2010  at 13:56 <br />
+</div>
+
+ <div class=3D"body">
+  <p>&gt; What will you do if the new driver complains by causing a kernel =
+panic?</p><p>You want to have console access in this case, (either physical=
+, or connected to some machine via serial port). Kernel panic logs may not =
+reach your /var/log, regardless of how it is mounted and where syslog is co=
+nfigured to send logs to.</p><p>-- <br /> ...Bye..Dmitry.
+ </p></div>
+
+<p class=3D"foot">
+ [
+=20
+  <a href=3D"#comment_14">Parent</a>
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/15">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+ </div>
+ =20
+
+ </div>
+ =20
+
+ </div>
+ =20
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_18">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_18">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/Anonymous">Anonymous</a>  (206.212.xx.xx) on T=
+hu 24 Feb 2011  at 20:14 <br />
+</div>
+
+ <div class=3D"body">
+  Unless I am mistaken, it looks like the the &#x27;stop&#x27; and &#x27;re=
+load&#x27; commands expect the disk log (/var/my_true_log in article, $VARL=
+OGPERM in sample script) to remain mounted while the tmpfs is in use. Howev=
+er, the last command of do_start() unmounts the disk log. Is this a bug?
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  Parent
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/18">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+ <div class=3D"indent">
+ =20
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_19">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_19">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/mcortese">mcortese</a>  (20.142.xx.xx) on Fri =
+25 Feb 2011  at 15:56 <br />
+[ <a href=3D"/users/mcortese/weblog">View Weblogs</a> ]</div>
+
+ <div class=3D"body">
+  No. The umount command of do_start() is in the rollback path: it is execu=
+ted only if something wrong happens before. If everything works as expected=
+, the do_start() function is exited (<code>return 0</code>) after touching =
+the lock file.
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  <a href=3D"#comment_18">Parent</a>
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/19">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+ </div>
+ =20
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_20">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_20">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/Anonymous">Anonymous</a>  (128.176.xx.xx) on T=
+ue 15 Nov 2011  at 15:38 <br />
+</div>
+
+ <div class=3D"body">
+  Why did you use cp and not rsync? I would guess an &quot;incremental back=
+up&quot; with rsync would even less wear down the ssd than a cp which might=
+ just overwrite the whole block.=20
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  Parent
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/20">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_21">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_21">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/mf_user">mf_user</a>  (188.217.xx.xx) on Fri  =
+5 Oct 2012  at 18:47 <br />
+</div>
+
+ <div class=3D"body">
+  Greetings, <br /><br />thanks for the script and the explanation. I see i=
+n the script that it is inspired by ramlog (<a href=3D"http://www.tremende.=
+com/ramlog" rel=3D"nofollow"></a><a href=3D"http://www.tremende.com/ramlog"=
+ rel=3D"nofollow">http://www.tremende.com/ramlog</a>). May I ask what are t=
+he main difference between this solution and ramlog, and in your opinion in=
+ which scenarios one is better (or worse) than the other? <br /><br />Thank=
+s a lot! MF
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  Parent
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/21">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+ <div class=3D"indent">
+ =20
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_22">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_22">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/mcortese">mcortese</a>  (85.158.xx.xx) on Mon =
+22 Oct 2012  at 13:41 <br />
+[ <a href=3D"/users/mcortese/weblog">View Weblogs</a> ]</div>
+
+ <div class=3D"body">
+  If I remember correctly, ramlog was not tailored for Debian, and had some=
+ very complex mechanisms to install/remove it.
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  <a href=3D"#comment_21">Parent</a>
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/22">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+ </div>
+ =20
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_26">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_26">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/Anonymous">Anonymous</a>  (178.196.xx.xx) on S=
+un  2 Feb 2014  at 12:45 <br />
+</div>
+
+ <div class=3D"body">
+  Calling insserv transientlog returns an error. <br /><br />root@XXXX:/etc=
+/init.d#insserv transientlog <br />insserv: Script transientlog is broken: =
+incomplete LSB comment. <br />insserv: missing `Required-Start:&#x27; entry=
+: please add even if empty. <br />insserv: missing `Required-Stop:&#x27; en=
+try: please add even if empty. <br />root@XXXX:cat /etc/debian_version <br =
+/>7.2 <br /><br />Just add both entries after #Provides like: <br /><br />#=
+ Provides: transientlog <br /># Required-Start: <br /># Required-Stop: <br =
+/># X-Start-Before: $syslog <br /># X-Stop-After: $syslog <br /># X-Interac=
+tive: yes <br /><br />
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  Parent
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/26">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_27">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_27">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/Anonymous">Anonymous</a>  (88.156.xx.xx) on Su=
+n 31 Aug 2014  at 09:37 <br />
+</div>
+
+ <div class=3D"body">
+  <p>Hi Matteo, thanks for this great script. I wanted to point out that in=
+ Debian Jessie (current testing release) I had to add<code>mount --make-pri=
+vate $VARLOGPERM</code></p><p>after the <code>mount --bind</code>, otherwis=
+e after calling <code>mount -t tmpfs...</code> the 2 mountpoints would shar=
+e the same content.
+ </p></div>
+
+<p class=3D"foot">
+ [
+=20
+  Parent
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/27">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+ <div class=3D"indent">
+ =20
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_28">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_28">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/Anonymous">Anonymous</a>  (96.127.xx.xx) on Mo=
+n 15 Sep 2014  at 06:00 <br />
+</div>
+
+ <div class=3D"body">
+  Hey thanks for this, I was wondering why it didn&#x27;t work since I dist=
+-upgraded from wheezy to sid. <br /><br />for those who might be wondering =
+about this as well, the symptoms are that without the mount --make-private,=
+ the mount -t tmpfs ...transienlog /var/log operation actually makes *both*=
+ /var/log and /var/my_true_log tmpfs mounts. you&#x27;d see something like =
+this: <br /><br />$ mount | grep log <br />/dev/mapper/sda5_crypt on /var/m=
+y_true_log type ext4 (rw,relatime,errors=3Dremount-ro,data=3Dordered) <br /=
+>transientlog on /var/log type tmpfs (rw,nosuid,nodev,noexec,relatime,size=
+=3D65536k,mode=3D755) <br />transientlog on /var/my_true_log type tmpfs (rw=
+,nosuid,nodev,noexec,relatime,size=3D65536k,mode=3D755) <br /><br /><br />I=
+&#x27;ve also just discovered the existence of systemd.journald, which by d=
+efault keeps logs only in ram. So I&#x27;m wondering if one might not simpl=
+y just uninstall rsyslogd and let systemd.journald handle the logging -- bu=
+t that might lead to dependecy issues for packages (I&#x27;m not sure yet)
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  <a href=3D"#comment_27">Parent</a>
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/28">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+ </div>
+ =20
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_29">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_29">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/madduck">madduck</a>  (46.244.xx.xx) on Mon  6=
+ Apr 2015  at 19:53 <br />
+</div>
+
+ <div class=3D"body">
+  See fs2ram...
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  Parent
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/29">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+ <div class=3D"indent">
+ =20
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_30">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_30">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/mcortese">mcortese</a>  (2.156.xx.xx) on Thu  =
+9 Apr 2015  at 00:40 <br />
+[ <a href=3D"/users/mcortese/weblog">View Weblogs</a> ]</div>
+
+ <div class=3D"body">
+  <p>Seen it. Didn&#x27;t like it.</p><p>To begin with, it is too complex. =
+It includes an initscript that uses a mandatory config file in <code>/etc</=
+code> plus some shell functions defined elsewhere to dynamically create ano=
+ther script which, in turn, populates <code>/var/log</code>. My solution, o=
+n the other hand, fills a single initscript.</p><p>Coming to the directory =
+<code>/var/log</code>, fs2ram dumps its contents into a single gzipped tar =
+file, then base64-encoded and embedded in the script itself. There is no at=
+tempt at telling apart changed and unchanged files (please remember that li=
+miting the writes to the SSD was one of the initial goals). Compare this wi=
+th the use of <code>cp</code> with the <code>-u</code> option, or even <cod=
+e>rsync</code>, as was suggested in one of the comments.</p><p>With fs2ram,=
+ before <code>/var/log</code> is mounted and its dynamic script executed, y=
+ou cannot access any log file. They are nowhere to be seen, their contents =
+being well hidden behind 4 layers of encoding (tar, gzip, base64, embed). C=
+an you imagine looking them up in an emergency shell half-way through the b=
+oot process? By contrast, with my approach you never need to wonder whether=
+ <code>/var/log</code> is transient or permanent, because in every moment a=
+ valid directory is available and filled with the latest files.</p><p>Final=
+ly, fs2ram offers no way to schedule periodic syncing of the in-memory and =
+on-disc versions of the files, thus relying on the unmount script as the on=
+ly way to save a copy of the log file to permanent storage. Failing that, y=
+ou are left with no log files at all.</p><p>In the end, I do not exactly kn=
+ow what use cases fs2ram is trying to address, but avoiding the wear of SSD=
+ is not one of them.
+ </p></div>
+
+<p class=3D"foot">
+ [
+=20
+  <a href=3D"#comment_29">Parent</a>
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/30">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+ </div>
+ =20
+
+
+<p></p>
+
+
+<!-- Indent comments.
+     See matching loop to correctly terminate the comment indentation.
+  -->
+
+
+ <div class=3D"indent">
+ =20
+
+ <div class=3D"indent">
+ =20
+
+
+
+<!-- Comment entry -->
+<div class=3D"comment">
+  <div class=3D"link">
+  =20
+  =20
+    <a href=3D"/articles/661#comment_31">#</a>
+  =20
+  =20
+  </div>
+
+ <div class=3D"title"><a name=3D"comment_31">Re: A transient /var/log</a>
+
+ </div>
+
+ <div class=3D"tagline">
+ Posted by <a href=3D"/users/madduck">madduck</a>  (82.135.xx.xx) on Thu  9=
+ Apr 2015  at 08:51 <br />
+</div>
+
+ <div class=3D"body">
+  Good points, but it&#x27;s my understanding that you can actually overrid=
+e/customise the strategy, and a simple way would be to unpack the stored co=
+ntent into a tmpdir and then to use rsync or cp-u to only write what needs =
+to be written. Or to store diffs or whatever. <br /><br />But even if you a=
+ccept the ugly base64 hack, it really does help a lot. Log writes are all h=
+appening in RAM and the only times data are written to the SSD is when I re=
+boot=C3=83=C2=A2=C3=A2=E2=80=9A=C2=AC=C3=82=C2=A6 which happens like once p=
+er week.
+ </div>
+
+<p class=3D"foot">
+ [
+=20
+  <a href=3D"#comment_30">Parent</a>
+=20
+
+=20
+
+=20
+  | <a href=3D"/comment/onarticle/661/31">Reply to this comment</a>
+=20
+
+=20
+
+=20
+
+=20
+ =20
+ =20
+=20
+
+=20
+]
+</p>
+
+</div>
+
+<!-- Terminate the indentation of the comments. -->
+
+ </div>
+ =20
+
+ </div>
+ =20
+
+
+<p></p>
+
+
+
+
+  <!-- Closing tag for if_error -->
+
+                </div>
+            </div>
+        </div>
+        <div class=3D"side" id=3D"rightcol">
+            <div class=3D"slide">
+             =20
+
+
+
+
+<h4>Sign In</h4>
+<form action=3D"/login" id=3D"user-login" method=3D"post">
+<input name=3D"mode" type=3D"hidden" value=3D"login" />
+<input name=3D"target" type=3D"hidden" value=3D"/article/661/A_transient_/v=
+ar/log" />
+
+<p><b>Username</b>:<br /> <input id=3D"name" maxlength=3D"25" name=3D"lname=
+" size=3D"14" type=3D"text" value=3D"" /></p>
+<p><b>Password</b>:<br /> <input id=3D"pass" maxlength=3D"25" name=3D"lpass=
+" size=3D"15" type=3D"password" value=3D"" /></p>
+<p><input name=3D"submit" type=3D"submit" value=3D"Login" /> </p>
+<p>[<a href=3D"/create/user/">Register</a>|<a href=3D"/login">Advanced</a>]=
+</p>
+
+=20
+
+            </form>
+
+
+
+
+             =20
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ <p>&#xa0;</p>
+ <div id=3D"flattr">
+ <h3>Flattr</h3>
+ <div style=3D"text-align:center;"><a class=3D"FlattrButton" href=3D"http:/=
+/debian-administration.org" style=3D"display:none;"></a></div>
+ </div>
+
+
+
+<p>&#xa0;</p>
+<div id=3D"poll">
+<h3>Current Poll</h3>
+
+ <form action=3D"/polls/165" method=3D"post">
+ <p><input name=3D"poll_id" type=3D"hidden" value=3D"165" /><b>Should this =
+site stay open?</b></p><p>
+=09
+	<label><input name=3D"pollanswer" type=3D"radio" value=3D"1" />No, it has =
+passed its peak.</label><br />
+=09
+	<label><input name=3D"pollanswer" type=3D"radio" value=3D"2" />Yes, even r=
+are updates are useful.</label><br />
+=09
+	<label><input name=3D"pollanswer" type=3D"radio" value=3D"3" />Other ..</l=
+abel><br />
+=09
+        <input name=3D"mode" type=3D"hidden" value=3D"poll_vote" />
+        <input name=3D"id" type=3D"hidden" value=3D"165" />
+	<input type=3D"submit" value=3D"Vote" /><br />
+        <span class=3D"votescast">
+	( <a href=3D"/polls/165">85 votes ~ 5 comments</a> )</span></p>
+	</form>
+=09
+ </div>
+
+
+
+<p>&#xa0;</p>
+<div id=3D"blogs">
+ <h3>Recent Weblogs</h3>
+   =20
+    <div class=3D"weblogs">
+      =20
+       <div class=3D"body">
+	<div class=3D"title"><a href=3D"/users/mcortese/weblog/21">GNOME Wayland</=
+a></div>
+        <div class=3D"tagline">by <a href=3D"/users/mcortese">mcortese</a><=
+/div>
+	<div class=3D"comments">  <a href=3D"/users/mcortese/weblog/21#comments">1=
+ comment</a></div>
+	</div>
+      =20
+       <div class=3D"body">
+	<div class=3D"title"><a href=3D"/users/dkg/weblog/114">Cheers to audacity!=
+</a></div>
+        <div class=3D"tagline">by <a href=3D"/users/dkg">dkg</a></div>
+	<div class=3D"comments"> </div>
+	</div>
+      =20
+       <div class=3D"body">
+	<div class=3D"title"><a href=3D"/users/fugit/weblog/10">Building a certain=
+ Version of Debian</a></div>
+        <div class=3D"tagline">by <a href=3D"/users/fugit">fugit</a></div>
+	<div class=3D"comments">  <a href=3D"/users/fugit/weblog/10#comments">2 co=
+mments</a></div>
+	</div>
+      =20
+       <div class=3D"body">
+	<div class=3D"title"><a href=3D"/users/ajt/weblog/212">DKIM</a></div>
+        <div class=3D"tagline">by <a href=3D"/users/ajt">ajt</a></div>
+	<div class=3D"comments"> </div>
+	</div>
+      =20
+       <div class=3D"body">
+	<div class=3D"title"><a href=3D"/users/rkreider/weblog/5">It&#x27;s been 7=
+ Years</a></div>
+        <div class=3D"tagline">by <a href=3D"/users/rkreider">rkreider</a><=
+/div>
+	<div class=3D"comments">  <a href=3D"/users/rkreider/weblog/5#comments">1 =
+comment</a></div>
+	</div>
+      =20
+       <div class=3D"body">
+	<div class=3D"title"><a href=3D"/users/Steve/weblog/241">Site code is publ=
+ic once again.</a></div>
+        <div class=3D"tagline">by <a href=3D"/users/Steve">Steve</a></div>
+	<div class=3D"comments">  <a href=3D"/users/Steve/weblog/241#comments">1 c=
+omment</a></div>
+	</div>
+      =20
+       <div class=3D"body">
+	<div class=3D"title"><a href=3D"/users/lee/weblog/50">Using Amazon SES wit=
+h Exim (Submission)</a></div>
+        <div class=3D"tagline">by <a href=3D"/users/lee">lee</a></div>
+	<div class=3D"comments"> </div>
+	</div>
+      =20
+       <div class=3D"body">
+	<div class=3D"title"><a href=3D"/users/simonw/weblog/490">Web Application =
+Vulnerability scanners</a></div>
+        <div class=3D"tagline">by <a href=3D"/users/simonw">simonw</a></div>
+	<div class=3D"comments"> </div>
+	</div>
+      =20
+       <div class=3D"body">
+	<div class=3D"title"><a href=3D"/users/blackm/weblog/17">I have a Debian s=
+erver again</a></div>
+        <div class=3D"tagline">by <a href=3D"/users/blackm">blackm</a></div>
+	<div class=3D"comments"> </div>
+	</div>
+      =20
+       <div class=3D"body">
+	<div class=3D"title"><a href=3D"/users/cisco/weblog/1">Hello World!</a></d=
+iv>
+        <div class=3D"tagline">by <a href=3D"/users/cisco">cisco</a></div>
+	<div class=3D"comments"> </div>
+	</div>
+      =20
+     </div>
+
+<p><a href=3D"http://planet.debian-administration.org" style=3D"float:right=
+;" title=3D"Planet Debian Administration">Archived weblogs</a></p>
+ <p></p>
+
+  </div>
+
+	   =20
+
+
+              <p>&#xa0;</p>
+
+             =20
+
+       =20
+           <div class=3D"advert">
+<h3>Sponsored Links</h3>
+<p></p>
+<div align=3D"center">
+<script type=3D"text/javascript"><!--
+google_ad_client =3D "pub-1910202134166551";
+//200x90, created 08/12/07
+google_ad_slot =3D "2315151555";
+google_ad_width =3D 200;
+google_ad_height =3D 90;
+//--></script>
+<script src=3D"http://pagead2.googlesyndication.com/pagead/show_ads.js" typ=
+e=3D"text/javascript">
+</script>
+</div>
+          =20
+	       <p><a href=3D"/about/FAQ%20:%20Site%20Adverts">Why are these advert=
+s here?</a></p>
+           =20
+	    </div>
+=09
+
+  =20
+
+
+  =20
+
+
+ =20
+
+
+
+
+
+
+
+            </div>
+        </div>
+      </div> <!-- end #content -->
+    </div> <!-- end #wrapper -->
+ <div id=3D"footer">
+<p>Articles and comments are the property of their respective posters.</p>
+<p>Trademarks are the property of their respective owners.<br />  Debian is=
+ <a href=3D"http://tarr.uspto.gov/servlet/tarr?regser=3Dserial&amp;entry=3D=
+75386376&amp;action=3DRequest+Status">a registered trademark</a> of <a href=
+=3D"http://www.spi-inc.org">Software in the Public Interest, Inc</a>.</p>
+<p>This site is copyright =C2=A9 2004-2014 <a href=3D"http://www.steve.org.=
+uk/">Steve Kemp</a>.<br />Site hosting provided by <a href=3D"http://www.by=
+temark.co.uk/">Bytemark Hosting</a> on the <a href=3D"http://bigv.io/">BigV=
+</a> platform.</p>
+<p><a href=3D"/about/Syndication">Article Feeds in Atom, RSS, &amp; RDF for=
+mats</a></p>
+</div>
+
+
+</body></html>
+------=_Part_34485EE6_C1A32548.14D8F27362B
+Content-Location: https://www.debian-administration.org/css/view.css
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/css
+
+#footer{color:black;background-color:white;text-align:center;border-top:1px=
+ solid black}h1{font-size:2.20em}h2{font-size:1.90em}h3{font-size:1.55em}h4=
+{font-size:1.30em}h5{font-size:1.10em}h6{font-size:1.00em}img{border-style:=
+none}h1,h3,h4,h5,h6{color:black;font-weight:bold;margin-bottom:0;text-align=
+:left;margin-left:4px;font-family:Georgia,"Hoefler Text","DejaVu Serif","Bi=
+stream Vera Serif","Lucida Bright",serif}h3 a{text-decoration:none}a{text-d=
+ecoration:none;color:#c03}a:link{color:#c03;text-decoration:none}a:visited{=
+color:#c03}a:hover{text-decoration:none;color:red}a:active{color:#fff;backg=
+round:transparent}dt{font-weight:bold}#header{height:110px;background-color=
+:white;border-bottom:1px solid black;background-image:url(/images/logo.png)=
+;background-repeat:no-repeat;padding-left:120px}#header h1{color:black !imp=
+ortant}#header h1 a,#header h1 a:hover,#header h1 a:visited{color:#c03;text=
+-decoration:none !important}#header ul{list-style-type:none;margin:0;paddin=
+g:0;overflow:hidden}#header li{float:left}#header ul li a:link,#header ul l=
+i a:visited{display:block;width:110px;font-weight:bold;color:black;backgrou=
+nd-color:white;text-align:center;padding:4px;text-decoration:none}#header u=
+l li a:hover,#header ul li a:visited #header h1 a:hover{background-color:#c=
+03}#signup{text-align:right;float:right;height:26px;float:left;background:#=
+fefefe;width:100%;border:1px dotted grey}#logo{float:left}#logo h1{font:14p=
+x Georgia,"Hoefler Text","DejaVu Serif","Bistream Vera Serif","Lucida Brigh=
+t",serif;font-size:26px;color:#F76B0C;font-weight:normal;text-decoration:no=
+ne;margin-left:40px}#logo h1 a{text-decoration:none}#logo h4{font:14px Geor=
+gia,"Hoefler Text","DejaVu Serif","Bistream Vera Serif","Lucida Bright",ser=
+if;font-size:11px;color:#808080;font-weight:normal;text-decoration:none;pad=
+ding-left:75px}#links ul{margin:0px;padding-top:80px;float:right}#links li{=
+float:left;list-style-type:none;width:129px;height:25px;text-align:center;b=
+ackground-color:#f0f0f0;border-left:1px solid black;border-top:1px solid bl=
+ack;padding-top:4px}#links li:hover{background-color:silver}#links a{displa=
+y:block;font:14px Georgia,"Hoefler Text","DejaVu Serif","Bistream Vera Seri=
+f","Lucida Bright",serif;font-size:11px;color:#c03;font-weight:bold;text-de=
+coration:none}#links a:hover{color:red}#advert,#poll,#headlines,#contribute=
+,#blogs,#tipbox,#flattr{background-color:white;border:1px solid #c03;margin=
+:2px;padding:5px;width:80%}#advert h3,#poll h3,#headlines h3,#contribute h3=
+,#blogs h3,#tipbox h3,#flattr h3{font-size:110%;border-bottom:1px solid #c0=
+3;margin-left:0em}#advert ul,#poll ul,#headlines ul,#contribute ul,#blogs u=
+l,#tipbox ul,#flattr ul{list-style-type:none}div.indent{margin-left:25px}di=
+v.comment{border-left:1px solid #ddd;border-right:1px solid #ddd;border-top=
+:1px solid #ddd;border-bottom:1px solid #ddd;background-color:white;margin:=
+5px 0px}div.comment div.body{padding:10px 10px;border-bottom:1px solid #ddd=
+}div.comment .title{background-color:#ddd;font-weight:bold;font-size:110%;p=
+adding:5px}div.comment .link{float:right;padding-top:0.25ex;padding-right:0=
+.5em}div.comment div.tagline{text-align:right;border-bottom:1px solid #ddd;=
+font-size:96%;padding:0.26ex 10px !important}div.comment p.foot{margin:0px;=
+padding:0.25ex 0.5em;font-size:96%;background-color:#ddd;text-align:right}d=
+iv.article .title{font-size:110%;border-bottom:1px solid #c03;padding:0}div=
+.article div.tagline{font-style:italic;font-size:80%;text-align:right}div.a=
+rticle div.tags{font-style:italic;font-size:80%;text-align:right}div.teaser=
+{text-align:justify}div.teaser div.body{}div.teaser .title{font-size:110%;b=
+order-bottom:1px solid #c03;padding:0;margin-bottom:0px}div.teaser .title a=
+{color:black !important;text-decoration:none !important}div.teaser .title a=
+:hover{color:black !important;text-decoration:none !important}div.teaser .t=
+itle a:visited{color:black !important;text-decoration:none !important}div.t=
+easer div.tagline{font-style:italic;font-size:80%;text-align:right}div.teas=
+er div.tags{font-style:italic;font-size:80%;text-align:right}div.teaser div=
+.readmore{font-size:80%;text-align:right}div.weblogs{}div.weblogs div.body{=
+text-align:left;padding-top:2px;padding-bottom:5px}div.weblogs div.title{fo=
+nt-size:90%}div.weblogs div.title a{color:black !important;text-decoration:=
+none !important}div.weblogs div.title a:hover{color:red !important;text-dec=
+oration:underline !important}div.weblogs div.tagline{text-align:right;font-=
+size:80%;font-style:italic}div.weblogs div.comments{text-align:right;font-s=
+ize:80%;font-style:italic}div.weblogs div.comments a{color:black !important=
+;text-decoration:none !important}div.weblogs div.comments a:hover{color:bla=
+ck !important;text-decoration:underline !important}div.weblog{border-left:1=
+px solid rgb(128,128,128);border-right:1px solid rgb(128,128,128);border-to=
+p:1px solid rgb(128,128,128);border-bottom:1px solid rgb(128,128,128);backg=
+round-color:white;margin:5px 0px}div.weblog div.body{padding:10px 10px}div.=
+weblog div.links{text-align:right;padding:4px;background-color:#ddd;border-=
+top:1px solid}div.weblog .title{background-color:#ddd;border-bottom:1px sol=
+id rgb(128,128,128);font-weight:bold;font-size:110%;padding:0.26ex 10px}div=
+.weblog div.title a{color:black !important;text-decoration:none !important}=
+div.weblog div.title a:hover{color:black !important;text-decoration:none !i=
+mportant}div.weblog .link{background-color:#ddd;text-align:right}div.weblog=
+ div.tagline{text-align:right;border-bottom:1px solid #ddd;font-size:96%;pa=
+dding:0.26ex 10px !important}div.weblog div.tags{font-style:italic;font-siz=
+e:80%;text-align:right}pre{overflow:auto;background:white;border:solid;bord=
+er-width:thin;padding:5px 10px}pre.terminal{background:black;color:white;pa=
+dding:1em;font-size:90%;overflow:auto;font-family:courier}pre.terminal span=
+.prompt{font-weight:bold;color:#f00}pre.terminal span.input{font-weight:bol=
+d;color:#afa}pre.terminal span.hiddeninput{font-style:italic;color:#afa}htm=
+l,body{height:100%;color:white;margin:0px;padding:0px}body{min-width:720px;=
+width:100%;height:101%;background:white;color:black;font-family:Georgia,"Ho=
+efler Text","DejaVu Serif","Bistream Vera Serif","Lucida Bright",serif}#wra=
+pper{padding:10px 2.5%;border:1px solid #ccc;text-align:left;overflow:hidde=
+n}#content{width:100%;margin:0 auto;padding-bottom:20px;overflow:hidden}#co=
+ntainer{float:left;width:98%;margin-right:-230px;position:relative}#inner{f=
+loat:right;width:100%}#main{padding:5px;margin-right:230px;position:relativ=
+e;min-height:0}#rightcol{float:right;display:inline;width:225px;position:re=
+lative;overflow:hidden}.slide{position:relative;color:black;top:0;right:0;f=
+loat:left;width:100%;padding-bottom:2em;padding-left:1em;z-index:9}.trigger=
+{position:absolute;top:1px;right:1px;width:3.9em;font-weight:700;text-align=
+:center;z-index:10}a.trigger,a:link.trigger,a:visited.trigger{padding:0 7px=
+;border-style:solid;border-width:2px;background:#f0f0f0 none}a:hover.trigge=
+r,a:focus.trigger,a:active.trigger{border-color:#b3c5db}a.collapsed,a:link.=
+collapsed,a:visited.collapsed{background:#000 none;color:#dfdfff}a:hover.co=
+llapsed,a:focus.collapsed,a:active.collapsed{color:#fff}a.switch.selected{c=
+olor:#ff5900}#centeredmenu{float:left;width:100%;background:#fff;border-bot=
+tom:4px solid #000;overflow:hidden;position:relative}#centeredmenu ul{clear=
+:left;float:left;list-style:none;margin:0;padding:0;position:relative;left:=
+50%;text-align:center}#centeredmenu ul li{display:block;float:left;list-sty=
+le:none;margin:0;padding:0;position:relative;right:50%}#centeredmenu ul li =
+a{display:block;margin:0 0 0 1px;padding:3px 10px;background:#ddd;color:#00=
+0;text-decoration:none;line-height:1.3em}#centeredmenu ul li a:hover{backgr=
+ound:#369;color:#fff}#centeredmenu ul li a.active,#centeredmenu ul li a.act=
+ive:hover{color:#fff;background:#000;font-weight:bold}
+------=_Part_34485EE6_C1A32548.14D8F27362B
+Content-Location: https://www.debian-administration.org/css/jquery.socialshareprivacy.min.css
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/css
+
+.social_share_privacy_area{clear:both;margin:5px 0;list-style-type:none;pad=
+ding:0;width:auto;display:block}.social_share_privacy_area.line{height:25px=
+;line-height:16px}.social_share_privacy_area.box{width:95px}.social_share_p=
+rivacy_area li{margin:0!important;padding:0!important;list-style-type:none!=
+important}.social_share_privacy_area.box li{text-align:center}.social_share=
+_privacy_area.line li{height:21px;float:left}.social_share_privacy_area li =
+.dummy_btn{cursor:pointer;padding:0;height:inherit}.social_share_privacy_ar=
+ea.line li .dummy_btn{float:left;margin:0 20px 0 10px}.social_share_privacy=
+_area.box li .dummy_btn{margin-bottom:10px}.social_share_privacy_area li .d=
+ummy_btn img.privacy_dummy,.social_share_privacy_area li .dummy_btn iframe{=
+vertical-align:bottom}.social_share_privacy_area li .dummy_btn iframe{overf=
+low:hidden;height:inherit;width:inherit;border-style:none}.social_share_pri=
+vacy_area.line li{display:inline-block}.social_share_privacy_area li .switc=
+h{display:inline-block;text-indent:-9999em;background:transparent url(../im=
+ages/socialshareprivacy_on_off.png) no-repeat 0 0 scroll;width:23px;height:=
+12px;overflow:hidden;margin:4px 0 0;padding:0;cursor:pointer}.social_share_=
+privacy_area.line li .switch{float:left}.social_share_privacy_area li .swit=
+ch.on{background-position:0 -12px}.social_share_privacy_area li.help_info{p=
+osition:relative}.social_share_privacy_area li.settings_info,.social_share_=
+privacy_area li.help_info .info{text-align:left}.social_share_privacy_area =
+li.help_info .info,.social_share_privacy_area li .help_info.icon .info{disp=
+lay:none;position:absolute;bottom:40px;width:290px;padding:10px 15px;margin=
+:0;font-size:12px;line-height:16px;font-weight:bold;border:1px solid #ccc;-=
+moz-border-radius:4px;-webkit-border-radius:4px;border-radius:4px;-moz-box-=
+shadow:0 0 15px rgba(0,0,0,0.4);-webkit-box-shadow:0 0 15px rgba(0,0,0,0.4)=
+;box-shadow:0 0 15px rgba(0,0,0,0.4);background-color:#fdfbec;color:#000;z-=
+index:500}.social_share_privacy_area.line li.help_info .info,.social_share_=
+privacy_area li .help_info.icon .info{left:0}.social_share_privacy_area.box=
+ li.help_info .info{left:100%;top:0;bottom:auto}.social_share_privacy_area =
+li .help_info.icon .info{width:350px}.social_share_privacy_area li.help_inf=
+o.display .info,.social_share_privacy_area li .help_info.icon.display .info=
+{display:block}.social_share_privacy_area li.help_info.info_off.display .in=
+fo{display:none}.social_share_privacy_area li .help_info.icon{background:#f=
+ff url(../images/socialshareprivacy_info.png) no-repeat center center scrol=
+l;width:25px;height:20px;position:relative;display:inline-block;vertical-al=
+ign:top;border:2px solid #e7e3e3;border-right-width:0;-moz-border-radius:5p=
+x 0 0 5px;-webkit-border-radius:5px 0 0 5px;border-radius:5px 0 0 5px;margi=
+n:0;padding:0}.social_share_privacy_area li.settings_info .settings_info_me=
+nu.perma_option_off .help_info.icon{border-right-width:2px;-moz-border-radi=
+us:5px;-webkit-border-radius:5px;border-radius:5px}.social_share_privacy_ar=
+ea li.settings_info{position:relative;top:-2px}.social_share_privacy_area l=
+i.settings_info a{text-decoration:none;margin:0!important}.social_share_pri=
+vacy_area li.settings_info .settings_info_menu{background-color:#f3f4f5;col=
+or:#000;border-style:none;-moz-border-radius:5px;-webkit-border-radius:5px;=
+border-radius:5px;-moz-box-shadow:0 0 15px rgba(0,0,0,0.4);-webkit-box-shad=
+ow:0 0 15px rgba(0,0,0,0.4);box-shadow:0 0 15px rgba(0,0,0,0.4);left:0;posi=
+tion:absolute;top:0;min-width:135px;margin:0;padding:0}.social_share_privac=
+y_area li.settings_info .settings_info_menu.on{z-index:1000}.social_share_p=
+rivacy_area li.settings_info .settings_info_menu.off{border-width:0;-moz-bo=
+x-shadow:none;-webkit-box-shadow:none;box-shadow:none;background-color:tran=
+sparent}.social_share_privacy_area li.settings_info .settings_info_menu.off=
+ form{display:none;margin:0;padding:0}.social_share_privacy_area li.setting=
+s_info .settings_info_menu .settings{text-indent:-9999em;display:inline-blo=
+ck;background:#fff url(../images/settings.png) no-repeat center center scro=
+ll;width:25px;height:20px;border:2px solid #e7e3e3;-moz-border-radius:0 5px=
+ 5px 0;-webkit-border-radius:0 5px 5px 0;border-radius:0 5px 5px 0;border-l=
+eft:1px solid #ddd;margin:0;padding:0}.social_share_privacy_area li.setting=
+s_info .settings_info_menu form fieldset{border-width:0;margin:0;padding:0 =
+10px 10px}.social_share_privacy_area li.settings_info .settings_info_menu f=
+orm fieldset legend{font-size:11px;font-weight:bold;line-height:14px;margin=
+:0;padding:10px 0;width:115px}.social_share_privacy_area li.settings_info .=
+settings_info_menu form fieldset input{margin:4px 10px 4px 0;padding:0}.soc=
+ial_share_privacy_area li.settings_info .settings_info_menu form fieldset l=
+abel{display:block;font-size:12px;font-weight:bold;line-height:24px;-moz-tr=
+ansition:color .5s ease-in;-webkit-transition:color .5s ease-in;transition:=
+color .5s ease-in;margin:0;padding:0;white-space:nowrap}.social_share_priva=
+cy_area li.settings_info .settings_info_menu form fieldset label.checked{co=
+lor:#090}.social_share_privacy_area.line .buffer iframe{width:110px;height:=
+20px}.social_share_privacy_area.line .buffer img{width:55px;height:20px;mar=
+gin-right:55px}.social_share_privacy_area.box .buffer iframe,.social_share_=
+privacy_area.box .buffer img{width:55px;height:62px}.social_share_privacy_a=
+rea.box .delicious .delicious-widget,.social_share_privacy_area.box .delici=
+ous img.privacy_dummy{width:50px;height:62px}.social_share_privacy_area.lin=
+e .delicious .delicious-widget,.social_share_privacy_area.line .delicious i=
+mg.privacy_dummy{width:75px;height:20px;margin-right:20px}.social_share_pri=
+vacy_area.box .delicious div.delicious-widget{font-family:Arial,Tahoma,Sans=
+-Serif;font-size:11px;width:50px;margin:0 auto}.social_share_privacy_area.b=
+ox .delicious a.icon,.social_share_privacy_area.box .delicious a.count{colo=
+r:#FFF!important;display:block;-webkit-border-radius:3px;-moz-border-radius=
+:3px;-o-border-radius:3px;border-radius:3px;outline:none!important;text-dec=
+oration:none!important}.social_share_privacy_area.box .delicious a.icon{bac=
+kground:#fff;border:1px solid #ccc;height:38px;overflow:hidden;position:rel=
+ative;direction:ltr}.social_share_privacy_area.box .delicious a.icon:hover{=
+border-color:#666}.social_share_privacy_area.box .delicious a.count{margin-=
+top:2px;text-align:center;font-size:12px;line-height:18px;height:18px;backg=
+round:#3274d0;border:#3274d0 1px solid;text-shadow:#2a5580 1px 1px 0}.socia=
+l_share_privacy_area.box .delicious a.count:hover{background:#369;border-co=
+lor:#369}.social_share_privacy_area.box .delicious a.count:active{backgroun=
+d:#000;border:#333 1px solid;text-shadow:#222 1px 1px 0;outline:0}.social_s=
+hare_privacy_area.line .delicious div.delicious-widget{font-family:Arial,Ta=
+homa,Sans-Serif;font-size:11px;width:76px}.social_share_privacy_area.line .=
+delicious a.icon,.social_share_privacy_area.line .delicious a.count{display=
+:block;float:left;line-height:18px;border:#666 solid 1px;-webkit-border-rad=
+ius:3px;-moz-border-radius:3px;-o-border-radius:3px;border-radius:3px;outli=
+ne:none!important;text-decoration:none!important;height:18px;overflow:hidde=
+n;color:#FFF!important}.social_share_privacy_area.line .delicious a.icon{ba=
+ckground:#fff;border-color:#ccc;width:20px;position:relative;direction:ltr;=
+margin-right:1px}.social_share_privacy_area.line .delicious a.icon:hover{bo=
+rder-color:#666}.social_share_privacy_area.line .delicious a.count{font-siz=
+e:12px;background:#3274d0;border-color:#3274d0;width:50px;text-align:center=
+;text-shadow:#2a5580 1px 1px 0}.social_share_privacy_area.line .delicious a=
+.count:hover{background:#369;border-color:#369;text-shadow:#369 1px 1px 0}.=
+social_share_privacy_area.line .delicious a.count:active{background:#000;bo=
+rder-color:#333;text-shadow:#222 1px 1px 0}.social_share_privacy_area.box .=
+delicious a.icon:hover *,.social_share_privacy_area.line .delicious a.icon:=
+hover *{opacity:.85;filter:alpha(opacity=3D85)}.social_share_privacy_area.b=
+ox .delicious a.icon *,.social_share_privacy_area.line .delicious a.icon *{=
+width:50%;height:50%;position:absolute;margin:0!important}.social_share_pri=
+vacy_area.box .delicious div.delicious1,.social_share_privacy_area.line .de=
+licious div.delicious1{background:#3274d0;left:50%;top:0}.social_share_priv=
+acy_area.box .delicious div.delicious2,.social_share_privacy_area.line .del=
+icious div.delicious2{background:#000;left:0;top:50%}.social_share_privacy_=
+area.box .delicious div.delicious3,.social_share_privacy_area.line .delicio=
+us div.delicious3{background:#d3d2d2;left:50%;top:50%}.social_share_privacy=
+_area.box .delicious a.count i,.social_share_privacy_area.line .delicious a=
+.count i{display:none;font-style:normal}.social_share_privacy_area.box .del=
+icious a.count b,.social_share_privacy_area.line .delicious a.count b{font-=
+weight:normal}.social_share_privacy_area.line .disqus img.privacy_dummy{wid=
+th:49px;height:20px;margin-right:45px}.social_share_privacy_area.box .disqu=
+s img.privacy_dummy{width:55px;height:61px}.social_share_privacy_area .disq=
+us .disqus-widget{line-height:20px;font-size:11px;font-family:Arial,sans-se=
+rif;cursor:text;white-space:nowrap;text-align:left}.social_share_privacy_ar=
+ea .disqus .disqus-widget a,.social_share_privacy_area .disqus .disqus-widg=
+et a:hover{-webkit-text-shadow:none;-moz-text-shadow:none;-ms-text-shadow:n=
+one;-o-text-shadow:none;text-shadow:none}.social_share_privacy_area .disqus=
+ .disqus-widget a.name{overflow:hidden;font-weight:bold;text-transform:uppe=
+rcase;text-decoration:none;color:#5e8ba9;-webkit-text-shadow:0 1px 0 rgba(2=
+55,255,255,0.5);-moz-text-shadow:0 1px 0 rgba(255,255,255,0.5);-ms-text-sha=
+dow:0 1px 0 rgba(255,255,255,0.5);-o-text-shadow:0 1px 0 rgba(255,255,255,0=
+.5);text-shadow:0 1px 0 rgba(255,255,255,0.5);height:18px;border:1px solid =
+#ccc;border-radius:3px;background-color:#f8f8f8;background-image:-webkit-gr=
+adient(linear,left top,left bottom,from(#fff),to(#dedede));background-image=
+:-moz-linear-gradient(top,#fff,#dedede);background-image:-o-linear-gradient=
+(top,#fff,#dedede);background-image:-ms-linear-gradient(top,#fff,#dedede);b=
+ackground-image:linear-gradient(top,#fff,#dedede)}.social_share_privacy_are=
+a .disqus .disqus-widget a.name .us{color:#b84}.social_share_privacy_area.l=
+ine .disqus .disqus-widget{min-width:94px}.social_share_privacy_area.line .=
+disqus .disqus-widget .count,.social_share_privacy_area.line .disqus .disqu=
+s-widget a.name{display:inline-block;padding:0 4px;vertical-align:top}.soci=
+al_share_privacy_area.box .disqus .disqus-widget{display:block;width:55px;h=
+eight:61px;margin:auto}.social_share_privacy_area.box .disqus .disqus-widge=
+t .count,.social_share_privacy_area.box .disqus .disqus-widget a.name{displ=
+ay:block;width:53px;text-align:center}.social_share_privacy_area .disqus .d=
+isqus-widget a.name:hover{border-color:#bbb;background-image:-webkit-gradie=
+nt(linear,left top,left bottom,from(#f8f8f8),to(#d9d9d9));background-image:=
+-moz-linear-gradient(top,#f8f8f8,#d9d9d9);background-image:-o-linear-gradie=
+nt(top,#f8f8f8,#d9d9d9);background-image:-ms-linear-gradient(top,#f8f8f8,#d=
+9d9d9);background-image:linear-gradient(top,#f8f8f8,#d9d9d9)}.social_share_=
+privacy_area .disqus .disqus-widget a.name:active{background-color:#efefef;=
+-webkit-box-shadow:inset 0 3px 5px rgba(0,0,0,0.1);-moz-box-shadow:inset 0 =
+3px 5px rgba(0,0,0,0.1);box-shadow:inset 0 3px 5px rgba(0,0,0,0.1)}.social_=
+share_privacy_area .disqus .disqus-widget .count{position:relative;height:1=
+8px;border:1px solid #bbb;background:white;border-radius:3px;text-align:cen=
+ter}.social_share_privacy_area .disqus .disqus-widget .count a{font-weight:=
+normal}.social_share_privacy_area.line .disqus .disqus-widget .count{margin=
+-left:4px;min-width:1em}.social_share_privacy_area.box .disqus .disqus-widg=
+et .count{height:34px;line-height:34px;font-size:14px;margin-bottom:5px}.so=
+cial_share_privacy_area.line .disqus .disqus-widget .count u,.social_share_=
+privacy_area.line .disqus .disqus-widget .count i{position:absolute;zoom:1;=
+line-height:0;width:0;height:0;left:0;top:50%;margin:-4px 0 0 -4px;border:4=
+px transparent solid;border-right-color:#aaa;border-left:0}.social_share_pr=
+ivacy_area.line .disqus .disqus-widget .count u{margin-left:-3px;border-rig=
+ht-color:#fff}.social_share_privacy_area.box .disqus .disqus-widget .count =
+u,.social_share_privacy_area.box .disqus .disqus-widget .count i{position:a=
+bsolute;zoom:1;line-height:0;top:auto;left:50%;bottom:0;right:auto;margin:0=
+ 0 -4px -4px;border:4px transparent solid;border-top-color:#aaa;border-bott=
+om:0;width:0;height:0}.social_share_privacy_area.box .disqus .disqus-widget=
+ .count u{margin-bottom:-3px;border-top-color:#fff}.social_share_privacy_ar=
+ea .disqus .disqus-widget .count a{color:#333;text-decoration:none}.social_=
+share_privacy_area .disqus .disqus-widget .count a:hover{color:#333;text-de=
+coration:underline}.social_share_privacy_area.line .facebook .fb_like{margi=
+n-right:30px;width:120px}.social_share_privacy_area.line .facebook iframe{w=
+idth:130px;height:21px}.social_share_privacy_area.box .facebook iframe{widt=
+h:62px;height:62px}.social_share_privacy_area.line .flattr img{width:72px;h=
+eight:20px;margin-right:98px}.social_share_privacy_area.line .flattr a,.soc=
+ial_share_privacy_area.line .flattr iframe{width:150px;height:20px;margin-r=
+ight:20px}.social_share_privacy_area.line .flattr a{display:inline-block}.s=
+ocial_share_privacy_area.box .flattr a,.social_share_privacy_area.box .flat=
+tr img,.social_share_privacy_area.box .flattr iframe{width:62px;height:62px=
+}.social_share_privacy_area.box .flattr a{display:block;visibility:hidden;m=
+argin:auto}.social_share_privacy_area.box .flattr .dummy_btn{min-width:62px=
+;min-height:67px}.social_share_privacy_area.line .gplus img.gplusone_privac=
+y_dummy{width:32px}.social_share_privacy_area.line li div.gplusone{width:90=
+px}.social_share_privacy_area.box li div.gplusone{min-width:50px;min-height=
+:65px}.social_share_privacy_area.line .hackernews img.privacy_dummy{width:2=
+0px;height:20px;margin-right:70px}.social_share_privacy_area.box .hackernew=
+s img.privacy_dummy{width:62px;height:62px}.social_share_privacy_area .hack=
+ernews .hackernews-widget{line-height:20px;font-size:11px;font-family:Arial=
+,sans-serif;cursor:text;white-space:nowrap;text-align:left}.social_share_pr=
+ivacy_area .hackernews .hackernews-widget a.name{overflow:hidden;font-weigh=
+t:bold;font-size:12px;text-decoration:none;text-align:center;color:#fff;hei=
+ght:20px;border-radius:3px;background-color:#f60}.social_share_privacy_area=
+.line .hackernews .hackernews-widget{min-width:90px}.social_share_privacy_a=
+rea.line .hackernews .hackernews-widget .points{display:inline-block;paddin=
+g:0 4px;vertical-align:top}.social_share_privacy_area.line .hackernews .hac=
+kernews-widget a.name{display:inline-block;width:20px}.social_share_privacy=
+_area.box .hackernews .hackernews-widget{display:block;width:62px;height:62=
+px;margin:auto}.social_share_privacy_area.box .hackernews .hackernews-widge=
+t a.name{display:block;width:62px}.social_share_privacy_area .hackernews .h=
+ackernews-widget a.name:hover{background-color:#ff8635}.social_share_privac=
+y_area .hackernews .hackernews-widget a.name:active{background-color:#ff863=
+5;-webkit-box-shadow:inset 0 3px 5px rgba(0,0,0,0.1);-moz-box-shadow:inset =
+0 3px 5px rgba(0,0,0,0.1);box-shadow:inset 0 3px 5px rgba(0,0,0,0.1)}.socia=
+l_share_privacy_area .hackernews .hackernews-widget .points{position:relati=
+ve;height:18px;border:1px solid #bbb;background:white;border-radius:3px;tex=
+t-align:center}.social_share_privacy_area .hackernews .hackernews-widget .p=
+oints a{font-weight:normal}.social_share_privacy_area.line .hackernews .hac=
+kernews-widget .points{margin-left:4px;min-width:1em}.social_share_privacy_=
+area.box .hackernews .hackernews-widget .points{display:block;width:60px;he=
+ight:35px;line-height:35px;font-size:14px;margin-bottom:5px}.social_share_p=
+rivacy_area.line .hackernews .hackernews-widget .points u,.social_share_pri=
+vacy_area.line .hackernews .hackernews-widget .points i{position:absolute;z=
+oom:1;line-height:0;width:0;height:0;left:0;top:50%;margin:-4px 0 0 -4px;bo=
+rder:4px transparent solid;border-right-color:#aaa;border-left:0}.social_sh=
+are_privacy_area.line .hackernews .hackernews-widget .points u{margin-left:=
+-3px;border-right-color:#fff}.social_share_privacy_area.box .hackernews .ha=
+ckernews-widget .points u,.social_share_privacy_area.box .hackernews .hacke=
+rnews-widget .points i{position:absolute;zoom:1;line-height:0;top:auto;left=
+:50%;bottom:0;right:auto;margin:0 0 -4px -4px;border:4px transparent solid;=
+border-top-color:#aaa;border-bottom:0;width:0;height:0}.social_share_privac=
+y_area.box .hackernews .hackernews-widget .points u{margin-bottom:-3px;bord=
+er-top-color:#fff}.social_share_privacy_area .hackernews .hackernews-widget=
+ .points a{color:#333;text-decoration:none}.social_share_privacy_area .hack=
+ernews .hackernews-widget .points a:hover{color:#333;text-decoration:underl=
+ine}.social_share_privacy_area.line .linkedin img.linkedin_privacy_dummy{wi=
+dth:63px;height:20px}.social_share_privacy_area.box .linkedin img.linkedin_=
+privacy_dummy{width:61px;height:62px}.social_share_privacy_area.box .linked=
+in .dummy_btn{min-width:61px;min-height:62px}.social_share_privacy_area .ma=
+il a{text-indent:-9999em;overflow:hidden}.social_share_privacy_area.line .m=
+ail a{display:inline-block;width:43px;height:20px;margin-right:20px;backgro=
+und:url(../images/mail.png) top left no-repeat transparent}.social_share_pr=
+ivacy_area.box .mail a{display:block;margin:auto;width:58px;height:39px;bac=
+kground:url(../images/mail_box.png) top left no-repeat transparent}.social_=
+share_privacy_area.line li div.pinit{width:100px}.social_share_privacy_area=
+.box .pinterest .dummy_btn.pinit a{margin-top:29px!important}.social_share_=
+privacy_area.line .pinterest .dummy_btn img.privacy_dummy{width:40px;height=
+:20px}.social_share_privacy_area.box .pinterest .dummy_btn img.privacy_dumm=
+y{width:40px;height:50px}.social_share_privacy_area.line .reddit iframe{wid=
+th:120px;height:18px}.social_share_privacy_area.box .reddit iframe{width:58=
+px;height:66px}.social_share_privacy_area.line .stumbleupon iframe,.social_=
+share_privacy_area.line .stumbleupon img{width:74px;height:18px}.social_sha=
+re_privacy_area.box .stumbleupon iframe,.social_share_privacy_area.box .stu=
+mbleupon img{width:50px;height:60px}.social_share_privacy_area .tumblr a{te=
+xt-indent:-9999em;overflow:hidden}.social_share_privacy_area.line .tumblr a=
+{display:inline-block;width:81px;height:20px;margin-right:20px;background:u=
+rl(../images/tumblr.png) top left no-repeat transparent}.social_share_priva=
+cy_area.box .tumblr a{display:block;margin:auto;width:58px;height:58px;back=
+ground:url(../images/tumblr_box.png) top left no-repeat transparent}.social=
+_share_privacy_area.line li div.tweet{width:115px}.social_share_privacy_are=
+a.line .twitter iframe{width:120px;height:20px}.social_share_privacy_area.b=
+ox .twitter iframe{width:62px;height:62px}.social_share_privacy_area.line .=
+xing img.xing_privacy_dummy{width:55px;height:20px;margin-right:66px}.socia=
+l_share_privacy_area.box .xing img.xing_privacy_dummy{width:55px;height:62p=
+x}.social_share_privacy_area.box .xing .dummy_btn{min-width:55px;min-height=
+:62px}.social_share_privacy_area.box .xing .dummy_btn div{margin:auto}
+------=_Part_34485EE6_C1A32548.14D8F27362B
+Content-Location: https://www.debian-administration.org/css/jquery.autocomplete.css
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/css
+
+.acResults{padding:0px;border:1px solid WindowFrame;background-color:Window=
+;overflow:hidden}.acResults ul{margin:0px;padding:0px;list-style-position:o=
+utside;list-style:none}.acResults ul li{margin:0px;padding:2px 5px;cursor:p=
+ointer;display:block;font:menu;font-size:12px;overflow:hidden}.acLoading{ba=
+ckground:url('/images/indicator.gif') right center no-repeat}.acSelect{back=
+ground-color:Highlight;color:HighlightText}
+------=_Part_34485EE6_C1A32548.14D8F27362B
+Content-Location: https://www.debian-administration.org/favicon.ico
+Content-Transfer-Encoding: base64
+Content-Type: image/vnd.microsoft.icon
+
+AAABAAQAICAAAAEACACoCAAARgAAACAgEAABAAQA6AIAAO4IAAAQEAAAAQAIAGgFAADWCwAAEBAQ
+AAEABAAoAQAAPhEAACgAAAAgAAAAQAAAAAEACAAAAAAAgAQAAAAAAAAAAAAAAAEAAAAAAAAAAAAA
+AACAAACAAAAAgIAAgAAAAIAAgACAgAAAwMDAAMDcwADwyqYAACBAAAAgYAAAIIAAACCgAAAgwAAA
+IOAAAEAAAABAIAAAQEAAAEBgAABAgAAAQKAAAEDAAABA4AAAYAAAAGAgAABgQAAAYGAAAGCAAABg
+oAAAYMAAAGDgAACAAAAAgCAAAIBAAACAYAAAgIAAAICgAACAwAAAgOAAAKAAAACgIAAAoEAAAKBg
+AACggAAAoKAAAKDAAACg4AAAwAAAAMAgAADAQAAAwGAAAMCAAADAoAAAwMAAAMDgAADgAAAA4CAA
+AOBAAADgYAAA4IAAAOCgAADgwAAA4OAAQAAAAEAAIABAAEAAQABgAEAAgABAAKAAQADAAEAA4ABA
+IAAAQCAgAEAgQABAIGAAQCCAAEAgoABAIMAAQCDgAEBAAABAQCAAQEBAAEBAYABAQIAAQECgAEBA
+wABAQOAAQGAAAEBgIABAYEAAQGBgAEBggABAYKAAQGDAAEBg4ABAgAAAQIAgAECAQABAgGAAQICA
+AECAoABAgMAAQIDgAECgAABAoCAAQKBAAECgYABAoIAAQKCgAECgwABAoOAAQMAAAEDAIABAwEAA
+QMBgAEDAgABAwKAAQMDAAEDA4ABA4AAAQOAgAEDgQABA4GAAQOCAAEDgoABA4MAAQODgAIAAAACA
+ACAAgABAAIAAYACAAIAAgACgAIAAwACAAOAAgCAAAIAgIACAIEAAgCBgAIAggACAIKAAgCDAAIAg
+4ACAQAAAgEAgAIBAQACAQGAAgECAAIBAoACAQMAAgEDgAIBgAACAYCAAgGBAAIBgYACAYIAAgGCg
+AIBgwACAYOAAgIAAAICAIACAgEAAgIBgAICAgACAgKAAgIDAAICA4ACAoAAAgKAgAICgQACAoGAA
+gKCAAICgoACAoMAAgKDgAIDAAACAwCAAgMBAAIDAYACAwIAAgMCgAIDAwACAwOAAgOAAAIDgIACA
+4EAAgOBgAIDggACA4KAAgODAAIDg4ADAAAAAwAAgAMAAQADAAGAAwACAAMAAoADAAMAAwADgAMAg
+AADAICAAwCBAAMAgYADAIIAAwCCgAMAgwADAIOAAwEAAAMBAIADAQEAAwEBgAMBAgADAQKAAwEDA
+AMBA4ADAYAAAwGAgAMBgQADAYGAAwGCAAMBgoADAYMAAwGDgAMCAAADAgCAAwIBAAMCAYADAgIAA
+wICgAMCAwADAgOAAwKAAAMCgIADAoEAAwKBgAMCggADAoKAAwKDAAMCg4ADAwAAAwMAgAMDAQADA
+wGAAwMCAAMDAoADw+/8ApKCgAICAgAAAAP8AAP8AAAD//wD/AAAA/wD/AP//AAD///8AAAAAAAAA
+AAAAAAAAAADnTpenAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAl0YAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAl0ZOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEZGAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAABGTgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARkYAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAEZGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACXRpcA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEZGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AABORgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEZGAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAABGRkYAAAAAAAAAAAAA75ef7wAAAAAAAAAAAAAAAAAAAJ9GAAAAAAAAAAAAV05ORkZG
+Rp8AAAAAAAAAAAAAAAAARkYAAAAAAAAAp05OTqcAAADvRkbvAAAAAAAAAAAAAKdGRgAAAAAAAADv
+Tp8AAAAAAAAA70aXAAAAAAAAAAAAp0aXAAAAAAAAAE5GAAAAp1cAAAAA70bvAAAAAAAAAACnRqcA
+AAAAAACnRu8AAAAAAABXAAAATkbvAAAAAAAAAJdGlwAAAAAAAKdGAAAAAAAAAKcAAAAARu8AAAAA
+AAAAp0ZOAAAAAAAAp0YAAAAAAAAAAAAAAABGTgAAAAAAAACnRkYAAAAAAAAARgAAAAAAAAAA5wAA
+AEZG7wAAAAAAAJ9GRgAAAAAAAADvnwAAAAAAAAAAAAAARkbvAAAAAAAA70ZGpwAAAAAAAABO7wAA
+AAAApwAAAABGTqcAAAAAAADvV0ZOAAAAAAAAAKdGpwAAAADvAAAA70ZO7wAAAAAAAO9GRkYAAAAA
+AAAAAO9ORkZGpwAAAACfRlfvAAAAAAAAAABGRk4AAAAAAAAAAAAAAAAAAAAAAEZGp6cAAAAAAAAA
+pwBGRk4AAAAAAAAAAAAAAAAAAACnRkZGAAAAAAAAAAAAAJ9GRkbvAAAAAAAAAAAAAAAAAEZGRk4A
+AAAAAAAAAAAAAEZGRkanAAAAAAAAAAAAAABGRkZGAAAAAAAAAAAAAAAAAEZGRkZGlwAAAAAAAABO
+RkZGRgAAAAAAAAAAAAAAAAAAAE5GRkZGRkZGRkZGRkZGRkYAAAAAAAAAAAAAAAAAAAAAAABGRkZG
+RkZGRkZGRk7vAAAAAAAAAAAAAAAAAAAAAAAAAAAATkZGTleXn6cAAAAAAAAAAAAAAP/8P///+f//
+/+P////P////n////z////5////8f////P////n////5////8f+H//P+Af/z+Dh/4/j+P+P5zx/j
+8fuP4/P7z+Pz/8/j+/3H4/n/x+H8+8fh/HuH4f4Hh/j//4f0f/8P/B//D/4P/h//A/g//4AAf//g
+AP//+Af/KAAAACAAAABAAAAAAQAEAAAAAACAAgAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAIAAAIAA
+AACAgACAAAAAgACAAICAAACAgIAAwMDAAAAA/wAA/wAAAP//AP8AAAD/AP8A//8AAP///wAAAAAA
+AAAACZkAAAAAAAAAAAAAAAAACZAAAAAAAAAAAAAAAAAACZkAAAAAAAAAAAAAAAAAAJkAAAAAAAAA
+AAAAAAAAAAmQAAAAAAAAAAAAAAAAAACZAAAAAAAAAAAAAAAAAAAJkAAAAAAAAAAAAAAAAAAAmZAA
+AAAAAAAAAAAAAAAAAJkAAAAAAAAAAAAAAAAAAAmZAAAAAAAAAAAAAAAAAAAJmQAAAAAAAAAAAAAA
+AAAACZAAAAAAAJkAAAAAAAAAAJkAAAAACZmZmZAAAAAAAACZAAAAAJmQAACZkAAAAAAAmQAAAAmQ
+AAAAAJkAAAAAAJkAAAAJAAAJAAAJkAAAAAmZAAAAmQAAAAkACZAAAAAJmQAAAJkAAAAAkACQAAAA
+CZkAAACQAAAAAAAAmQAAAAmZAAAAmQAAAACQAJkAAAAJmQAAAAmQAAAAAACZkAAAAJkAAAAAkAAA
+AJAAmZAAAACZkAAAAAkAAAkAAJmQAAAACZAAAAAAmZkAAAmZAAAAAAmZAAAAAAAAAAAJmQAAAAAA
+mZAAAAAAAAAAmZkAAAAAAJmZAAAAAAAAAJmQAAAAAAAJmZAAAAAAAAmZkAAAAAAAAJmZmQAAAAmZ
+mQAAAAAAAAAJmZmZmZmZmZAAAAAAAAAAAAmZmZmZmZAAAAAAAAAAAAAACZmZmQAAAAAAAP/+P///
++f///+P////P////n////z////5////8f////P////j////4////+f/P//P+Af/z/Hx/8/n/P/P7
+75/j8/uf4/P93+P3/8/j8/3P4/n/x/P9/cfx/vvH+f8Pj/j//4/8f/8P/D//H/4f/h//A/g//4AA
+f//gAf//+A//KAAAABAAAAAgAAAAAQAIAAAAAABAAQAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAIAA
+AIAAAACAgACAAAAAgACAAICAAADAwMAAwNzAAPDKpgAAIEAAACBgAAAggAAAIKAAACDAAAAg4AAA
+QAAAAEAgAABAQAAAQGAAAECAAABAoAAAQMAAAEDgAABgAAAAYCAAAGBAAABgYAAAYIAAAGCgAABg
+wAAAYOAAAIAAAACAIAAAgEAAAIBgAACAgAAAgKAAAIDAAACA4AAAoAAAAKAgAACgQAAAoGAAAKCA
+AACgoAAAoMAAAKDgAADAAAAAwCAAAMBAAADAYAAAwIAAAMCgAADAwAAAwOAAAOAAAADgIAAA4EAA
+AOBgAADggAAA4KAAAODAAADg4ABAAAAAQAAgAEAAQABAAGAAQACAAEAAoABAAMAAQADgAEAgAABA
+ICAAQCBAAEAgYABAIIAAQCCgAEAgwABAIOAAQEAAAEBAIABAQEAAQEBgAEBAgABAQKAAQEDAAEBA
+4ABAYAAAQGAgAEBgQABAYGAAQGCAAEBgoABAYMAAQGDgAECAAABAgCAAQIBAAECAYABAgIAAQICg
+AECAwABAgOAAQKAAAECgIABAoEAAQKBgAECggABAoKAAQKDAAECg4ABAwAAAQMAgAEDAQABAwGAA
+QMCAAEDAoABAwMAAQMDgAEDgAABA4CAAQOBAAEDgYABA4IAAQOCgAEDgwABA4OAAgAAAAIAAIACA
+AEAAgABgAIAAgACAAKAAgADAAIAA4ACAIAAAgCAgAIAgQACAIGAAgCCAAIAgoACAIMAAgCDgAIBA
+AACAQCAAgEBAAIBAYACAQIAAgECgAIBAwACAQOAAgGAAAIBgIACAYEAAgGBgAIBggACAYKAAgGDA
+AIBg4ACAgAAAgIAgAICAQACAgGAAgICAAICAoACAgMAAgIDgAICgAACAoCAAgKBAAICgYACAoIAA
+gKCgAICgwACAoOAAgMAAAIDAIACAwEAAgMBgAIDAgACAwKAAgMDAAIDA4ACA4AAAgOAgAIDgQACA
+4GAAgOCAAIDgoACA4MAAgODgAMAAAADAACAAwABAAMAAYADAAIAAwACgAMAAwADAAOAAwCAAAMAg
+IADAIEAAwCBgAMAggADAIKAAwCDAAMAg4ADAQAAAwEAgAMBAQADAQGAAwECAAMBAoADAQMAAwEDg
+AMBgAADAYCAAwGBAAMBgYADAYIAAwGCgAMBgwADAYOAAwIAAAMCAIADAgEAAwIBgAMCAgADAgKAA
+wIDAAMCA4ADAoAAAwKAgAMCgQADAoGAAwKCAAMCgoADAoMAAwKDgAMDAAADAwCAAwMBAAMDAYADA
+wIAAwMCgAPD7/wCkoKAAgICAAAAA/wAA/wAAAP//AP8AAAD/AP8A//8AAP///wAAAAAAAADvTqfv
+AAAAAAAAAAAAAACXTu8AAAAAAAAAAAAAAACfTu8AAAAAAAAAAAAAAACfTu8AAAAAAAAAAAAAAADv
+RqcAAAAAAAAAAAAAAAAAVkYAAAAAp6fvAAAAAAAA70bvAACnl05GRpfvAAAAAKdGAAAAl6cAAABO
+Tu8AAACfRgAAp1YA76cAAJeXAAAAn04AAKdWAAAApwCfTu8AAKdGAAAAnwAAAAAAp0bvAADvRp8A
+AACfl58AAJdO7wAAAJdO7wAAAAAAAO9GlwAAAADvTkanAAAAAO+XRu8AAAAAAO9ORlaXl1ZORu8A
+AAAAAAAA76dWRkZWp+8AAAAA/D/vgfj/74Hx/wAA4/86AMf/AgDPHysBjAcAApzjAgCZM0oBmdEA
+Ap3xBACOMVgBx+OBAcPDAALgB08C8A/OAigAAAAQAAAAIAAAAAEABAAAAAAAwAAAAAAAAAAAAAAA
+EAAAAAAAAAAAAAAAAACAAACAAAAAgIAAgAAAAIAAgACAgAAAgICAAMDAwAAAAP8AAP8AAAD//wD/
+AAAA/wD/AP//AAD///8AAAAACZAAAAAAAAmQAAAAAAAAmQAAAAAAAAmQAAAAAAAAmQAAAAAAAACQ
+AAmZkAAACZAAmQCZkAAJkAmQAACZAAmQCQCZAJkACZAJAACQCZAJkACQAJAJkACZAAmZAAmQAJmQ
+AAAAmQAACZkAAAmZAAAAmZmZmZAAAAAJmZmQAAD+f++B+f/vgfP/PALn/+sCz/8CAN4fCgKcx+sC
+mfMGAJszJwKb2RICndmAAs456wLH8wIA4+M1AvAH6wL4H++B
+
+------=_Part_34485EE6_C1A32548.14D8F27362B
+Content-Location: https://www.debian-administration.org/images/logo.png
+Content-Transfer-Encoding: base64
+Content-Type: image/png
+
+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
+
+------=_Part_34485EE6_C1A32548.14D8F27362B
+Content-Location: https://www.debian-administration.org/images/xml.gif
+Content-Transfer-Encoding: base64
+Content-Type: image/gif
+
+R0lGODlhJAAOANUAANVYBPHUwOFdBP/28P9yFeCngvfp4OVeBPRkBe3JsfBjBfr079+ecv+rc/fg
+0NByM+e9of/j0Z9BA//m1eWEQ/+FNP/awc5VBM1nI//t4eezkeirgtRhFPBsFOR3Lt1uJPDBofjX
+wf98JOZ7M/PCofqWU/CugiEOAfmygv/Rsv+PRP+0gn0zAv+aV8JQBD8aAf/IpP////9mAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAAAAAAALAAAAAAkAA4AAAbKwAls
+SCwaj8ijpyVrOp/QqDTKYk6vWKq12YgNCDJVLEJYxWKVJuwcjlmmVWgoliBkYo+LOQZBEM4xLmIB
+AFJxTyILMQ4xDC4IZoofKwNngjGEhltOJWcBLgcyZhB0AySWg4VaUWIxBhxNZgUgZxiomKpQh04E
+AwOMGrExBSN0LreZq08pjQ9nFKLDAgguALcGGysrKk+7Ml2fByiuHbICTreAMSYKTt4yB9VNAi4u
+MvTnTvUyCvX++TLeZRlIRcKLgwgTKlzIcOGJIAA7
+
+------=_Part_34485EE6_C1A32548.14D8F27362B--

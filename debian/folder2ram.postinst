@@ -67,7 +67,8 @@ case "$1" in
         # Handle fs2ram.conf with ucf
         ucf --debconf-ok $folder2ram_conffile /etc/folder2ram/folder2ram.conf
 
-#DISABLED --- squeeze not supported, period.            
+#DISABLED --- squeeze not supported anymore, 
+# it is already good enough that i manage to support wheezy and jessie in the future.            
         # Support also squeeze (for backports)
 #        initscripts_version=$(dpkg-query -W initscripts | cut -f 2)
 #        if dpkg --compare-versions "$initscripts_version" lt "2.88dsf-13.3" ; then
@@ -80,12 +81,13 @@ case "$1" in
 
         # Execute the unmount scripts once to be sure to keep data accross the
         # next reboot.
-        echo " Executing the unmount scripts ..."
-        folder2ram execute-unmount-script -a  > /dev/null || true
+#---DISABLED---- because I need this to stay put and obey to the will of another package
+#        echo " Executing the unmount scripts ..."
+#        folder2ram execute-unmount-script -a  > /dev/null || true
 
         # Fix some permissions
-        set_perms root root 700 /var/lib/folder2ram/mount-scripts
-        set_perms root root 700 /etc/folder2ram/unmount-scripts
+        set_perms root root 700 /lib/folder2ram/mount-scripts
+        set_perms root root 700 /lib/folder2ram/unmount-scripts
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

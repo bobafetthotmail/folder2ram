@@ -29,7 +29,7 @@ UNMOUNT_SCRIPT_ETCDIR=/etc/folder2ram/unmount-scripts
 UNMOUNT_SCRIPT_DIR=/lib/folder2ram/unmount-scripts
 MOUNT_SCRIPT_VARDIR=/var/lib/folder2ram/mount-scripts
 
-
+#logging functions should log to a file because that's the point of logging functions right?
 log_info_message() {
     echo $*
 }
@@ -141,6 +141,12 @@ do_mountpoint() {
 }
 
 # mount
+# modified to implement the script written by mcortese in 2010
+# in this webpage https://www.debian-administration.org/article/661/A_transient_/var/log
+# webpage saved and available in docs folder
+# much better and safer than fs2ram's own system, as it runs a bind mount before mounting the tmpfs.
+# Added check so that if it fails it will safely unmount stuff. Won't leave it borked.
+
 mount_mountpoint() {
     local dev mtpt type opts quiet
     dev=$1
@@ -150,22 +156,37 @@ mount_mountpoint() {
     quiet=$5
 
     if  is_mounted "$mtpt"; then
-        # Skip if already mounted
-        if is_tmpfs "$mtpt"; then
+        # Skip if already mounted ### fixed another bug, even if it is already a tmpfs we should not care.
+	# only thing that matters is if it is already mounted at its own mountpoint or not. As the unmount scripts do.
+        if is_mounted "$mtpt"; then
             log_warning_message "folder2ram: $mtpt is already mounted with tmpfs"
         else
             log_warning_message "folder2ram: $mtpt is already mounted with another type than tmpfs"
         fi
         return 1
+########################CRITICAL PART#####################
     else
         [ "$quiet" != "true" ] && log_info_message "folder2ram: mounting $mtpt ($type)."
-        if ! mount -t "$type" -o "$opts" "$dev" "$mtpt"; then
-            log_error_message "folder2ram: Unable to mount $mtpt."
+	# bind folder exists? if answer is no then we create it.	
+	[ -d /var/folder2ram/$dir ] || mkdir -p /var/folder2ram/$dir 
+	if ! mount --bind $dir /var/folder2ram/$dir; ; then
+            log_error_message "folder2ram: Unable to bind mount $mtpt."
             return 1
         fi
+        if ! mount -t "$type" -o "$opts" "$dev" "$mtpt"; then
+            log_error_message "folder2ram: Unable to mount $mtpt."
+	    umount -l /var/folder2ram/$dir
+            return 1
+        fi
+	if cp -rfp /var/folder2ram/$dir -T $dir; then
+	    log_error_message "folder2ram: Unable to move files to $mtpt."
+	    umount -l $mtpt
+	    umount -l /var/folder2ram/$dir
+            return 1
     fi
     return 0
 }
+##############################################################
 
 execute_unmount_script() {
     local mtpt script script_opts quiet tmp_mount_script mount_script unmount_script
@@ -226,6 +247,10 @@ execute_mount_script() {
 }
 
 # unmount
+# modified to implement the script written by mcortese in 2010
+# in this webpage https://www.debian-administration.org/article/661/A_transient_/var/log
+# webpage saved and available in docs folder
+# much better and safer than fs2ram's own system, as it runs a bind mount before mounting the tmpfs.
 unmount_mountpoint() {
     local dev mtpt type opts quiet
     dev=$1
@@ -241,8 +266,12 @@ unmount_mountpoint() {
     fi
 
     [ "$quiet" != "true" ] && log_info_message "folder2ram: unmounting $tab_mountpoint ($type)."
-    if ! umount "$mtpt"; then
+    if ! umount -l "$mtpt"; then
         log_error_message "folder2ram: Unable to unmount $mtpt."
+        return 1
+    fi
+    if ! umount -l "/var/folder2ram/$dir"; then
+        log_error_message "folder2ram: Unable to unbind $dir."
         return 1
     fi
     return 0
