@@ -1,5 +1,5 @@
 #!/bin/sh
-# postinst script for fs2ram
+# postinst script for folder2ram
 #
 # see: dh_installdeb(1)
 
@@ -81,7 +81,9 @@ case "$1" in
 
         # Execute the unmount scripts once to be sure to keep data accross the
         # next reboot.
+
 #---DISABLED---- because I need this to stay put and obey to the will of another package
+
 #        echo " Executing the unmount scripts ..."
 #        folder2ram execute-unmount-script -a  > /dev/null || true
 

@@ -1,0 +1,10 @@
+#!/bin/sh
+# preinst script for folder2ram
+#
+# see: dh_installdeb(1)
+
+if folder2ram unmount -a; then
+exit 0
+else
+echo folder2ram cannot unmount everything! Aborting!
+exit 1

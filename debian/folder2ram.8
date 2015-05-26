@@ -75,11 +75,18 @@ By default, \fBfolder2ram\fP won't make /var/run, /var/lock or /tmp available as
 ram filesystems. Since \fBsysvinit\fP provides a way to achieve this, it is
 preferable to use it. See \fBtmpfs\fP(5) for more information.
 .SH UNMOUNT SCRIPTS 
-An unmount script has to produce to the standard output the mount script that
-folder2ram will execute at boot. The unmount script takes two arguments. The first
-one is the concerned mountpoint. The second one, optional, is the options given
-to the script.
-The default unmount scripts are in /lib/folder2ram/unmount-scripts/
+An unmount script has to produce to the standard output (i.e. echo "something") 
+the mount script that folder2ram will execute at boot. 
+The unmount script takes two arguments. The first one is the concerned mountpoint. 
+The second one, optional, is the options given to the script.
+The default unmount scripts are in /lib/folder2ram/unmount-scripts/.
+There are four different scripts
+keep_content -- this script simply copies the data from the tmpfs to the disk before unmounting
+keep_folder_structure -- this script keeps the same folder structure in ram, but no files are kept on reboot
+keep_file_structure -- this script keeps the folder and file structure in ram, but files are fake and no change is kept on reboot (this is useful for lockfiles and other files where the only important thing is that they must exist)
+compress_file_content -- EXPERIMENTAL this script saves the folder into a tgz archive. Theoretically should save space.
+This is the equivalent of the original fs2ram's keep_file_content script.
+Will probably become squashfs in ram if it makes some kind of performance difference in embedded devices.
 .SH FILES
 .PP
 .IP "/etc/folder2ram/folder2ram.conf"

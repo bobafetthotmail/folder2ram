@@ -29,6 +29,9 @@ Added check so that if it fails it will safely unmount stuff. Won't leave it bor
 
 TODO:
 
+write better readme and manual about what happens when folder2ram is run, what folders are bound and where they will go.
+
+make sure that keep_file and keep_folder structure clean their tmpfs folder before running.
 
 remove configuration choices (so that by default it does nothing)
 
