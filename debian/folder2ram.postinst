@@ -52,16 +52,16 @@ case "$1" in
         install_type="$RET"
         case "$install_type" in
             "Content-preserving")
-                folder2ram_conffile=/usr/share/doc/folder2ram/examples/folder2ram.conf.wear
+                folder2ram_conffile=/usr/share/folder2ram/examples/folder2ram.conf.wear
                 ;;
 
             "Structure-preserving")
-                folder2ram_conffile=/usr/share/doc/folder2ram/examples/folder2ram.conf.privacy
+                folder2ram_conffile=/usr/share/folder2ram/examples/folder2ram.conf.privacy
                 ;;
 
             *)
                 # Include the case "No configuration"
-                folder2ram_conffile=/usr/share/doc/folder2ram/examples/folder2ram.conf.empty
+                folder2ram_conffile=/usr/share/folder2ram/examples/folder2ram.conf.empty
                 ;;
         esac
         # Handle fs2ram.conf with ucf

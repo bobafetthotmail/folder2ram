@@ -15,7 +15,7 @@ filter_ignore() {
     ignore_regexp="$1"
     
     while read line; do
-        if [ -z "$ignore_regexp" ] || [ "$(printf "$line" | sed -e "s/'$//" | egrep "$ignore_regexp")" = "" ]; then
+        if [ -z "$ignore_regexp" ] || [ $(printf "$line" | sed -e "s/'$//" | egrep "$ignore_regexp") = "" ]; then
             echo "$line"
         fi
     done
