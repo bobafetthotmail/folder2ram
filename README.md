@@ -11,11 +11,21 @@ for now I'm focusing on wheezy.
 NOTDONE:
 translations in /debian/po weren't changed.
 
+DONE:
+
+--check what is happening with """ inside /home/alby/folder2ram/lib/folder2ram/unmount-scripts/common.sh
+
+--modified to implement the script written by mcortese in 2010
+in this webpage https://www.debian-administration.org/article/661/A_transient_/var/log
+webpage saved and available in docs folder
+much better and safer than fs2ram's own system, as it runs a bind mount before mounting the tmpfs.
+Added check so that if it fails it will safely unmount stuff. Won't leave it borked.
+
+-fixed two bugs reported in fs2ram bugtracker (can now mount folders already inside tmpfs, moved examples in another folder) 
+
 TODO:
 
-check what is happening with """ inside /home/alby/folder2ram/lib/folder2ram/unmount-scripts/common.sh
-
-remove weird folder compression
+remove weird folder compression -- in progress
 
 remove autostart after installation
 
