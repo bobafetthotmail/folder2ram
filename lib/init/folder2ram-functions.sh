@@ -169,7 +169,7 @@ mount_mountpoint() {
         [ "$quiet" != "true" ] && log_info_message "folder2ram: mounting $mtpt ($type)."
 	# bind folder exists? if answer is no then we create it.	
 	[ -d /var/folder2ram/$dir ] || mkdir -p /var/folder2ram/$dir 
-	if ! mount --bind $dir /var/folder2ram/$dir; ; then
+	if ! mount --bind $dir /var/folder2ram/$dir;  then
             log_error_message "folder2ram: Unable to bind mount $mtpt."
             return 1
         fi
@@ -183,7 +183,8 @@ mount_mountpoint() {
 	    umount -l $mtpt
 	    umount -l /var/folder2ram/$dir
             return 1
-    fi
+    	fi
+     fi
     return 0
 }
 ##############################################################

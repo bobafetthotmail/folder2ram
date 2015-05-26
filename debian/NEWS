@@ -1,13 +1,5 @@
-folder2ram 0.1.1 unstable;
+folder2ram (0.1.1) unstable; urgency=low
 
-	first commit
+first commit.
 
-
-fs2ram (0.3.12) unstable; urgency=low
-
-    sysvinit (>= 2.88dsf-23) provides now the variables RAMTMP and
-    RAMLOCK to manage /var/lock and /tmp into tmpfs (see the tmpfs(5)
-    manpage). the default configuration files of fs2ram will no more
-    manage these two mountpoints.
-
- -- Philippe Le Brouster <plb@nebkha.net>  Mon, 25 Jun 2012 13:42:33 +0200
+ -- Alberto Bursi <starshipeleven@hotmail.it>  Fri, 26 Jun 2009 15:00:39 +0200

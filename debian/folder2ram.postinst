@@ -103,6 +103,6 @@ esac
 
 #db_stop
 
-######DEBHELPER#
+#DEBHELPER#
 
 exit 0

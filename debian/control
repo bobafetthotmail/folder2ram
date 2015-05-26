@@ -4,7 +4,6 @@ Priority: optional
 Maintainer: Alberto Bursi <starshipeleven@hotmail.it>
 Build-Depends: debhelper (>= 9~)
 Standards-Version: 3.9.3
-DM-Upload-Allowed: yes
 
 Package: folder2ram
 Architecture: all

@@ -1,0 +1,143 @@
+fs2ram (0.3.12) unstable; urgency=low
+
+  [ Christian Perrier ]
+  * Debconf templates and debian/control reviewed by the debian-l10n-
+    english team as part of the Smith review project. Closes: #679869
+  * [Debconf translation updates]
+  * Slovak (Ivan Masár).  Closes: #681222
+  * Russian (Yuri Kozlov).  Closes: #681369
+  * German (Florian Rehnisch).  Closes: #681382
+  * Swedish (Martin Bagge / brother).  Closes: #681391
+  * Czech (Michal Simunek).  Closes: #681516
+  * French (Julien Patriarca).  Closes: #681559
+  * Polish (Michał Kułach).  Closes: #681686
+  * Italian (Beatrice Torracca).  Closes: #682262
+  * Portuguese (Pedro Ribeiro).  Closes: #682380
+  * Danish (Joe Hansen).  Closes: #682383
+  * Spanish; (# traductor (campo Last-Translator) y ponga en copia a la
+    lista de Javier Fernández-Sanguino).  Closes: #682558
+
+  [ Philippe Le Brouster ]
+  * Remove the ability to set the variables RAMLOCK and RAMTMP in
+    /etc/default/tmpfs (Closes: #679715) 
+
+ -- Philippe Le Brouster <plb@nebkha.net>  Thu, 27 Sep 2012 15:07:50 +0200
+
+fs2ram (0.3.11) unstable; urgency=low
+
+  * /var/run, /var/lock and /tmp are no more handled by fs2ram by default as
+    the init scripts already provide the options RAMLOCK, RAMTMP. See
+    /etc/default/tmpfs
+  * Add an unmount script to backup/restore a mountpoint entirely.
+  * Use ucf for fs2ram.conf.
+  * Add a select template to choose the type of installation.
+  * Some minor enhancements.
+  * The keep_{folder,file}_structure scripts use now the numerical id of
+    groups/users instead of their names (Closes: #649179).
+  * Update the config script according to sysvinit changes in 2.88dsf-23
+  * Update the debian standards version to 3.9.3
+  * Update to debhelper 9
+  * Allow DM to upload this package.
+
+ -- Philippe Le Brouster <plb@nebkha.net>  Wed, 27 Jun 2012 12:45:40 +0200
+
+fs2ram (0.3.10) unstable; urgency=low
+
+  * First release in the debian archive (Closes: #600840)
+  * Fix bashisms (dash)
+
+ -- Philippe Le Brouster <plb@nebkha.net>  Sun, 20 Mar 2011 19:41:39 +0100
+
+fs2ram (0.3.8) UNRELEASED; urgency=low
+
+  * debian stuff
+  * fix an incorrect error message.
+
+ -- Philippe Le Brouster <plb@nebkha.net>  Sun, 21 Nov 2010 22:04:21 +0100
+
+fs2ram (0.3.7) UNRELEASED; urgency=low
+
+  * The conffile fs2ram.conf is now in /etc/fs2ram/.
+  * fs2ram is quiet during startup/shutdown (show only error).
+  * Some debian packaging stuff.
+  * English rewording.
+  * Some cleaning.
+  * Switch from the exec ... < construction to while ... done <.
+  * /var/log, /var/run, /var/cache are now handled by default (work out
+    of the box).
+  * Fix the return code for the do_mountpoint() function.
+  * move the unmount scripts from /usr/share/fs2ram to /lib/fs2ram.
+  * init: add syslog-ng to X-Stop-After.
+
+ -- Philippe Le Brouster <plb@nebkha.net>  Wed, 20 Oct 2010 15:05:47 +0200
+
+fs2ram (0.3.6) UNRELEASED; urgency=low
+
+  * Switch to debhelper 7.
+  * Refactoring the shell script.
+  * Rewrite the README file.
+  * Some packaging cleaning.
+  * Fixed invalid message when using '-a' option with no mountpoint defined.
+  * Fixed an error in fs2ram-functions.sh (in is_tmpfs).
+
+ -- Philippe Le Brouster <plb@nebkha.net>  Sun, 08 Nov 2009 17:06:58 +0100
+
+fs2ram (0.3.5) UNRELEASED; urgency=low
+
+  * Update init.d code order from 37 to 36.
+  * Removed space character not needed.
+
+ -- Philippe Le Brouster <plb@nebkha.net>  Mon, 17 Aug 2009 21:21:42 +0200
+
+fs2ram (0.3.4) UNRELEASED; urgency=low
+
+  * Fixed syntax for apt.
+
+ -- Philippe Le Brouster <plb@nebkha.net>  Thu, 30 Jul 2009 17:27:10 +0200
+
+fs2ram (0.3.3) UNRELEASED; urgency=low
+
+  * Fixed filter for keep_file_structure.
+
+ -- Philippe Le Brouster <plb@nebkha.net>  Thu, 30 Jul 2009 16:42:21 +0200
+
+fs2ram (0.3.2) UNRELEASED; urgency=low
+
+  * Moved /etc/fs2ram.d to /usr/share/fs2ram/backup-scripts.
+  * Removed the obselete /etc/default/fs2ram file.
+
+ -- Philippe Le Brouster <plb@nebkha.net>  Mon, 20 Jul 2009 17:43:28 +0200
+
+fs2ram (0.3.1) UNRELEASED; urgency=low
+
+  * Updated fs2ram manpage.
+
+ -- Philippe Le Brouster <plb@nebkha.net>  Sat, 18 Jul 2009 21:57:05 +0200
+
+fs2ram (0.3) UNRELEASED; urgency=low
+
+  * Added Depends: initscripts.
+  * Renamed /etc/fs2ram/backup.d to /etc/fs2ram.d.
+  * Moved the mountpoints configuration to /etc/fs2ram.conf.
+  * Moved the fs2ram lib to /lib/init/fs2ram-functions.sh.
+  * Re-wrote /lib/init/fs2ram-functions.
+  * Re-wrote /usr/sbin/fs2ram.
+  * Added some docs (manpage, command usage).
+  * Modified the dpkg hook to display a message when executing fs2ram.
+
+ -- Philippe Le Brouster <plb@nebkha.net>  Sat, 18 Jul 2009 21:51:00 +0200
+
+fs2ram (0.2) UNRELEASED; urgency=low
+
+  * Added the /etc/fs2ram/backup.d folder.
+  * Renamed logtoram to fs2ram.
+  * Added dpkg hook.
+  * Changed runlevel init.d script to S, 0 and 6.
+
+ -- Philippe Le Brouster <plb@nebkha.net>  Sun, 05 Jul 2009 00:04:55 +0200
+
+fs2ram (0.1) UNRELEASED; urgency=low
+
+  * Initial Release.
+
+ -- Philippe Le Brouster <plb@nebkha.net>  Fri, 26 Jun 2009 15:00:39 +0200

@@ -3,8 +3,10 @@
 #
 # see: dh_installdeb(1)
 
-if folder2ram unmount -a; then
+set -e
+
+if [ -e /sbin/folder2ram ]; then
+	folder2ram unmount -a 
+fi
+
 exit 0
-else
-echo "folder2ram cannot unmount everything! Aborting!"
-exit 1
