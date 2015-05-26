@@ -1,2 +1,0 @@
-DPkg::Post-Invoke      { "if [ -x /usr/sbin/folder2ram ]; then echo -n 'folder2ram: executing the unmount scripts corresponding to the mountpoints present in /etc/folder2ram/folder2ram.conf...'; folder2ram execute-unmount-script -a; echo 'done.'; fi"; };
-
