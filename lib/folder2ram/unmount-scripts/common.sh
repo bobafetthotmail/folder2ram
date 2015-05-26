@@ -73,3 +73,8 @@ archive_name=$dir-$(date +%Y%m%d-%H%M%S)
 #    echo "EOF"
 }
 
+#function to clean the tmpfs run before or after something
+clean_tmpfs() {
+echo "rm -r $dir/*"
+}
+

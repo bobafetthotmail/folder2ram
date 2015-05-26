@@ -6,19 +6,19 @@
 #
 # Even minor modifications require translation updates and such
 # changes should be coordinated with translators and reviewers.
-Template: folder2ram/main_install_type
-Type: select
-__Choices: Content-preserving, Structure-preserving, Unconfigured
-Default: Content-preserving
-_Description: Configuration for folder2ram:
- Please select the folder2ram configuration that best meets your needs.
- .
-  * Content-preserving: /var/tmp, /var/cache, and /var/log will be in 
-    RAM, reducing writes to the hard drive, and folder2ram will preserve the
-    contents of these file systems across reboots.
-  * Structure-preserving: /var/tmp, /var/cache, and /var/log will be in
-    RAM, but folder2ram will only preserve their directory structures across
-    reboots, not their (potentially private) contents.
-  * Unconfigured: the folder2ram configuration file will be left empty and
-    must be filled manually.
+#Template: folder2ram/main_install_type
+#Type: select
+#__Choices: Content-preserving, Structure-preserving, Unconfigured
+#Default: Content-preserving
+#_Description: Configuration for folder2ram:
+# Please select the folder2ram configuration that best meets your needs.
+# .
+#  * Content-preserving: /var/tmp, /var/cache, and /var/log will be in 
+#    RAM, reducing writes to the hard drive, and folder2ram will preserve the
+#    contents of these file systems across reboots.
+#  * Structure-preserving: /var/tmp, /var/cache, and /var/log will be in
+#    RAM, but folder2ram will only preserve their directory structures across
+#    reboots, not their (potentially private) contents.
+#  * Unconfigured: the folder2ram configuration file will be left empty and
+#    must be filled manually.
 

@@ -23,5 +23,6 @@ for opt in $options; do
 done
 
 generate_sh_header
+clean_tmpfs "$dir"
 generate_file_content "$dir" "$include_pattern" "$exclude_pattern"
 

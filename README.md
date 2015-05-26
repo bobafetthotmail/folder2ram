@@ -27,15 +27,15 @@ Added check so that if it fails it will safely unmount stuff. Won't leave it bor
 
 --removed autostart after installation
 
+--make sure that keep_file and keep_folder structure clean their tmpfs folder before running.
+
+--remove configuration choices (so that by default it does nothing) (temporarily at least)
+
+--remove configuration cli GUI (again temporarily commented out)
+
 TODO:
 
 write better readme and manual about what happens when folder2ram is run, what folders are bound and where they will go.
-
-make sure that keep_file and keep_folder structure clean their tmpfs folder before running.
-
-remove configuration choices (so that by default it does nothing)
-
-remove configuration cli GUI
 
 add optional periodic sync to disk
 

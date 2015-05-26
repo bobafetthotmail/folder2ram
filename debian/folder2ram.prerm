@@ -6,5 +6,5 @@
 if folder2ram unmount -a; then
 exit 0
 else
-echo folder2ram cannot unmount everything! Aborting!
+echo "folder2ram cannot unmount everything! Aborting!"
 exit 1

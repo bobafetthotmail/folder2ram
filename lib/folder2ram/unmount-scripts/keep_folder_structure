@@ -19,6 +19,7 @@ for opt in $options; do
 done
 
 generate_sh_header
+clean_tmpfs "$dir"
 generate_folder_structure "$dir" "$ignore_folder_regexp"
 
 

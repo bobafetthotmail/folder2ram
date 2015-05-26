@@ -48,24 +48,24 @@ case "$1" in
             fi
         fi
 
-        db_get folder2ram/main_install_type
-        install_type="$RET"
-        case "$install_type" in
-            "Content-preserving")
-                folder2ram_conffile=/usr/share/folder2ram/examples/folder2ram.conf.wear
-                ;;
-
-            "Structure-preserving")
-                folder2ram_conffile=/usr/share/folder2ram/examples/folder2ram.conf.privacy
-                ;;
-
-            *)
-                # Include the case "No configuration"
-                folder2ram_conffile=/usr/share/folder2ram/examples/folder2ram.conf.empty
-                ;;
-        esac
-        # Handle fs2ram.conf with ucf
-        ucf --debconf-ok $folder2ram_conffile /etc/folder2ram/folder2ram.conf
+#        db_get folder2ram/main_install_type
+#        install_type="$RET"
+#        case "$install_type" in
+#           "Content-preserving")
+#                folder2ram_conffile=/usr/share/folder2ram/examples/folder2ram.conf.wear
+#                ;;
+#
+#            "Structure-preserving")
+#                folder2ram_conffile=/usr/share/folder2ram/examples/folder2ram.conf.privacy
+#                ;;
+#
+#            *)
+#                # Include the case "No configuration"
+#                folder2ram_conffile=/usr/share/folder2ram/examples/folder2ram.conf.empty
+#                ;;
+#        esac
+#        # Handle fs2ram.conf with ucf
+#        ucf --debconf-ok $folder2ram_conffile /etc/folder2ram/folder2ram.conf
 
 #DISABLED --- squeeze not supported anymore, 
 # it is already good enough that i manage to support wheezy and jessie in the future.            
@@ -101,8 +101,8 @@ case "$1" in
     ;;
 esac
 
-db_stop
+#db_stop
 
-#DEBHELPER#
+######DEBHELPER#
 
 exit 0
