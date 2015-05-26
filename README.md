@@ -23,11 +23,12 @@ Added check so that if it fails it will safely unmount stuff. Won't leave it bor
 
 -fixed two bugs reported in fs2ram bugtracker (can now mount folders already inside tmpfs, moved examples in another folder) 
 
+--weird folder compression is removed, left compression as an optional script
+
+--removed autostart after installation
+
 TODO:
 
-remove weird folder compression -- in progress
-
-remove autostart after installation
 
 remove configuration choices (so that by default it does nothing)
 

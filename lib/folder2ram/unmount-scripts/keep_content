@@ -1,7 +1,8 @@
 #! /bin/sh
-# the core function of this script was written by mcortese in 2010
+# this script is the part of the script written by mcortese in 2010
 # in this webpage https://www.debian-administration.org/article/661/A_transient_/var/log
-# webpage saved and available in docs folder
+# (webpage saved and available in docs folder)
+# that was not be integrated with the core of folder2ram, for the sake of keeping folder2ram flexible.
 
 . /lib/folder2ram/unmount-scripts/common.sh
 
@@ -41,11 +42,15 @@ generate_sh_header
         # Check if I am root
 #        [ `id -u` -eq 0 ] || return 2
 
-        # Merge back to permanent storage
-        cp -rfup $dir -T /var/folder2ram/$dir
-
-        umount -l $dir
-        umount -l /var/folder2ram/$dir
+##################### Merge back to permanent storage
+        if cp -rfup $dir -T /var/folder2ram/$dir; then
+	return 0
+	else 
+	return 1
+	fi
+#####################
+#        umount -l $dir
+#        umount -l /var/folder2ram/$dir
 #        rm -r /var/lock/transientlog.lock
-        return 0
+#        return 0
 #}

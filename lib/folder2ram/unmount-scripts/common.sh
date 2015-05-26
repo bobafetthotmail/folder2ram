@@ -65,8 +65,11 @@ generate_file_content() {
     include_pattern="$2"
     exclude_pattern="$3"
 
-    echo "base64 -d - <<EOF | tar xzf - -C '$dir'"
-    tar czf - -C "$dir" --exclude="$exclude_pattern" $include_pattern | base64
-    echo "EOF"
+#    echo "base64 -d - <<EOF | tar xzf - -C '$dir'"
+#   tar czf name_of_archive_file.tar.gz name_of_directory_to_tar
+archive_name=$dir-$(date +%Y%m%d-%H%M%S)
+    echo "tar xzf /var/folder2ram/compressed/$archive_name.tar.gz /var/folder2ram/$dir"
+    tar czf /var/folder2ram/compressed/$archive_name.tar.gz /var/folder2ram/$dir --exclude="$exclude_pattern" $include_pattern # | base64
+#    echo "EOF"
 }
 

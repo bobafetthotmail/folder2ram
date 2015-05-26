@@ -86,8 +86,8 @@ case "$1" in
 #        folder2ram execute-unmount-script -a  > /dev/null || true
 
         # Fix some permissions
-        set_perms root root 700 /lib/folder2ram/mount-scripts
-        set_perms root root 700 /lib/folder2ram/unmount-scripts
+        set_perms root root 700 /var/lib/folder2ram/mount-scripts
+        set_perms root root 700 /etc/folder2ram/unmount-scripts
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
