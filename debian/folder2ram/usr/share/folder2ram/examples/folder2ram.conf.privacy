@@ -1,0 +1,9 @@
+#
+# In case you want to make /var/lock or /tmp available as ram
+# filesystems, it is preferable to set the variables RAMTMP, RAMLOCK
+# from /etc/default/tmpfs.
+#
+#<file system>  <mount point>   <script>                <script option> <type>  <options>
+tmpfs            /var/cache      keep_folder_structure   -               tmpfs
+tmpfs            /var/log        keep_file_structure     -               tmpfs
+tmpfs            /var/tmp        -                       -               tmpfs

@@ -1,0 +1,185 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides: folder2ram
+# X-Start-Before:	$syslog
+# X-Stop-After:		$syslog
+# X-Interactive:	yes
+# Default-Start:	2 3 4 5
+# Default-Stop:		0 1 6
+# Short-Description:	Keeps folders in RAM
+# Description: Moves the contents of user-defined folders to RAM during boot
+#              and keeps it there until shutdown/reboot, when it
+#              copies the contents back to permanent storage.
+### END INIT INFO
+
+# Version 1.0
+# Author: Alberto Bursi <starshipeleven@hotmail.it>
+#
+# Based off transientlog by Matteo Cortese <matteo_cortese@fastwebnet.it>
+#
+# Which was inspired by ramlog by Jan Andrejkovic.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+NAME=folder2ram #will have to be set by external script
+DESC="ram folders"
+LOCKFILE=/var/lock/$NAME.lock
+#VARLOG=/var/log useless, must be removed
+SIZE=16M
+MODE=0755
+
+# DIRPERM is the directory in permanent storage
+# DIR is the directory 
+
+# Read configuration variable file if it is present
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+# Load the VERBOSE setting and other rcS variables
+. /lib/init/vars.sh
+
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
+. /lib/lsb/init-functions
+
+#this stuff is set from outside script, left commented for now.
+
+#if [ -z "$DIRPERM" ]; then
+#	var=`dirname $DIR`
+#	log=`basename $DIR`
+#	DIRPERM="$var/permanent$log"
+#	unset var log
+#fi
+
+
+do_start()
+{
+	# Return
+	#   0 if transient log has been started
+	#   1 if transient log was already running
+	#   2 if transient log could not be started
+
+	[ -f $LOCKFILE ] && return 1
+	
+	# Check if I'm root
+	[ `id -u` -eq 0 ] || return 2
+
+	# If VARLOG does not exist?
+	[ -d $VARLOG ] || return 2
+
+	# VARLOGPERM either does not exist (first invocation)
+	# or is empty (left from previous invocation).
+	# 
+	[ -d $VARLOGPERM ] || mkdir -p $VARLOGPERM || return 2
+
+	# Mount a tmpfs over VARLOG.
+	# The mount will shadow the current contents of VARLOG.
+	# So, before, make a bind mount so that looking into VARLOGPERM
+	# we'll see the current contents of VARLOG, which
+	# will not be available anymore as soon as we mount
+	# a tmpfs over it.
+	#
+	mount --bind $VARLOG $VARLOGPERM
+	mount -t tmpfs -o nosuid,noexec,nodev,mode=$MODE,size=$SIZE $NAME $VARLOG
+	if [ $? -eq 0 ]; then
+		# Populate the tmpfs
+		if cp -rfp $VARLOGPERM -T $VARLOG; then
+			# Success!
+			touch $LOCKFILE
+			return 0
+		fi
+
+		# Something went wrong...
+
+		# Rollback the mount
+		umount -l $VARLOG
+	fi
+
+	# Rollback the directory mangling
+	umount $VARLOGPERM
+	
+	return 2
+}
+
+do_stop() {
+	# Return
+	#   0 if daemon has been stopped
+	#   1 if daemon was already stopped
+	#   2 if daemon could not be stopped
+	#   other if a failure occurred
+
+	[ -f $LOCKFILE ] || return 1
+
+	# Check if I am root
+	[ `id -u` -eq 0 ] || return 2
+
+	# Merge back to permanent storage
+	cp -rfup $VARLOG -T $VARLOGPERM
+
+	# The following cannot fail... or can it?
+	umount -l $VARLOG
+	umount -l $VARLOGPERM
+	rm -f $LOCKFILE
+	return 0
+}
+
+do_reload() {
+	# Return
+	#   0 if transient log has been reloaded
+	#   1 if transient log was not running
+	#   2 if transient log could not be reloaded
+
+	[ -f $LOCKFILE ] || return 1
+	
+	# Check if I am root
+	[ `id -u` -eq 0 ] || return 2
+
+	# Merge back to permanent storage
+	cp -rfup $VARLOG -T $VARLOGPERM
+	touch $LOCKFILE
+	return 0
+}
+	
+
+
+
+
+
+case "$1" in
+  start)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC" "$NAME"
+	do_start
+	case "$?" in
+		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  stop)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME"
+	do_stop
+	case "$?" in
+		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  status)
+  	if [ -f $LOCKFILE ]; then
+		echo "$DESC is running"
+	else
+		echo "$DESC is stopped"
+		exit 1
+	fi
+	;;
+  reload)
+	log_daemon_msg "Reloading $DESC" "$NAME"
+	do_reload
+	log_end_msg $?
+	;;
+  *)
+	echo "Usage: $0 {start|stop|status|reload}" >&2
+	exit 3
+	;;
+esac

@@ -1,0 +1,5 @@
+# Automatically added by dh_installinit
+if [ -x "/etc/init.d/folder2ram" ]; then
+	update-rc.d folder2ram start 36 S . start 39 0 6 . >/dev/null || exit $?
+fi
+# End automatically added section

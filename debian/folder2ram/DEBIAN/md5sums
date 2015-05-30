@@ -1,0 +1,17 @@
+b59ae14288d07f71396e720255472b27  lib/folder2ram/unmount-scripts/common.sh
+41d133a14109b0aecf5fe12bb482bc0b  lib/folder2ram/unmount-scripts/compress_file_content
+87f6b0ec035d609d28d6fc3745167a92  lib/folder2ram/unmount-scripts/keep_content
+01ca871f4b6ead753733202cf22f5485  lib/folder2ram/unmount-scripts/keep_file_structure
+20a4a5cb072096122e8a945bf760eb36  lib/folder2ram/unmount-scripts/keep_folder_structure
+3ba4cd3f0c8a1be3d118774855598504  lib/init/folder2ram-functions.sh
+d360bc56c00d03fb00c8434fe4f3b48d  sbin/folder2ram
+84e83a6b1e9449f0ebfad8128f22e0bc  usr/share/doc/folder2ram/NEWS.Debian.gz
+1e5f13d5fab71c3cf795d27b72acd899  usr/share/doc/folder2ram/README.Debian
+c27f4ee6fa0bc1334ece8474d76101b6  usr/share/doc/folder2ram/changelog.gz
+4b656216cb80ec51805260d2c34a67f0  usr/share/doc/folder2ram/copyright
+0625b7f8cece0c3323b22ac6487e9047  usr/share/doc/folder2ram/examples/folder2ram.conf
+97a6d6c60e61fe87e2728de19b039e37  usr/share/folder2ram/examples/folder2ram.conf.empty
+80d3da3d2e85b895c80f4acdd73fb5e2  usr/share/folder2ram/examples/folder2ram.conf.privacy
+43d5881d3be3b5561f07f58b2bb1ab56  usr/share/folder2ram/examples/folder2ram.conf.wear
+f715864c75f8862207e79949d12904d9  usr/share/lintian/overrides/folder2ram
+67f09653e33c13c021ae866003424b10  usr/share/man/man8/folder2ram.8.gz

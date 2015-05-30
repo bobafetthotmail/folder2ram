@@ -1,0 +1,103 @@
+#! /bin/sh
+
+# Author:
+#
+#     Alberto Bursi <starshipeleven@hotmail.it>
+#
+# Copyright:
+#
+#     
+#
+# License:
+#
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This package is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# On Debian systems, the complete text of the GNU General
+# Public License version 3 can be found in `/usr/share/common-licenses/GPL-3'.
+
+. /lib/init/folder2ram-functions.sh
+
+
+print_usage() {
+    echo "Command usage:"
+    echo ""
+    echo "$0 <action> <mountpoint> [-f]"
+    echo "$0 <action> -a [-f]"
+    echo "$0 -v"
+    echo ""
+    echo "<action>"
+    echo "    mount-only              Mount the mountpoint <mountpoint>."
+    echo "    unmount-only            Unmount the mountpoint <mountpoint>."
+    echo "    execute-unmount-script  Execute the unmount script for the mountpoint <mountpoint>."
+    echo "    execute-mount-script    Execute the mount script for the mountpoint <mountpoint>. "
+    echo "    mount                   Do mount & execute mount script. If '-f' is given,"
+    echo "                            this will execute the mount script even if mount failed."
+    echo "    unmount                 Execute unmount script & do unmount. If '-f' is given,"
+    echo "                            this will unmount even if backup failed. "
+    echo ""
+    echo "-a"
+    echo "    This means that the <action> given will be proceeded for all the mountpoints defined in /etc/folder2ram/folder2ram.conf."
+    echo "-h"
+    echo "    Display the command usage for $0."
+}
+
+print_usage_exit() {
+    print_usage
+    exit
+}
+
+force='false'
+quiet='false'
+mountpoint='%%none%%'
+all_mountpoints='false'
+
+action="$1"
+[ -z "$action" ] && print_usage_exit;
+
+shift
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -a)
+            [ "$mountpoint" != "%%none%%" ] && print_usage_exit
+            mountpoint=""
+            ;;
+
+        -f)
+            force='true'
+            ;;
+
+        -q)
+            quiet='true'
+            ;;
+
+        *)
+            [ -z "$mountpoint" ] || [ "$mountpoint" != '%%none%%' ] && print_usage_exit
+            mountpoint="$1"
+            ;;
+    esac
+    shift
+done
+
+[ "$mountpoint" = "%%none%%" ] && print_usage_exit
+
+case "$action" in
+    mount-only|unmount-only|unmount|mount|execute-unmount-script|execute-mount-script)
+        do_mountpoint "$mountpoint" "$action" "$force" "$quiet"
+        ;;
+    *|-h)
+        print_usage
+        ;;
+esac
+
