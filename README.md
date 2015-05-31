@@ -16,17 +16,17 @@ webpage saved and available in docs folder
 much better and safer than fs2ram's own system, as it runs a bind mount before mounting the tmpfs.
 Added check so that if it fails it will safely unmount stuff. Won't leave it borked.
 
---removed autostart after installation
+--the configuration script (the one that gets user input and deploys/removes the initscripts, it's the factotum)
 
-IN PROGRESS:
-
-write the configuration script (the one that gets user input and deploys/removes the initscripts)
-
-Write the initscript template (the one that is used by the configuration script to make the initscripts)
+--the initscript template (the one that is used by the configuration script to make the initscripts)
 
 TODO:
 
+add safety checks to avoid trying to mount things as tmpfs when the folder is too big to fit into RAM
+
 write better readme and manual about what happens when folder2ram is run.
+
+add optional names for mount points (easier to remember/faster to write than full path when calling folder2ram)
 
 add optional periodic sync to disk
 

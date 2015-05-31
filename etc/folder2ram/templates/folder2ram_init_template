@@ -34,16 +34,21 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
 
+
+#This script is HEAVILY commented, for the sake of easy understanding and mainteneance
+#because I'm sure I will forget some of its arcane spells and I don't feel like wasting
+#hours trying to understand what I wrote an unspecified amount of time ago. -Alberto
+
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
-NAME=folder2ram #will have to be set by external script as it needs to be different for each init script
-DESC="ram folders"
+NAME= # this will be set by external script as it needs to be different for each init script
+DIR= # this will be set by external script as it needs to be different for each init script
+DESC="ram folders" # this may be set by external script in the future
 LOCKFILE=/run/lock/$NAME.lock
-#DIR=/var/log useless for now
 #SIZE=16M this can be interesting for later, for now it stays disabled
 MODE=0755
 
-# DIRPERM is the directory in permanent storage
-# DIR is the directory 
+# DIRPERM is the bind mount to the directory in permanent storage
+# DIR is the directory we are working with
 
 # Read configuration variable file if it is present
 #[ -r /etc/default/$NAME ] && . /etc/default/$NAME
@@ -99,7 +104,7 @@ do_start()
 	#
 	mount --bind $DIR $DIRPERM
 #	mount -t tmpfs -o nosuid,noexec,nodev,mode=$MODE,size=$SIZE $NAME $DIR 
-# original line, disabled for now as it allows to accept options, a feature that I plan to add in the future.
+# original line, allows to accept options, a feature that I plan to add in the future.
 	mount -t tmpfs -o nosuid,noexec,nodev,mode=$MODE $NAME $DIR
 	if [ $? -eq 0 ]; then
 		# Populate the tmpfs
@@ -140,9 +145,9 @@ do_stop() {
 	umount -l $DIR
 	umount -l $DIRPERM
 	rm -f $LOCKFILE
-	# well, technically yes it can. 
-	# being the lockfile in a tmpfs folder (/run/lock is a tmpfs folder)
-	# a reboot should fix any issue.
+	# well, yes it can
+	# being the lockfile in a tmpfs folder (/run/lock is a tmpfs folder for Debian)
+	# a reboot should fix any issue anyway
 	return 0
 }
 

@@ -26,6 +26,11 @@
 # On Debian systems, the complete text of the GNU General
 # Public License version 3 can be found in `/usr/share/common-licenses/GPL-3'.
 
+
+#This script is HEAVILY commented, for the sake of easy understanding and mainteneance
+#because I'm sure I will forget some of its arcane spells and I don't feel like wasting
+#hours trying to understand what I wrote an unspecified amount of time ago. -Alberto
+
 ###############FUNCTIONS#######################
 
 print_usage() {
@@ -35,8 +40,8 @@ print_usage() {
 	echo "There are five main components of folder2ram system:"
 	echo "--the init scripts that do the mounting and unmounting automatically in /etc/init.d"
 	echo "--the configuration and management tool in /etc/sbin/folder2ram"
-	echo "--the configuration file in /etc/folder2ram.conf"
-	echo "--the template files in /doc/templates"
+	echo "--the configuration file in /etc/folder2ram/folder2ram.conf"
+	echo "--the template files in /etc/folder2ram/templates"
 	echo "--the folders in /var/folder2ram, the bind-mounted folders"
 	echo "  they allow easy access to the original folder in permanent storage"
 	echo "  since if you mount folder A on folder B you lose access to folder B"
@@ -59,7 +64,7 @@ print_usage() {
 	echo "::::::::::print all mountpoints and their status (mounted or unmounted)"
 	echo ""
 	echo "-mountall"
-	echo "::::::::::folder2ram will start all initscripts of all folders in the config file"
+	echo "::::::::::folder2ram will start all folder2ram initscripts"
 	echo ""
 	echo "-mount /folder/path"
 	echo "::::::::::folder2ram will start the init script for that particular folder,"
@@ -88,32 +93,316 @@ print_usage_exit() {
     exit
 }
 
-read_config_file() {
-#this reads config file at a predetemined line and extracts mount point and (in the future) additional options
-#line_number must come from outside
+read_mount_point() {
+# this reads config file at a predetemined line and extracts mount point 
+# $line_number must come from outside
+# blank lines and commented lines are ignored, so line_number refers only to actual mount points
+# a similar function can be used to extract additional options in the future
 
-line_number="4"
+line_number=$1 
+
 # get variable form outside, remove blank and commented lines, and print line at $line_number
-mount_point=`awk -v line=$line_number '!/^ *#/ && NF && FNR == line {print $2}' /home/alby/testfstab ` 
+mount_point=`awk -v line=$line_number '!/^ *#/ && NF && FNR == line {print $2}' /etc/folder2ram/folder2ram.conf ` 
 
-echo $mount_point
-echo 
+# checking if mount point variable is empty, and if it is returning a keyword
+if [ x$mount_point != "x" ]; then 
+echo $mount_point;
+else
+echo "no_more_mount_points";
+fi
+
+}
+
+mount_umount_all() {
+
+# initializing variables    
+line_number=0 #because it gets increased as first action in while loop below
+mount_point=1
+start_or_stop=$1
+
+#::::::::BEGINNING OF MAIN LOOP
+while [ $mount_point != "no_more_mount_points" -o $mount_point != "" ]  do
+
+# increasing line number
+line_number=$((line_number+1))
+
+# calling another function (above) to fill the mount point at this line number
+mount_point=$(read_mount_point $line_number)
+
+# cleaning the mount point string to generate a initscript name that won't break anything
+# basically turning /this/is/a/path into -this-is-a-path-mount_type
+# mount_type is hardcoded for now, will be set by something else when I implement folder2ram options
+mount_type="tmpfs" 
+
+# field separator is set as "/" then the record separator is set as "-" , the loop prints one by one the fields
+# (because I could not find a better way to get the damn "-" to be inserted properly) 
+# then disables the record separators and prints the variable "mount_type" coming from outside awk (see the -v option)
+clean_mount_point=`echo $mount_point | awk -v mount_type=$mount_type -F '/' '{ORS="-"; out=$1; for(i=1;i<=NF;i++){out=$i; print out}; ORS=""; print mount_type}' `
+
+# generating the initscript name, will look like this "folder2ram-this-is-a-path-mount_type"
+initscript_name="folder2ram$clean_mount_point"
+
+
+#starting/stopping the init script
+/etc/init.d/$initscript_name $start_or_stop
+
+
+#:::::::::::ENDING OF MAIN LOOP
+done
+
+mount_umount_mountpoint() {
+
+# initializing variables    
+mount_point=$1
+start_or_stop=$2
+
+# cleaning the mount point string to generate a initscript name that won't break anything
+# basically turning /this/is/a/path into -this-is-a-path-mount_type
+# mount_type is hardcoded for now, will be set by something else when I implement folder2ram options
+mount_type="tmpfs" 
+
+# field separator is set as "/" then the record separator is set as "-" , the loop prints one by one the fields
+# (because I could not find a better way to get the damn "-" to be inserted properly) 
+# then disables the record separators and prints the variable "mount_type" coming from outside awk (see the -v option)
+clean_mount_point=`echo $mount_point | awk -v mount_type=$mount_type -F '/' '{ORS="-"; out=$1; for(i=1;i<=NF;i++){out=$i; print out}; ORS=""; print mount_type}' `
+
+# generating the initscript name, will look like this "folder2ram-this-is-a-path-mount_type"
+initscript_name="folder2ram$clean_mount_point"
+
+
+#starting the init script
+/etc/init.d/$initscript_name $start_or_stop
+
+exit
 
 }
 
 generate_initscripts() {
-    
+
+# initializing variables    
+line_number=0 #because it gets increased as first action in while loop below
+mount_point=1
+
+#::::::::BEGINNING OF MAIN LOOP
+while [ $mount_point != "no_more_mount_points" -o $mount_point != "" ]  do
+
+# increasing line number
+line_number=$((line_number+1))
+
+# calling another function (above) to fill the mount point at this line number
+mount_point=$(read_mount_point $line_number)
+
+# cleaning the mount point string to generate a initscript name that won't break anything
+# basically turning /this/is/a/path into -this-is-a-path-mount_type
+# mount_type is hardcoded for now, will be set by something else when I implement folder2ram options
+mount_type="tmpfs" 
+# field separator is set as "/" then the record separator is set as "-" , the loop prints one by one the fields
+# (because I could not find a better way to get the damn "-" to be inserted properly) 
+# then disables the record separators and prints the variable "mount_type" coming from outside awk (see the -v option)
+clean_mount_point=`echo $mount_point | awk -v mount_type=$mount_type -F '/' '{ORS="-"; out=$1; for(i=1;i<=NF;i++){out=$i; print out}; ORS=""; print mount_type}' `
+
+# generating the initscript name, will look like this "folder2ram-this-is-a-path-mount_type"
+initscript_name="folder2ram$clean_mount_point"
+
+
+###################BEGIN IF
+
+#checking if there is another initscript with the same name, skipping to next mount point if found 
+if [ -e /etc/init.d/$initscript_name ]; 
+then ############BEGIN THEN
+
+	echo "/etc/init.d/$initscript_name exists, skipping";
+
+else ############BEGIN ELSE and END THEN
+
+	echo "generating /etc/init.d/$initscript_name";
 
 
 
+# this reads the etc/folder2ram/templates/folder2ram_init_template up to line 2
+# and writes that into /etc/init.d/$initscript_name.
+	line_begin=1;
+	line_after_end=3;
+	while [ $line_begin != $line_after_end ] ; do
+	echo `awk -v line=$line 'NR == line' etc/folder2ram/templates/folder2ram_init_template ` >> /etc/init.d/$initscript_name ;
+	line=$((line+1));
+	done;
 
+# this sets some variables we need to be different in the initscript, by appending them to the same file
+	echo "# Provides: $initscript_name" >> /etc/init.d/$initscript_name ;
 
+# this reads the etc/folder2ram/templates/folder2ram_init_template from line 4 to line 42 
+# and writes that into /etc/init.d/$initscript_name, appending into the same file
+	line_begin=4;
+	line_after_end=43;
+	while [ $line_begin != $line_after_end ] ; do
+	echo `awk -v line=$line 'NR == line' etc/folder2ram/templates/folder2ram_init_template ` >> /etc/init.d/$initscript_name ;
+	line=$((line+1));
+	done;
 
+# this sets some variables we need to be different in the initscript, by appending them to the same file
+	echo "NAME=$initscript_name" >> /etc/init.d/$initscript_name ;
+	echo "DIR=$mount_point" >> /etc/init.d/$initscript_name ;
 
+# this reads the etc/folder2ram/templates/folder2ram_init_template from line 45 to the end of the file 
+# and writes that into /etc/init.d/$initscript_name, appending into the same file
+	line_begin=45;
+	line_after_end=211;
+	while [ $line_begin != $line_after_end ] ; do
+	echo `awk -v line=$line 'NR == line' etc/folder2ram/templates/folder2ram_init_template ` >> /etc/init.d/$initscript_name ;
+	line=$((line+1));
+	done;
+
+# this marks the newly created file as executable
+	chmod a+x /etc/init.d/$initscript_name ;
+
+# this asks insserv to generate symlinks in the appropriate runlevels
+	insserv $initscript_name ;
+
+########END ELSE and END IF
+fi
+
+#:::::::::::ENDING OF MAIN LOOP
+done
     exit
 }
 
 
+clean_initscripts() {
+
+mount_umount_all stop
+
+# initializing variables    
+line_number=0 #because it gets increased as first action in while loop below
+mount_point=1
+
+#::::::::BEGINNING OF MAIN LOOP
+while [ $mount_point != "no_more_mount_points" -o $mount_point != "" ]  do
+
+# increasing line number
+line_number=$((line_number+1))
+
+# calling another function (above) to fill the mount point at this line number
+mount_point=$(read_mount_point $line_number)
+
+# cleaning the mount point string to generate a initscript name that won't break anything
+# basically turning /this/is/a/path into -this-is-a-path-mount_type
+# mount_type is hardcoded for now, will be set by something else when I implement folder2ram options
+mount_type="tmpfs" 
+
+# field separator is set as "/" then the record separator is set as "-" , the loop prints one by one the fields
+# (because I could not find a better way to get the damn "-" to be inserted properly) 
+# then disables the record separators and prints the variable "mount_type" coming from outside awk (see the -v option)
+clean_mount_point=`echo $mount_point | awk -v mount_type=$mount_type -F '/' '{ORS="-"; out=$1; for(i=1;i<=NF;i++){out=$i; print out}; ORS=""; print mount_type}' `
+
+# generating the initscript name, will look like this "folder2ram-this-is-a-path-mount_type"
+initscript_name="folder2ram$clean_mount_point"
+
+
+###################BEGIN IF
+
+#checking if there is an initscript with the same name, skipping to next mount point if found 
+if [ -e /etc/init.d/$initscript_name ]; 
+then ############BEGIN THEN
+
+	echo "deleting /etc/init.d/$initscript_name";
+	/etc/init.d/$initscript_name stop;
+	insserv -r $initscript_name;
+	rm /etc/init.d/$initscript_name;
+
+else ############BEGIN ELSE and END THEN
+
+	echo "/etc/init.d/$initscript_name not found, already deleted";
+
+########END ELSE and END IF
+fi
+
+#:::::::::::ENDING OF MAIN LOOP
+done
+
+exit
+}
+
+refresh_initscripts() {
+
+clean_initscripts
+generate_initscripts
+
+exit
+}
+
+print_status() {
+
+# initializing variables    
+line_number=0 #because it gets increased as first action in while loop below
+mount_point=1
+
+#::::::::BEGINNING OF MAIN LOOP
+while [ $mount_point != "no_more_mount_points" -o $mount_point != "" ]  do
+
+# increasing line number
+line_number=$((line_number+1))
+
+# calling another function (above) to fill the mount point at this line number
+mount_point=$(read_mount_point $line_number)
+
+# cleaning the mount point string to generate a initscript name that won't break anything
+# basically turning /this/is/a/path into -this-is-a-path-mount_type
+# mount_type is hardcoded for now, will be set by something else when I implement folder2ram options
+mount_type="tmpfs" 
+
+# field separator is set as "/" then the record separator is set as "-" , the loop prints one by one the fields
+# (because I could not find a better way to get the damn "-" to be inserted properly) 
+# then disables the record separators and prints the variable "mount_type" coming from outside awk (see the -v option)
+clean_mount_point=`echo $mount_point | awk -v mount_type=$mount_type -F '/' '{ORS="-"; out=$1; for(i=1;i<=NF;i++){out=$i; print out}; ORS=""; print mount_type}' `
+
+# generating the initscript name, will look like this "folder2ram-this-is-a-path-mount_type"
+initscript_name="folder2ram$clean_mount_point"
+
+# looking at output of mount command and see if it is mounted as mount_type (see above for that variable)
+mounted_or_not=`mount | grep $mount_point | grep $mount_type`
+
+###################BEGIN IF
+
+#checking if there is an initscript with the same name, skipping to next mount point if found 
+if [ $mounted_or_not = "" ]; 
+then ############BEGIN THEN
+
+	echo "$mount_point type $mount_type not mounted";
+
+else ############BEGIN ELSE and END THEN
+
+	echo "$mount_point type $mount_type mounted";
+
+########END ELSE and END IF
+fi
+
+#:::::::::::ENDING OF MAIN LOOP
+done
+
+
+exit
+}
+
+configure(){
+
+echo will now open the configuration file
+echo write your favourite text editor (nano, vim, gedit are the most common)
+read $editor
+
+sudo $editor /etc/folder2ram/folder2ram.conf 
+
+}
+
+reset(){
+
+clean_initscripts
+rm /etc/folder2ram/folder2ram.conf 
+cp /etc/folder2ram/template/folder2ram.conf /etc/folder2ram/folder2ram.conf 
+
+exit
+
+}
 
 ##################END FUNCTIONS ###########################
 
@@ -166,16 +455,16 @@ case "$action" in
         print_status
         ;;
 -mount)
-        mount_mountpoint $mountpoint
+        mount_umount_mountpoint $mountpoint start
         ;;
 -mountall)
-	mount_all
+	mount_umount_all start
         ;;
 -umount)
-        umount_mountpoint $mountpoint
+        mount_umount_mountpoint $mountpoint stop
         ;;
 -umountall)
-        umount_all
+        mount_umount_all stop
         ;;
 -configure)
         configure
