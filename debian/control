@@ -7,7 +7,7 @@ Standards-Version: 3.9.3
 
 Package: folder2ram
 Architecture: all
-Depends: ${misc:Depends}, ucf
+Depends: ${misc:Depends}, ucf, lsb-base
 Description: move folders to ram and preseve contents across reboots
  folder2ram relocates and manages folders into tmpfs across reboots. 
  Each tmpfs mountpoint can be associated with a pre-mount script, 

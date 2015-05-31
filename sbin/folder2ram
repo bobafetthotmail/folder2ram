@@ -6,7 +6,7 @@
 #
 # Copyright:
 #
-#     
+#     Alberto Bursi 2015
 #
 # License:
 #
@@ -86,6 +86,19 @@ print_usage() {
 print_usage_exit() {
     print_usage
     exit
+}
+
+read_config_file() {
+#this reads config file at a predetemined line and extracts mount point and (in the future) additional options
+#line_number must come from outside
+
+line_number="4"
+# get variable form outside, remove blank and commented lines, and print line at $line_number
+mount_point=`awk -v line=$line_number '!/^ *#/ && NF && FNR == line {print $2}' /home/alby/testfstab ` 
+
+echo $mount_point
+echo 
+
 }
 
 generate_initscripts() {
