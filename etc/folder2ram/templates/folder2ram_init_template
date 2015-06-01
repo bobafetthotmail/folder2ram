@@ -1,9 +1,11 @@
-#!/bin/sh
+#! /bin/sh
 ### BEGIN INIT INFO
 # Provides: folder2ram
 # X-Start-Before:	$syslog
 # X-Stop-After:		$syslog
 # X-Interactive:	yes
+# Required-Start:
+# Required-Stop:
 # Default-Start:	2 3 4 5
 # Default-Stop:		0 1 6
 # Short-Description:	Keeps folders in RAM
@@ -39,11 +41,13 @@
 #because I'm sure I will forget some of its arcane spells and I don't feel like wasting
 #hours trying to understand what I wrote an unspecified amount of time ago. -Alberto
 
-PATH=/sbin:/bin:/usr/sbin:/usr/bin
-NAME= # this will be set by external script as it needs to be different for each init script
-DIR= # this will be set by external script as it needs to be different for each init script
+PATH="/sbin:/bin:/usr/sbin:/usr/bin"
+#################### set by external script
+NAME=name 
+DIR=dir
+####################
 DESC="ram folders" # this may be set by external script in the future
-LOCKFILE=/run/lock/$NAME.lock
+LOCKFILE="/run/lock/$NAME.lock"
 #SIZE=16M this can be interesting for later, for now it stays disabled
 MODE=0755
 
@@ -62,20 +66,11 @@ MODE=0755
 . /lib/lsb/init-functions
 # added lsb-base to the dependencies, but seriously considering to dump this and do independent logging
 
-#this stuff is getting hardcoded in the next line, leaving commented for now, might be useful later.
-
-#if [ -z "$DIRPERM" ]; then
-#	var=`dirname $DIR`
-#	log=`basename $DIR`
-#	DIRPERM="$var/permanent$log"
-#	unset var log
-#fi
-
 #setting the place where all this stuff will be bind-mounted
 DIRPERM="/var/folder2ram$DIR"
 
 
-do_start()
+do_start() 
 {
 	# Return
 	#   0 if daemon has been started
@@ -85,7 +80,7 @@ do_start()
 	[ -f $LOCKFILE ] && return 1
 	
 	# Check if I'm root
-	[ `id -u` -eq 0 ] || return 2
+	[ "$(id -u)" -eq 0 ] || return 2
 
 	# If DIR does not exist?
 	[ -d $DIR ] || return 2
@@ -136,7 +131,7 @@ do_stop() {
 	[ -f $LOCKFILE ] || return 1
 
 	# Check if I am root
-	[ `id -u` -eq 0 ] || return 2
+	[ "$(id -u)" -eq 0 ] || return 2
 
 	# Merge back to permanent storage
 	cp -rfup $DIR -T $DIRPERM
@@ -160,18 +155,15 @@ do_reload() {
 	[ -f $LOCKFILE ] || return 1
 	
 	# Check if I am root
-	[ `id -u` -eq 0 ] || return 2
+	[ "$(id -u)" -eq 0 ] || return 2
 
 	# Merge back to permanent storage
 	cp -rfup $DIR -T $DIRPERM
 	touch $LOCKFILE
 	return 0
 }
-	
 
-
-
-
+################
 
 case "$1" in
   start)
@@ -181,7 +173,7 @@ case "$1" in
 		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
 		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
 	esac
-	;;
+  ;;
   stop)
 	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME"
 	do_stop
@@ -189,7 +181,7 @@ case "$1" in
 		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
 		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
 	esac
-	;;
+  ;;
   status)
   	if [ -f $LOCKFILE ]; then
 		echo "$DESC is running"
@@ -197,14 +189,17 @@ case "$1" in
 		echo "$DESC is stopped"
 		exit 1
 	fi
-	;;
+  ;;
   reload)
 	log_daemon_msg "Reloading $DESC" "$NAME"
 	do_reload
 	log_end_msg $?
-	;;
+  ;;
   *)
 	echo "Usage: $0 {start|stop|status|reload}" >&2
 	exit 3
-	;;
+  ;;
+
 esac
+
+exit

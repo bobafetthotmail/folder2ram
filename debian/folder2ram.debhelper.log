@@ -7,15 +7,11 @@ dh_auto_install
 dh_install
 dh_installdocs
 dh_installchangelogs
-dh_installexamples
 dh_installman
 dh_installdebconf
-override_dh_installinit dh_installinit
-dh_installinit
 dh_lintian
 dh_perl
 dh_link
-override_dh_compress dh_compress
 dh_compress
 dh_fixperms
 dh_installdeb

@@ -1,5 +1,2 @@
 sbin/folder2ram
 etc/folder2ram/*
-lib/folder2ram/unmount-scripts/*
-lib/init/*
-usr/share/folder2ram/examples/*

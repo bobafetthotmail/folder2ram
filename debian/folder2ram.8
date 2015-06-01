@@ -2,7 +2,7 @@
 .\" First parameter, NAME, should be all caps
 .\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
 .\" other parameters are allowed: see man(7), man(1)
-.TH FS2RAM 8 "September 17, 2010"
+.TH FOLDER2RAM 8 "2015" "folder2ram"
 .\" Please adjust this date whenever revising the manpage.
 .\"
 .\" Some roff macros, for reference:
@@ -16,21 +16,16 @@
 .\" .sp <n>    insert n+1 empty lines
 .\" for manpage-specific macros, see man(7)
 .SH NAME
-folder2ram \- manage post-mount/pre-mount scripts
+folder2ram \- automated tmpfs folder management
 .SH SYNOPSIS
-\fBfolder2ram\fP \fIaction\fP \fB\-a\fP [\fB\-f\fP] [\fB\-q\fP]
-.PP
-\fBfolder2ram\fP \fIaction\fP <mountpoint> [\fB\-f\fP] [\fB\-q\fP]
-.PP
-\fBfolder2ram\fP \fB\-h\fP
+\fBfolder2ram\fP \fIaction\fP \fB\-generate\fP [\fB\-clean\fP] [\fB\-refresh\fP] [\fB\-status\fP] [\fB\-mountall\fP] [\fB\-mount\fP] [\fB\-umountall\fP] [\fB\-umountall\fP] [\fB\-configure\fP] [\fB\-reset\fP]
 .PP
 .SH DESCRIPTION
-\fBfolder2ram\fP relocates and manages folders into tmpfs across reboots. Each tmpfs
-<mountpoint> can be associated with a pre-mount script, which is executed by
-\fBfolder2ram\fP at each shutdown/reboot before the file system is unmounted. The
-pre-unmount script must print a post-mount script on standard output, which is
-saved and then run at boot time after \fBfolder2ram\fP mounts the corresponding
-file system.  
+\fBfolder2ram\fP folder2ram is a script-based utility that relocates the contents of a folder 
+to tmpfs (more options in the future) and on shutdown unmounts it safely synching the data back
+to the permanent storage (more options about when and where to sync in the future).
+\fBfolder2ram\fP is a configuration script that generates init scripts that then do the leg work
+of mounting, unmounting and syncing. 
 
 .SH OPTIONS
 .TP
@@ -38,69 +33,55 @@ file system.
 This option specifies the action to execute. It could be :
 .RS
 .TP .4i
-\fBunmount\fP:
-This action first \fBexecute-unmount-script\fP and then \fBunmount\fP.
+\fB-generate\fP:
+read the configuration file at /etc/folder2ram/folder2ram.etc and generate the init scripts that are missing
 .TP
-\fBmount\fP:
-This action first \fBmount-only\fP and then \fBexecute-mount-script\fP.
+\fB-clean\fP:
+stop folder2ram and remove all folder2ram init scripts
 .TP
-\fBmount-only\fP:
-This action mounts the filesystem given in parameters.
+\fB-refresh\fP:
+execute a -clean followed by a -generate
 .TP
-\fBunmount-only\fP:
-This action unmounts the filesystem given in parameters.
+\fB-status\fP:
+print all mountpoints and their status (mounted or unmounted)
 .TP
-\fBexecute-unmount-script\fP:
-This action executes the unmount script corresponding to the mountpoint given in parameters.
+\fB-mountall\fP:
+start all folder2ram initscripts
 .TP
-\fBexecute-mount-script\fP:
-This action executes the mount script corresponding to the mountpoint given in parameters.
-.RE
+\fB-mount /folder/path\fP:
+start the init script for that particular folder, if it is in the configuration file.
 .TP
-\fB\-a\fP
-This option tells to do \fIaction\fP for each <mountpoint> specified in /etc/folder2ram/folder2ram.conf
+\fB\-umount /folder/path\fP
+stop the init script for that particular folder, if it is in the configuration file.
 .TP
-\fB\-q\fP
-This option tells to be quiet (only warning/error).
+\fB\-umountall\fP
+folder2ram will stop all initscripts of all folders in the config file
 .TP
-\fB\-h\fP
-This option tells to display the command usage.
+\fB\-configure\fP
+open the configuration file in a text editor
 .TP
-\fB\-f\fP
-For the action \fBunmount\fP and \fBmount\fP, this option tells
-to proceed execute-mount-script/unmount respectively even if
-mount/execute-unmount-script failed. This option has no effect for the other options.
+\fB\-reset\fP
+delete all folder2ram init scripts and restore default config file
 .SH DEFAULTS
 By default, \fBfolder2ram\fP won't make /var/run, /var/lock or /tmp available as
 ram filesystems. Since \fBsysvinit\fP provides a way to achieve this, it is
 preferable to use it. See \fBtmpfs\fP(5) for more information.
-.SH UNMOUNT SCRIPTS 
-An unmount script has to produce to the standard output (i.e. echo "something") 
-the mount script that folder2ram will execute at boot. 
-The unmount script takes two arguments. The first one is the concerned mountpoint. 
-The second one, optional, is the options given to the script.
-The default unmount scripts are in /lib/folder2ram/unmount-scripts/.
-There are four different scripts
-keep_content -- this script simply copies the data from the tmpfs to the disk before unmounting
-keep_folder_structure -- this script keeps the same folder structure in ram, but no files are kept on reboot
-keep_file_structure -- this script keeps the folder and file structure in ram, but files are fake and no change is kept on reboot (this is useful for lockfiles and other files where the only important thing is that they must exist)
-compress_file_content -- EXPERIMENTAL this script saves the folder into a tgz archive. Theoretically should save space.
-This is the equivalent of the original fs2ram's keep_file_content script.
-Will probably become squashfs in ram if it makes some kind of performance difference in embedded devices.
+.SH INIT SCRIPTS 
+The init scripts are completely independent from the folder2ram configuration file and configuration script.
+Each mount point has its own initscript. This tends to pollute a bit the init folder, but allows safer 
+operation since if/when a script fails the others are unaffected.
 .SH FILES
 .PP
 .IP "/etc/folder2ram/folder2ram.conf"
-Mountpoints configuration file,
-.IP "/lib/folder2ram/unmount-scripts/*"
-Default unmount scripts used by folder2ram,
-.IP "/etc/folder2ram/unmount-scripts/*"
-User-defined unmount scripts used by folder2ram,
-.IP "/etc/init.d/folder2ram
-Script executed at runlevels S/0/6,
-.IP "/var/lib/folder2ram/mount-scripts/*"
-Mount scripts created by folder2ram.
+configuration file,
+.IP "/sbin/folder2ram"
+configuration script
+.IP "/etc/folder2ram/templates/*"
+here you find an init script template and a configuration file template, these are used by the configuration
+script, any modification to the templates may have bad effects
+.IP "/var/folder2ram/*"
+here you will find the bind-mounted folders so you (and the init scripts) can access the original folder in permanent storage to sync the contents of the tmpfs  
 .SH SEE ALSO
 \fBmount\fP(8), \fBtmpfs\fP(5), \fBrcS\fP(5).
 .SH AUTHOR
-folder2ram was based on fs2ram, written by Philippe Le Brouster <plb@nebkha.net>.
 the author of folder2ram is Alberto Bursi <starshipeleven@hotmail.it>

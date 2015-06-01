@@ -1,2 +1,2 @@
-var/lib/folder2ram/mount-scripts
-etc/folder2ram/unmount-scripts
+etc/folder2ram/templates
+etc/folder2ram
