@@ -46,7 +46,7 @@ PATH="/sbin:/bin:/usr/sbin:/usr/bin"
 NAME=name 
 DIR=dir
 ####################
-DESC="ram folders" # this may be set by external script in the future
+DESC=desc # this may be set by external script in the future
 LOCKFILE="/run/lock/$NAME.lock"
 #SIZE=16M this can be interesting for later, for now it stays disabled
 MODE=0755
@@ -184,9 +184,9 @@ case "$1" in
   ;;
   status)
   	if [ -f $LOCKFILE ]; then
-		echo "$DESC is running"
+		echo "$DESC $NAME is running"
 	else
-		echo "$DESC is stopped"
+		echo "$DESC $NAME is stopped"
 		exit 1
 	fi
   ;;

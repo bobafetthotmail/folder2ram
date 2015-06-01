@@ -112,7 +112,6 @@ if [ "x$mount_point" != "x" ]; then
 echo "$mount_point";
 else
 echo "no_more_mount_points";
-#mount_point="no_more_mount_points";
 fi
 
 }
@@ -146,8 +145,6 @@ echo "$initscript_name"
 
 ########################## PRIMARY FUNCTIONS ################################
 
-
-
 mount_umount_all() {
 
 # initializing variables    
@@ -175,9 +172,13 @@ initscript_path="/etc/init.d/$initscript_name"
 
 ################FUNCTION PAYLOAD#############
 
-
-#starting/stopping the init script
+if [ -e "initscript_path" ]; then 
+echo "$initscript_path" "$start_or_stop" >> "/run/print_status";
 "$initscript_path" "$start_or_stop"
+else
+echo "no folder2ram init script found" >> "/run/print_status";
+fi
+
 
 ####################################
 
@@ -213,14 +214,13 @@ initscript_path="/etc/init.d/$initscript_name"
 if [ -e "$initscript_path" ]; 
 then ############BEGIN THEN
 
-	echo "$initscript_path exists, starting";
+	echo "$initscript_path exists, starting" >> "/run/print_status";
 	#starting or stopping the init script
 	"$initscript_path" "$start_or_stop";
 
 else ############BEGIN ELSE
 
-	echo "$initscript_path not found, please add it to the config with -configure";
-	echo "then do a -generate, then you can try again with this action";
+	echo "$initscript_path not found, please add it to the config with -configure then do a -generate, then you can try again with this action" >> "/run/print_status";
 fi
 
 exit
@@ -258,7 +258,7 @@ initscript_path="/etc/init.d/$initscript_name"
 if [ -e "$initscript_path" ]; 
 then ############BEGIN THEN
 
-	echo "$initscript_path exists, skipping";
+	echo "$initscript_path exists, skipping" >> "/run/print_status";
 
 else ############BEGIN ELSE
 
@@ -333,17 +333,27 @@ initscript_path="/etc/init.d/$initscript_name"
 if [ -e "$initscript_path" ]; 
 then ############BEGIN THEN
 
-	echo "deleting $initscript_path";
+	echo "deleting $initscript_path" >> "/run/print_status";
 	"$initscript_path" stop;
 	insserv -r "$initscript_name";
 	rm -f "$initscript_path";
 
 else ############BEGIN ELSE and END THEN
 
-	echo "$initscript_path not found, already deleted perhaps?";
+	echo "$initscript_path not found, already deleted perhaps?" >> "/run/print_status";
 
 ########END ELSE and END IF
 fi
+
+# increasing line number
+line_number=$((line_number+1))
+
+################CHECKING IF THERE ARE STILL MOUNT POINTS
+
+# calling another function (above) to fill the mount point at this line number
+mount_point=$(read_mount_point "$line_number")
+
+########################################################
 
 #:::::::::::ENDING OF MAIN LOOP
 done
@@ -385,29 +395,28 @@ mount_point=$(read_mount_point "$line_number")
 # calling another function (above) to fill the initscript name at this line number
 initscript_name=$(generate_initscript_name "$mount_point")
 
-# looking at output of mount command and see if it is mounted as mount_type (see above for that variable)
-mounted_or_not=$(mount | grep "$mount_point" | grep "$mount_type")
+# generating a variable with full name inside, easier to manipulate
+initscript_path="/etc/init.d/$initscript_name"
 
-###################BEGIN IF
-
-#checking if there is an initscript with the same name, skipping to next mount point if found 
-if [ "$mounted_or_not" = "" ]; 
-then ############BEGIN THEN
-
-	echo "$mount_point type $mount_type not mounted";
-
-else ############BEGIN ELSE and END THEN
-
-	echo "$mount_point type $mount_type mounted";
-
-########END ELSE and END IF
+if [ -e "initscript_path" ]; then 
+"$initscript_path" status >> "/run/print_status";
+else
+echo "no folder2ram init script found" >> "/run/print_status";
 fi
+
+# increasing line number
+line_number=$((line_number+1))
+
+################CHECKING IF THERE ARE STILL MOUNT POINTS
+
+# calling another function (above) to fill the mount point at this line number
+mount_point=$(read_mount_point "$line_number")
+
+########################################################
 
 #:::::::::::ENDING OF MAIN LOOP
 done
 
-
-exit
 }
 
 configure(){
@@ -443,16 +452,12 @@ exit
 
 #force='false'
 #quiet='false'
-read mountpoint
 #all_mountpoints='false'
 
 #doing a root check, because folder2ram must be run as root for obvious reasons
 if [ "$(id -u)" -eq 0 ]; then
-
 echo "good, running as root";
-
 else
-
 echo "you must run folder2ram as root, write sudo folder2ram or su folder2ram";
 exit
 fi
@@ -490,27 +495,45 @@ action="$1"
 case "$action" in
 -generate)
         generate_initscripts
+	cat "/run/print_status"
+	rm -f "/run/print_status"
         ;;
 -clean)
         clean_initscripts
+	cat "/run/print_status"
+	rm -f "/run/print_status"
         ;;
 -refresh)
         refresh_initscripts
+	cat "/run/print_status"
+	rm -f "/run/print_status"
         ;;
 -status)
         print_status
+	cat "/run/print_status"
+	rm -f "/run/print_status"
         ;;
 -mount)
-        mount_umount_mountpoint "$mountpoint" start
+	read mountpoint        
+	mount_umount_mountpoint "$mountpoint" start
+	cat "/run/print_status"
+	rm -f "/run/print_status"
         ;;
 -mountall)
 	mount_umount_all start
+	cat "/run/print_status"
+	rm -f "/run/print_status"
         ;;
 -umount)
+	read mountpoint
         mount_umount_mountpoint "$mountpoint" stop
+	cat "/run/print_status"
+	rm -f "/run/print_status"
         ;;
 -umountall)
         mount_umount_all stop
+	cat "/run/print_status"
+	rm -f "/run/print_status"
         ;;
 -configure)
         configure
@@ -523,3 +546,4 @@ case "$action" in
         ;;
 esac
 
+rm -f "/run/print_status"
