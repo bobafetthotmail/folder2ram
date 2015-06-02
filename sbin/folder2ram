@@ -451,11 +451,10 @@ case "$choice" in
 
 Y)
 #calling a function to do this job
-clean_initscripts ;
-
+clean_initscripts 
 #removing current config and making a new one from the template
-rm -f "/etc/folder2ram/folder2ram.conf" ; 
-cp "/etc/folder2ram/template/folder2ram.conf" "/etc/folder2ram/folder2ram.conf" ;
+rm -f "/etc/folder2ram/folder2ram.conf" 
+cp "/etc/folder2ram/template/folder2ram.conf" "/etc/folder2ram/folder2ram.conf" 
 
 ;;
 
@@ -463,8 +462,14 @@ N)
 echo "ok, nevermind then"
 exit
 
+;;
+
 *)
 echo "answer not recognized, please write Y for yes or N for no"
+
+;;
+
+esac
 
 }
 
