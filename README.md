@@ -8,6 +8,10 @@ debian source package as I stay mostly in debian environments.
 
 for now I'm focusing on wheezy, will do a Jessie/systemd package in the future.
 
+
+READYNESS: alpha testing completed. awaiting beta testing.
+
+
 DONE:
 
 --implementing the script written by mcortese in 2010
@@ -24,11 +28,12 @@ Added check so that if it fails it will safely unmount stuff. Won't leave it bor
 
 --fixed the folder2ram initscript template file with dos2unix (converted it to Unix) because it was giving weird nonsense syntax errors. and I'm on linux. Never wrote anything on Windows or DOS.
 
-TODO:
 
-discover why folder2ram fails without error code
+
+TODO (additional features for the future, these wait until I'm sure the core is stable):
 
 add safety checks to avoid trying to mount things as tmpfs when the folder is too big to fit into RAM
+(mostly to notify the user during configuration, the initscript fails safely already, no broken things in any case)
 
 add optional names for mount points (easier to remember/faster to write than full path when calling folder2ram)
 
@@ -41,7 +46,7 @@ add optional custom/settable paths where the folders can be synced
 add more options like tmpfs size and mount options
 
 
-TODO2:
+TODO2 (this may become top priority or stay in the backburner for ages, depends on how soon I need to switch):
 
 make this work with systemd.
 

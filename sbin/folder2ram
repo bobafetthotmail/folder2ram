@@ -104,8 +104,8 @@ read_mount_point() {
 
 line_number=$1 
 
-# get variable form outside, remove blank and commented lines, and print line at $line_number
-mount_point=$( awk -v line="$line_number" '!/^ *#/ && NF == line {print $1}' "/etc/folder2ram/folder2ram.conf" )
+# remove blank and commented lines with sed, get variable form outside in awk, and use it to print line at $line_number
+mount_point=$( sed '/^[[:space:]]*$/d' /etc/folder2ram/folder2ram.conf | sed '/^#/d' | awk -v line="$line_number" 'NR == line {print $2}' )
 
 # checking if mount point variable is empty, and if it is returning a keyword
 if [ "x$mount_point" != "x" ]; then 
@@ -141,8 +141,6 @@ echo "$initscript_name"
 }
 
 
-
-
 ########################## PRIMARY FUNCTIONS ################################
 
 mount_umount_all() {
@@ -150,6 +148,8 @@ mount_umount_all() {
 # initializing variables    
 line_number=1 
 start_or_stop=$1
+
+echo "will now $start_or_stop all mountpoints"
 
 ######################CHECKING IF THERE ARE STILL MOUNT POINTS
 
@@ -172,11 +172,11 @@ initscript_path="/etc/init.d/$initscript_name"
 
 ################FUNCTION PAYLOAD#############
 
-if [ -e "initscript_path" ]; then 
-echo "$initscript_path" "$start_or_stop" >> "/run/print_status";
-"$initscript_path" "$start_or_stop"
+if [ -x "/etc/init.d/$initscript_name" ]; then 
+echo "/etc/init.d/$initscript_name" "$start_or_stop";
+/etc/init.d/"$initscript_name" "$start_or_stop"
 else
-echo "no folder2ram init script found" >> "/run/print_status";
+echo "no folder2ram init script found";
 fi
 
 
@@ -195,7 +195,6 @@ mount_point=$(read_mount_point "$line_number")
 #:::::::::::ENDING OF MAIN LOOP
 done
 
-exit
 }
 
 mount_umount_mountpoint() {
@@ -204,6 +203,8 @@ mount_umount_mountpoint() {
 specified_mount_point=$1
 start_or_stop=$2
 
+echo "will $start_or_stop the $specified_mount_point folder if it is in the list"
+
 initscript_name=$(generate_initscript_name "$specified_mount_point")
 
 # generating a variable with full name inside, easier to manipulate
@@ -211,23 +212,23 @@ initscript_path="/etc/init.d/$initscript_name"
 
 ################FUNCTION PAYLOAD#############
 
-if [ -e "$initscript_path" ]; 
+if [ -x "$initscript_path" ]; 
 then ############BEGIN THEN
 
-	echo "$initscript_path exists, starting" >> "/run/print_status";
+	echo "$initscript_path exists, starting" ;
 	#starting or stopping the init script
 	"$initscript_path" "$start_or_stop";
 
 else ############BEGIN ELSE
 
-	echo "$initscript_path not found, please add it to the config with -configure then do a -generate, then you can try again with this action" >> "/run/print_status";
+	echo "$initscript_path not found, please add it to the config with -configure then do a -generate, then you can try again with this action" ;
 fi
-
-exit
 
 }
 
 generate_initscripts() {
+
+echo "generating all folder2ram initscripts"
 
 # initializing variables    
 line_number=1
@@ -255,14 +256,14 @@ initscript_path="/etc/init.d/$initscript_name"
 ###################BEGIN IF CHECK FOR SAME NAME SCRIPTS
 
 #checking if there is another initscript with the same name, skipping to next mount point if found 
-if [ -e "$initscript_path" ]; 
+if [ -x "$initscript_path" ]; 
 then ############BEGIN THEN
 
-	echo "$initscript_path exists, skipping" >> "/run/print_status";
+	echo "$initscript_path exists, skipping" ;
 
 else ############BEGIN ELSE
 
-	echo "generating $initscript_path";
+	echo "generating $initscript_path" ;
 
 # this reads the etc/folder2ram/templates/folder2ram_init_template
 # and writes that into /etc/init.d/$initscript_name.
@@ -295,11 +296,13 @@ mount_point=$(read_mount_point "$line_number")
 #:::::::::::ENDING OF MAIN LOOP
 done
 
-exit
+
 }
 
 
 clean_initscripts() {
+
+echo "stopping and deleting folder2ram initscripts"
 
 #calling a main function to unmount all folder2ram mounts before removal
 mount_umount_all stop
@@ -333,14 +336,13 @@ initscript_path="/etc/init.d/$initscript_name"
 if [ -e "$initscript_path" ]; 
 then ############BEGIN THEN
 
-	echo "deleting $initscript_path" >> "/run/print_status";
-	"$initscript_path" stop;
-	insserv -r "$initscript_name";
-	rm -f "$initscript_path";
+	echo "deleting $initscript_path" ;
+	insserv -r "$initscript_name" ;
+	rm -f "$initscript_path" ;
 
 else ############BEGIN ELSE and END THEN
 
-	echo "$initscript_path not found, already deleted perhaps?" >> "/run/print_status";
+	echo "$initscript_name not found, already deleted perhaps?" ;
 
 ########END ELSE and END IF
 fi
@@ -358,19 +360,23 @@ mount_point=$(read_mount_point "$line_number")
 #:::::::::::ENDING OF MAIN LOOP
 done
 
-exit
+
 }
 
 refresh_initscripts() {
+
+echo "deleting and genereting again folder2ram initscripts"
 
 #calling the two functions that do the job
 clean_initscripts
 generate_initscripts
 
-exit
+
 }
 
 print_status() {
+
+echo "checking what folders are mounted and what are unmounted"
 
 #prints the status of all mounted folders
 
@@ -398,10 +404,10 @@ initscript_name=$(generate_initscript_name "$mount_point")
 # generating a variable with full name inside, easier to manipulate
 initscript_path="/etc/init.d/$initscript_name"
 
-if [ -e "initscript_path" ]; then 
-"$initscript_path" status >> "/run/print_status";
+if [ -e "$initscript_path" ]; then 
+"$initscript_path" status;
 else
-echo "no folder2ram init script found" >> "/run/print_status";
+echo "no folder2ram init script found";
 fi
 
 # increasing line number
@@ -437,14 +443,28 @@ read editor
 
 reset(){
 
+echo "will now delete all folder2ram initscripts and revert all changes of folder2ram.conf"
+echo "you sure you want to do that (Y or N)"
+read choice
+
+case "$choice" in
+
+Y)
 #calling a function to do this job
-clean_initscripts
+clean_initscripts ;
 
 #removing current config and making a new one from the template
-rm -f "/etc/folder2ram/folder2ram.conf" 
-cp "/etc/folder2ram/template/folder2ram.conf" "/etc/folder2ram/folder2ram.conf" 
+rm -f "/etc/folder2ram/folder2ram.conf" ; 
+cp "/etc/folder2ram/template/folder2ram.conf" "/etc/folder2ram/folder2ram.conf" ;
 
+;;
+
+N)
+echo "ok, nevermind then"
 exit
+
+*)
+echo "answer not recognized, please write Y for yes or N for no"
 
 }
 
@@ -456,7 +476,7 @@ exit
 
 #doing a root check, because folder2ram must be run as root for obvious reasons
 if [ "$(id -u)" -eq 0 ]; then
-echo "good, running as root";
+echo ;
 else
 echo "you must run folder2ram as root, write sudo folder2ram or su folder2ram";
 exit
@@ -495,45 +515,29 @@ action="$1"
 case "$action" in
 -generate)
         generate_initscripts
-	cat "/run/print_status"
-	rm -f "/run/print_status"
         ;;
 -clean)
         clean_initscripts
-	cat "/run/print_status"
-	rm -f "/run/print_status"
         ;;
 -refresh)
         refresh_initscripts
-	cat "/run/print_status"
-	rm -f "/run/print_status"
         ;;
 -status)
         print_status
-	cat "/run/print_status"
-	rm -f "/run/print_status"
         ;;
 -mount)
-	read mountpoint        
+	read mountpoint   
 	mount_umount_mountpoint "$mountpoint" start
-	cat "/run/print_status"
-	rm -f "/run/print_status"
         ;;
 -mountall)
 	mount_umount_all start
-	cat "/run/print_status"
-	rm -f "/run/print_status"
         ;;
 -umount)
 	read mountpoint
         mount_umount_mountpoint "$mountpoint" stop
-	cat "/run/print_status"
-	rm -f "/run/print_status"
         ;;
 -umountall)
         mount_umount_all stop
-	cat "/run/print_status"
-	rm -f "/run/print_status"
         ;;
 -configure)
         configure
@@ -546,4 +550,4 @@ case "$action" in
         ;;
 esac
 
-rm -f "/run/print_status"
+exit
