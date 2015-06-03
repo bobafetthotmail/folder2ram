@@ -176,7 +176,7 @@ if [ -x "/etc/init.d/$initscript_name" ]; then
 echo "/etc/init.d/$initscript_name" "$start_or_stop";
 /etc/init.d/"$initscript_name" "$start_or_stop"
 else
-echo "no folder2ram init script found";
+echo "$initscript_path init script not installed, not starting";
 fi
 
 
@@ -407,7 +407,7 @@ initscript_path="/etc/init.d/$initscript_name"
 if [ -e "$initscript_path" ]; then 
 "$initscript_path" status;
 else
-echo "no folder2ram init script found";
+echo "$initscript_path init script not installed";
 fi
 
 # increasing line number
