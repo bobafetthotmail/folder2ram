@@ -179,7 +179,6 @@ else
 echo "$initscript_path init script not installed, not starting";
 fi
 
-
 ####################################
 
 # increasing line number
@@ -192,7 +191,7 @@ mount_point=$(read_mount_point "$line_number")
 
 #########################################################
 
-#:::::::::::ENDING OF MAIN LOOP
+###########ENDING OF MAIN LOOP::::::::::::::::::::::::::
 done
 
 }
@@ -444,28 +443,28 @@ read editor
 reset(){
 
 echo "will now delete all folder2ram initscripts and revert all changes of folder2ram.conf"
-echo "you sure you want to do that (Y or N)"
+echo "you sure you want to do that (y or n)"
 read choice
 
 case "$choice" in
 
-Y)
+Y|y|yes|Yes|YES)
 #calling a function to do this job
 clean_initscripts 
 #removing current config and making a new one from the template
 rm -f "/etc/folder2ram/folder2ram.conf" 
-cp "/etc/folder2ram/template/folder2ram.conf" "/etc/folder2ram/folder2ram.conf" 
+cp "/etc/folder2ram/templates/folder2ram.conf" "/etc/folder2ram/folder2ram.conf" 
 
 ;;
 
-N)
+N|n|no|No|NO)
 echo "ok, nevermind then"
 exit
 
 ;;
 
 *)
-echo "answer not recognized, please write Y for yes or N for no"
+echo "please write y for yes or n for no"
 
 ;;
 

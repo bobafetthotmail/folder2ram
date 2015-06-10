@@ -49,6 +49,7 @@ DIR=dir
 DESC=desc # this may be set by external script in the future
 LOCKFILE="/run/lock/$NAME.lock"
 #SIZE=16M this can be interesting for later, for now it stays disabled
+TYPE="tmpfs"
 MODE=0755
 
 # DIRPERM is the bind mount to the directory in permanent storage
@@ -100,7 +101,7 @@ do_start()
 	mount --bind $DIR $DIRPERM
 #	mount -t tmpfs -o nosuid,noexec,nodev,mode=$MODE,size=$SIZE $NAME $DIR 
 # original line, allows to accept options, a feature that I plan to add in the future.
-	mount -t tmpfs -o nosuid,noexec,nodev,mode=$MODE $NAME $DIR
+	mount -t tmpfs $TYPE $DIR
 	if [ $? -eq 0 ]; then
 		# Populate the tmpfs
 		if cp -rfp $DIRPERM -T $DIR; then
