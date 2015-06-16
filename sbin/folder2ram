@@ -407,12 +407,14 @@ then ############BEGIN THEN
 #checking mount status
 	initscript_status=$("$initscript_path" status);
 #acting depending on conditions
+running="*is running*" 
+stopped="*is stopped*"
 	case "$initscript_status" in 
-  "*is running*")
+  $running)
   	generate_initscript "$initscript_name"
   	"$initscript_path" start
     ;;
-  "*is stopped*")
+  $stopped)
   	generate_initscript "$initscript_name"
     ;;
   *)
