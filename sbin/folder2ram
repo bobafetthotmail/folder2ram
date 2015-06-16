@@ -408,11 +408,11 @@ then ############BEGIN THEN
 	initscript_status=$("$initscript_path" status);
 #acting depending on conditions
 	case "$initscript_status" in 
-  *is running*)
+  "*is running*")
   	generate_initscript "$initscript_name"
   	"$initscript_path" start
     ;;
-  *is stopped*)
+  "*is stopped*")
   	generate_initscript "$initscript_name"
     ;;
   *)
