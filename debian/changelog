@@ -1,5 +1,9 @@
+folder2ram (0.1.3) stable; urgency=low
+
+ *added unmount of folder before mounting as tmpfs, in case it was already mounted as tmpfs by someone else.
+
 folder2ram (0.1.2) stable; urgency=low
 
-  *Should work now
+ *Should work now
 
  -- Alberto Bursi <starshipeleven@hotmail.it>  Fri, 10 Jun 2015 15:00:39 +0200
