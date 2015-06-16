@@ -62,7 +62,8 @@ print_usage() {
 	echo "::::::::::stop folder2ram and remove all folder2ram init scripts"
 	echo ""
 	echo "-refresh"
-	echo "::::::::::execute a -clean followed by a -generate"
+	echo "::::::::::delete and create again folder2ram initscripts, then start them again if they were running."
+	echo "::::::::::This is called when updating and when something changes the templates."
 	echo ""
 	echo "-status"
 	echo "::::::::::print all mountpoints and their status (mounted or unmounted)"
@@ -137,6 +138,30 @@ initscript_name="f2r$clean_mount_point"
 
 #outputting the result
 echo "$initscript_name"
+
+}
+
+generate_initscript() {
+
+initscript_name=$1
+initscript_path="/etc/init.d/$initscript_name"
+
+	echo "generating $initscript_path" ;
+
+# this reads the etc/folder2ram/templates/folder2ram_init_template
+# and writes that into /etc/init.d/$initscript_name.
+	cat "/etc/folder2ram/templates/folder2ram_init_template" > "$initscript_path" ;
+
+# this sets some variables we need to be different in the initscript, by appending them to the same file
+	sed -i "/# Provides: folder2ram/c\# Provides: $initscript_name" "$initscript_path" ;
+	sed -i "/NAME=name/c\NAME=$initscript_name" "$initscript_path" ;
+	sed -i "/DIR=dir/c\DIR=$mount_point" "$initscript_path" ;
+
+# this marks the newly created file as executable
+	chmod +x "$initscript_path" ;
+
+# this asks insserv to generate symlinks in the appropriate runlevels
+	insserv "$initscript_name" ;
 
 }
 
@@ -262,23 +287,8 @@ then ############BEGIN THEN
 
 else ############BEGIN ELSE
 
-	echo "generating $initscript_path" ;
-
-# this reads the etc/folder2ram/templates/folder2ram_init_template
-# and writes that into /etc/init.d/$initscript_name.
-	cat "/etc/folder2ram/templates/folder2ram_init_template" >> "$initscript_path" ;
-
-# this sets some variables we need to be different in the initscript, by appending them to the same file
-	sed -i "/# Provides: folder2ram/c\# Provides: $initscript_name" "$initscript_path" ;
-	sed -i "/NAME=name/c\NAME=$initscript_name" "$initscript_path" ;
-	sed -i "/DIR=dir/c\DIR=$mount_point" "$initscript_path" ;
-
-# this marks the newly created file as executable
-	chmod +x "$initscript_path" ;
-
-# this asks insserv to generate symlinks in the appropriate runlevels
-	insserv "$initscript_name" ;
-
+	generate_initscript "$initscript_name"
+	
 ########END IF CHECK FOR SAME NAME SCRIPT
 fi
 
@@ -364,12 +374,67 @@ done
 
 refresh_initscripts() {
 
-echo "deleting and genereting again folder2ram initscripts"
+echo "deleting and generating again folder2ram initscripts"
 
-#calling the two functions that do the job
-clean_initscripts
-generate_initscripts
+# initializing variables    
+line_number=1
 
+######################CHECKING IF THERE ARE STILL MOUNT POINTS
+
+# calling another function (above) to fill the mount point at this line number
+mount_point=$(read_mount_point "$line_number")
+
+#########################################################
+
+############BEGINNING MAIN LOOP::::::::::::::::::::::::::::::::::::::
+
+until [ "$mount_point" = "no_more_mount_points" ] ;  do
+
+# calling another function (above) to fill the mount point at this line number
+mount_point=$(read_mount_point "$line_number")
+
+# calling another function (above) to fill the initscript name at this line number
+initscript_name=$(generate_initscript_name "$mount_point")
+
+# generating a variable with full name inside, easier to manipulate
+initscript_path="/etc/init.d/$initscript_name"
+
+################## CHECK FOR INIT SCRIPTS
+#checking if there is another initscript with the same name, skipping to next mount point if not found 
+if [ -x "$initscript_path" ]; 
+then ############BEGIN THEN
+
+#checking mount status
+	initscript_status=$("$initscript_path" status);
+#acting depending on conditions
+	case "$initscript_status" in 
+  *is running*)
+  	generate_initscript "$initscript_name"
+  	"$initscript_path" start
+    ;;
+  *is stopped*)
+  	generate_initscript "$initscript_name"
+    ;;
+  *)
+  # do nothing
+  ;;
+esac
+	
+########END IF CHECK FOR INIT SCRIPTS
+fi
+
+# increasing line number
+line_number=$((line_number+1))
+
+################CHECKING IF THERE ARE STILL MOUNT POINTS
+
+# calling another function (above) to fill the mount point at this line number
+mount_point=$(read_mount_point "$line_number")
+
+########################################################
+
+#:::::::::::ENDING OF MAIN LOOP
+done
 
 }
 
