@@ -194,6 +194,14 @@ case "$1" in
 		exit 1
 	fi
   ;;
+  short-status)
+  	if [ -f "$LOCKFILE" ]; then
+		echo "folder2ram-script-running"
+	else
+		echo "folder2ram-script-stopped"
+		exit 1
+	fi
+  ;;
   reload)
 	log_daemon_msg "Reloading $DESC" "$NAME"
 	do_reload
