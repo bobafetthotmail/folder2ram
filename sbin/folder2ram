@@ -405,24 +405,24 @@ if [ -x "$initscript_path" ];
 then ############BEGIN THEN
 
 #checking mount status
-	initscript_status=$("$initscript_path" status);
+	initscript_status=$("$initscript_path" short-status);
 #acting depending on conditions
-running="*is running*" 
-stopped="*is stopped*"
-	case "$initscript_status" in 
-  $running)
-  	generate_initscript "$initscript_name"
-  	"$initscript_path" start
-    ;;
-  $stopped)
-  	generate_initscript "$initscript_name"
-    ;;
-  *)
-  # do nothing
-  ;;
-esac
+
+if [ "$initscript_status" = "folder2ram-script-running" ]; then
+  	generate_initscript "$initscript_name" ;
+  	"$initscript_path" start ;
+fi
+
+if [ "$initscript_status" = "folder2ram-script-stopped" ]; then
+  	generate_initscript "$initscript_name" ;
+fi
 	
 ########END IF CHECK FOR INIT SCRIPTS
+else
+
+echo "no initscript found, generating it" ;
+generate_initscript "$initscript_name" ;
+
 fi
 
 # increasing line number
