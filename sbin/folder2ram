@@ -52,7 +52,7 @@ print_usage() {
 	echo ""
 	echo "for first startup use -configure action, then -generate, then -mountall"
 	echo ""
-	echo "list of actions:"
+	echo "list of actions (only one at a time):"
 	echo ""
 	echo "-generate"
 	echo "::::::::::folder2ram will read the configuration file at /etc/folder2ram/folder2ram.etc"
@@ -68,17 +68,17 @@ print_usage() {
 	echo "-status"
 	echo "::::::::::print all mountpoints and their status (mounted or unmounted)"
 	echo ""
-	echo "-mount /folder/path"
-	echo "::::::::::folder2ram will start the init script for that particular folder,"
-	echo "::::::::::if it is in the configuration file."
-	echo ""
+	#echo "-mount /folder/path"
+	#echo "::::::::::folder2ram will start the init script for that particular folder,"
+	#echo "::::::::::if it is in the configuration file."
+	#echo ""
 	echo "-mountall"
 	echo "::::::::::folder2ram will start all initscripts of all folders in the config file"
 	echo ""
-	echo "-umount /folder/path"
-	echo "::::::::::folder2ram will stop the init script for that particular folder,"
-	echo "::::::::::if it is in the configuration file."
-	echo ""
+	#echo "-umount /folder/path"
+	#echo "::::::::::folder2ram will stop the init script for that particular folder,"
+	#echo "::::::::::if it is in the configuration file."
+	#echo ""
 	echo "-umountall"
 	echo "::::::::::folder2ram will stop all initscripts of all folders in the config file"
 	echo ""
@@ -197,11 +197,11 @@ initscript_path="/etc/init.d/$initscript_name"
 
 ################FUNCTION PAYLOAD#############
 
-if [ -x "/etc/init.d/$initscript_name" ]; then 
-echo "/etc/init.d/$initscript_name" "$start_or_stop";
-/etc/init.d/"$initscript_name" "$start_or_stop"
+if [ -x "$initscript_path" ]; then 
+echo "$initscript_path" "$start_or_stop";
+"$initscript_path" "$start_or_stop"
 else
-echo "$initscript_path init script not installed, not starting";
+echo "$initscript_path not installed, not starting";
 fi
 
 ####################################
@@ -330,9 +330,6 @@ mount_point=$(read_mount_point "$line_number")
 
 until [ "$mount_point" = "no_more_mount_points" ] ;  do
 
-# calling another function (above) to fill the mount point at this line number
-mount_point=$(read_mount_point "$line_number")
-
 # calling another function (above) to fill the initscript name at this line number
 initscript_name=$(generate_initscript_name "$mount_point")
 
@@ -342,7 +339,7 @@ initscript_path="/etc/init.d/$initscript_name"
 ###################BEGIN IF
 
 #checking if there is an initscript with the same name, skipping to next mount point if found 
-if [ -e "$initscript_path" ]; 
+if [ -f "$initscript_path" ]; 
 then ############BEGIN THEN
 
 	echo "deleting $initscript_path" ;
@@ -421,7 +418,6 @@ fi
 else
 
 echo "no initscript found, generating it" ;
-generate_initscript "$initscript_name" ;
 
 fi
 
