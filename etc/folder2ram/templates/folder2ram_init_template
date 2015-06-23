@@ -120,7 +120,7 @@ do_start()
 	fi
 
 	# Rollback the directory mangling
-	umount "$DIRPERM"
+	umount -l "$DIRPERM"
 	
 	return 2
 }
