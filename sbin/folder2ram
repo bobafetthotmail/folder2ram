@@ -68,6 +68,9 @@ print_usage() {
 	echo "-status"
 	echo "::::::::::print all mountpoints and their status (mounted or unmounted)"
 	echo ""
+	echo "-syncall"
+	echo "::::::::::sync to disk all the tmpfs folders"
+	echo ""
 	#echo "-mount /folder/path"
 	#echo "::::::::::folder2ram will start the init script for that particular folder,"
 	#echo "::::::::::if it is in the configuration file."
@@ -535,6 +538,62 @@ esac
 
 }
 
+sync_to_disk() {
+
+# initializing variables    
+line_number=1 
+start_or_stop=$1
+
+echo "will now sync all mountpoints"
+
+######################CHECKING IF THERE ARE STILL MOUNT POINTS
+
+# calling another function (above) to fill the mount point at this line number
+mount_point=$(read_mount_point "$line_number")
+
+#########################################################
+
+############BEGINNING MAIN LOOP::::::::::::::::::::::::::::::::::::::
+
+until [ "$mount_point" = "no_more_mount_points" ] ;  do
+
+# calling another function (above) to fill the mount point at this line number
+mount_point=$(read_mount_point "$line_number")
+
+initscript_name=$(generate_initscript_name "$mount_point")
+
+# generating a variable with full name inside, easier to manipulate
+initscript_path="/etc/init.d/$initscript_name"
+
+################FUNCTION PAYLOAD#############
+
+#getting the status of the initscript
+initscript_status=$("$initscript_path" short-status);
+
+#if running request a sync to the initscript
+if [ "$initscript_status" = "folder2ram-script-running" ]; then
+	"$initscript_path" "reload" ;
+else
+echo "$initscript_path not installed or not started" ;
+fi
+
+####################################
+
+# increasing line number
+line_number=$((line_number+1))
+
+######################CHECKING IF THERE ARE STILL MOUNT POINTS
+
+# calling another function (above) to fill the mount point at this line number
+mount_point=$(read_mount_point "$line_number")
+
+#########################################################
+
+###########ENDING OF MAIN LOOP::::::::::::::::::::::::::
+done
+
+}
+
 ##################END FUNCTIONS ###########################
 
 #force='false'
@@ -612,6 +671,9 @@ case "$action" in
 -reset)
         reset
         ;;
+-syncall)
+	sync_to_disk
+	;;
 *)
         print_usage
         ;;
