@@ -1,15 +1,17 @@
 # folder2ram
 
-a rewrite of fs2ram that aims to be simpler, faster, safer. 
+a rewrite of fs2ram that aims to be simpler, faster, safer.
+
+A script that moves a folder to RAM (tmpfs) and can sync it to disk any time thanks to bind mounts.
 
 Designed to be controlled manually for easy integration with other projects.
 
-debian source package as I stay mostly in debian environments.
+debian package as I stay mostly in debian environments.
 
-for now I'm focusing on wheezy, will do a Jessie/systemd package in the future.
+for now I'm focusing on wheezy, will probably do a Jessie/systemd package in the future.
 
 
-READYNESS: alpha testing completed. awaiting beta testing.
+READYNESS: Beta testing.
 
 
 DONE:
@@ -28,7 +30,9 @@ Added check so that if it fails it will safely unmount stuff. Won't leave it bor
 
 --fixed the folder2ram initscript template file with dos2unix (converted it to Unix) because it was giving weird nonsense syntax errors. and I'm on linux. Never wrote anything on Windows or DOS.
 
+--fixed various bugs about initscripts and checks failing.
 
+-- added manual sync do disk
 
 TODO (additional features for the future, these wait until I'm sure the core is stable):
 
