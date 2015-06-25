@@ -34,7 +34,7 @@
 
 #If you edit it, please comment HEAVILY what you are doing, you will thank me later.
 
-############### USER INTERFACE FUNCTIONS
+############### USER INTERFACE FUNCTIONS ########################
 
 print_usage() {
 	echo "folder2ram is a script-based utility that relocates the contents of a folder to RAM"
@@ -69,7 +69,7 @@ print_usage() {
 	echo "::::::::::print all mountpoints and their status (mounted or unmounted)"
 	echo ""
 	echo "-syncall"
-	echo "::::::::::sync to disk all the tmpfs folders"
+	echo "::::::::::sync to disk the content of folder2ram's tmpfs folders"
 	echo ""
 	#echo "-mount /folder/path"
 	#echo "::::::::::folder2ram will start the init script for that particular folder,"
@@ -91,14 +91,14 @@ print_usage() {
 	echo "-reset"
 	echo "::::::::::delete all folder2ram init scripts and restore default config file"
 	echo ""
-}
+} #### END FUNCTION
 
 print_usage_exit() {
     print_usage
     exit
-}
+} #### END FUNCTION
 
-#################### UTILITY FUNCTIONS CALLED BY PRIMARY FUNCTIONS
+#################### UTILITY FUNCTIONS CALLED BY PRIMARY FUNCTIONS #############################
 
 read_mount_point() {
 # this reads config file at a predetemined line and extracts mount point 
@@ -118,7 +118,7 @@ else
 echo "no_more_mount_points";
 fi
 
-}
+} #### END FUNCTION
 
 generate_initscript_name() {
 
@@ -142,7 +142,7 @@ initscript_name="f2r$clean_mount_point"
 #outputting the result
 echo "$initscript_name"
 
-}
+} #### END FUNCTION
 
 generate_initscript() {
 
@@ -166,7 +166,7 @@ initscript_path="/etc/init.d/$initscript_name"
 # this asks insserv to generate symlinks in the appropriate runlevels
 	insserv "$initscript_name" ;
 
-}
+} #### END FUNCTION
 
 
 ########################## PRIMARY FUNCTIONS ################################
@@ -179,50 +179,45 @@ start_or_stop=$1
 
 echo "will now $start_or_stop all mountpoints"
 
-######################CHECKING IF THERE ARE STILL MOUNT POINTS
-
+# reading first mountpoint
 # calling another function (above) to fill the mount point at this line number
 mount_point=$(read_mount_point "$line_number")
 
-#########################################################
-
-############BEGINNING MAIN LOOP::::::::::::::::::::::::::::::::::::::
+####:::::#### BEGIN MAIN mount_umount_all UNTIL LOOP ####:::::####
 
 until [ "$mount_point" = "no_more_mount_points" ] ;  do
-
-# calling another function (above) to fill the mount point at this line number
-mount_point=$(read_mount_point "$line_number")
 
 initscript_name=$(generate_initscript_name "$mount_point")
 
 # generating a variable with full name inside, easier to manipulate
 initscript_path="/etc/init.d/$initscript_name"
 
-################FUNCTION PAYLOAD#############
+####:::::#### BEGIN PAYLOAD ####:::::####
 
+#check if initscript is executable
 if [ -x "$initscript_path" ]; then 
+
+#starting or stopping it
 echo "$initscript_path" "$start_or_stop";
-"$initscript_path" "$start_or_stop"
+"$initscript_path" "$start_or_stop" ;
+
 else
+#telling something if not found
 echo "$initscript_path not installed, not starting";
 fi
 
-####################################
+####:::::#### END PAYLOAD ####:::::####
 
 # increasing line number
 line_number=$((line_number+1))
 
-######################CHECKING IF THERE ARE STILL MOUNT POINTS
-
+# reading next mountpoint before next iteration in loop
 # calling another function (above) to fill the mount point at this line number
 mount_point=$(read_mount_point "$line_number")
 
-#########################################################
+done ####:::::#### END OF mount_umount_all UNTIL LOOP ####:::::####
 
-###########ENDING OF MAIN LOOP::::::::::::::::::::::::::
-done
-
-}
+} ##### END OF function
 
 mount_umount_mountpoint() {
 
@@ -237,21 +232,24 @@ initscript_name=$(generate_initscript_name "$specified_mount_point")
 # generating a variable with full name inside, easier to manipulate
 initscript_path="/etc/init.d/$initscript_name"
 
-################FUNCTION PAYLOAD#############
+####:::::#### BEGIN PAYLOAD ####:::::####
 
 if [ -x "$initscript_path" ]; 
-then ############BEGIN THEN
+then 
 
 	echo "$initscript_path exists, starting" ;
+
 	#starting or stopping the init script
 	"$initscript_path" "$start_or_stop";
 
-else ############BEGIN ELSE
+else 
 
 	echo "$initscript_path not found, please add it to the config with -configure then do a -generate, then you can try again with this action" ;
 fi
 
-}
+####:::::#### END PAYLOAD ####:::::####
+
+} #### END FUNCTION
 
 generate_initscripts() {
 
@@ -260,19 +258,13 @@ echo "generating all folder2ram initscripts"
 # initializing variables    
 line_number=1
 
-######################CHECKING IF THERE ARE STILL MOUNT POINTS
-
+# reading first mountpoint
 # calling another function (above) to fill the mount point at this line number
 mount_point=$(read_mount_point "$line_number")
 
-#########################################################
-
-############BEGINNING MAIN LOOP::::::::::::::::::::::::::::::::::::::
+####:::::#### BEGIN MAIN generate_initscripts UNTIL LOOP ####:::::####
 
 until [ "$mount_point" = "no_more_mount_points" ] ;  do
-
-# calling another function (above) to fill the mount point at this line number
-mount_point=$(read_mount_point "$line_number")
 
 # calling another function (above) to fill the initscript name at this line number
 initscript_name=$(generate_initscript_name "$mount_point")
@@ -280,36 +272,30 @@ initscript_name=$(generate_initscript_name "$mount_point")
 # generating a variable with full name inside, easier to manipulate
 initscript_path="/etc/init.d/$initscript_name"
 
-###################BEGIN IF CHECK FOR SAME NAME SCRIPTS
+####:::::#### BEGIN PAYLOAD ####:::::####
 
 #checking if there is another initscript with the same name, skipping to next mount point if found 
 if [ -x "$initscript_path" ]; 
-then ############BEGIN THEN
+then 
 
 	echo "$initscript_path exists, skipping" ;
 
-else ############BEGIN ELSE
-
+else 
 	generate_initscript "$initscript_name"
-	
-########END IF CHECK FOR SAME NAME SCRIPT
 fi
+
+####:::::#### END PAYLOAD ####:::::####
 
 # increasing line number
 line_number=$((line_number+1))
 
-################CHECKING IF THERE ARE STILL MOUNT POINTS
-
+# reading next mountpoint before next iteration in loop
 # calling another function (above) to fill the mount point at this line number
 mount_point=$(read_mount_point "$line_number")
 
-########################################################
+done ####:::::#### END MAIN generate_initscripts UNTIL LOOP ####:::::####
 
-#:::::::::::ENDING OF MAIN LOOP
-done
-
-
-}
+} #### END FUNCTION
 
 
 clean_initscripts() {
@@ -322,14 +308,11 @@ mount_umount_all stop
 # initializing variables    
 line_number=1
 
-######################CHECKING IF THERE ARE STILL MOUNT POINTS
-
+# reading first mountpoint
 # calling another function (above) to fill the mount point at this line number
 mount_point=$(read_mount_point "$line_number")
 
-#########################################################
-
-############BEGINNING MAIN LOOP::::::::::::::::::::::::::::::::::::::
+####:::::#### BEGIN MAIN clean_initscripts UNTIL LOOP ####:::::####
 
 until [ "$mount_point" = "no_more_mount_points" ] ;  do
 
@@ -339,38 +322,30 @@ initscript_name=$(generate_initscript_name "$mount_point")
 # generating a variable with full name inside, easier to manipulate
 initscript_path="/etc/init.d/$initscript_name"
 
-###################BEGIN IF
+####:::::#### BEGIN PAYLOAD ####:::::####
 
 #checking if there is an initscript with the same name, skipping to next mount point if found 
 if [ -f "$initscript_path" ]; 
-then ############BEGIN THEN
-
+then 
 	echo "deleting $initscript_path" ;
 	insserv -r "$initscript_name" ;
 	rm -f "$initscript_path" ;
-
-else ############BEGIN ELSE and END THEN
-
+else 
 	echo "$initscript_name not found, already deleted perhaps?" ;
-
-########END ELSE and END IF
 fi
+
+####:::::#### END PAYLOAD ####:::::####
 
 # increasing line number
 line_number=$((line_number+1))
 
-################CHECKING IF THERE ARE STILL MOUNT POINTS
-
+# reading next mountpoint before next iteration in loop
 # calling another function (above) to fill the mount point at this line number
 mount_point=$(read_mount_point "$line_number")
 
-########################################################
+done ####:::::#### END MAIN clean_initscripts UNTIL LOOP ####:::::####
 
-#:::::::::::ENDING OF MAIN LOOP
-done
-
-
-}
+} #### END FUNCTION
 
 refresh_initscripts() {
 
@@ -379,19 +354,13 @@ echo "deleting and generating again folder2ram initscripts"
 # initializing variables    
 line_number=1
 
-######################CHECKING IF THERE ARE STILL MOUNT POINTS
-
+# reading first mountpoint
 # calling another function (above) to fill the mount point at this line number
 mount_point=$(read_mount_point "$line_number")
 
-#########################################################
-
-############BEGINNING MAIN LOOP::::::::::::::::::::::::::::::::::::::
+####:::::#### BEGIN MAIN refresh_initscripts UNTIL LOOP ####:::::####
 
 until [ "$mount_point" = "no_more_mount_points" ] ;  do
-
-# calling another function (above) to fill the mount point at this line number
-mount_point=$(read_mount_point "$line_number")
 
 # calling another function (above) to fill the initscript name at this line number
 initscript_name=$(generate_initscript_name "$mount_point")
@@ -399,45 +368,40 @@ initscript_name=$(generate_initscript_name "$mount_point")
 # generating a variable with full name inside, easier to manipulate
 initscript_path="/etc/init.d/$initscript_name"
 
-################## CHECK FOR INIT SCRIPTS
+####:::::#### BEGIN PAYLOAD ####:::::####
+
 #checking if there is another initscript with the same name, skipping to next mount point if not found 
 if [ -x "$initscript_path" ]; 
-then ############BEGIN THEN
+then
 
-#checking mount status
+	#checking mount status
 	initscript_status=$("$initscript_path" short-status);
-#acting depending on conditions
-
-if [ "$initscript_status" = "folder2ram-script-running" ]; then
-  	generate_initscript "$initscript_name" ;
-  	"$initscript_path" start ;
-fi
-
-if [ "$initscript_status" = "folder2ram-script-stopped" ]; then
-  	generate_initscript "$initscript_name" ;
-fi
 	
-########END IF CHECK FOR INIT SCRIPTS
+	#acting depending on conditions
+	if [ "$initscript_status" = "folder2ram-script-running" ]; then
+	  	generate_initscript "$initscript_name" ;
+	  	"$initscript_path" start ;
+	fi
+
+	if [ "$initscript_status" = "folder2ram-script-stopped" ]; then
+	  	generate_initscript "$initscript_name" ;
+	fi
 else
-
 echo "no initscript found, generating it" ;
-
 fi
+
+####:::::#### END PAYLOAD ####:::::####
 
 # increasing line number
 line_number=$((line_number+1))
 
-################CHECKING IF THERE ARE STILL MOUNT POINTS
-
+# reading next mountpoint before next iteration in loop
 # calling another function (above) to fill the mount point at this line number
 mount_point=$(read_mount_point "$line_number")
 
-########################################################
+done ####:::::#### END MAIN refresh_initscripts UNTIL LOOP ####:::::####
 
-#:::::::::::ENDING OF MAIN LOOP
-done
-
-}
+} #### END FUNCTION
 
 print_status() {
 
@@ -449,19 +413,13 @@ echo "checking what folders are mounted and what are unmounted"
 line_number=1
 mount_type="tmpfs" #hardcoded for now
 
-######################CHECKING IF THERE ARE STILL MOUNT POINTS
-
+# reading first mountpoint
 # calling another function (above) to fill the mount point at this line number
 mount_point=$(read_mount_point "$line_number")
 
-#########################################################
-
-############BEGINNING MAIN LOOP::::::::::::::::::::::::::::::::::::::
+####:::::#### BEGIN MAIN print_status UNTIL LOOP ####:::::####
 
 until [ "$mount_point" = "no_more_mount_points" ] ;  do
-
-# calling another function (above) to fill the mount point at this line number
-mount_point=$(read_mount_point "$line_number")
 
 # calling another function (above) to fill the initscript name at this line number
 initscript_name=$(generate_initscript_name "$mount_point")
@@ -469,26 +427,26 @@ initscript_name=$(generate_initscript_name "$mount_point")
 # generating a variable with full name inside, easier to manipulate
 initscript_path="/etc/init.d/$initscript_name"
 
+####:::::#### BEGIN PAYLOAD ####:::::####
+
+#if there is an initscript at this mount point then poll its status
 if [ -e "$initscript_path" ]; then 
 "$initscript_path" status;
 else
 echo "$initscript_path init script not installed";
 fi
+####:::::#### END PAYLOAD ####:::::####
 
 # increasing line number
 line_number=$((line_number+1))
 
-################CHECKING IF THERE ARE STILL MOUNT POINTS
-
+# reading next mountpoint before next iteration in loop
 # calling another function (above) to fill the mount point at this line number
 mount_point=$(read_mount_point "$line_number")
 
-########################################################
+done ####:::::#### END MAIN print_status UNTIL LOOP ####:::::####
 
-#:::::::::::ENDING OF MAIN LOOP
-done
-
-}
+} #### END FUNCTION
 
 configure(){
 
@@ -504,7 +462,7 @@ read editor
 
 "$editor" "/etc/folder2ram/folder2ram.conf" 
 
-}
+} #### END FUNCTION
 
 reset(){
 
@@ -515,57 +473,49 @@ read choice
 case "$choice" in
 
 Y|y|yes|Yes|YES)
-#calling a function to do this job
-clean_initscripts 
-#removing current config and making a new one from the template
-rm -f "/etc/folder2ram/folder2ram.conf" 
-cp "/etc/folder2ram/templates/folder2ram.conf" "/etc/folder2ram/folder2ram.conf" 
+	#calling a function to do this job
+	clean_initscripts 
+
+	#removing current config and making a new one from the template
+	rm -f "/etc/folder2ram/folder2ram.conf" 
+	cp "/etc/folder2ram/templates/folder2ram.conf" "/etc/folder2ram/folder2ram.conf" 
 
 ;;
 
 N|n|no|No|NO)
-echo "ok, nevermind then"
-exit
-
+	echo "ok, nevermind then"
+	exit
 ;;
 
 *)
-echo "please write y for yes or n for no"
-
+	echo "please write y for yes or n for no"
 ;;
 
 esac
 
-}
+} #### END FUNCTION
 
 sync_to_disk() {
 
 # initializing variables    
 line_number=1 
-start_or_stop=$1
 
 echo "will now sync all mountpoints"
 
-######################CHECKING IF THERE ARE STILL MOUNT POINTS
-
+# reading first mountpoint
 # calling another function (above) to fill the mount point at this line number
 mount_point=$(read_mount_point "$line_number")
 
-#########################################################
-
-############BEGINNING MAIN LOOP::::::::::::::::::::::::::::::::::::::
+####:::::#### BEGIN MAIN sync_to_disk UNTIL LOOP ####:::::####
 
 until [ "$mount_point" = "no_more_mount_points" ] ;  do
-
-# calling another function (above) to fill the mount point at this line number
-mount_point=$(read_mount_point "$line_number")
 
 initscript_name=$(generate_initscript_name "$mount_point")
 
 # generating a variable with full name inside, easier to manipulate
 initscript_path="/etc/init.d/$initscript_name"
 
-################FUNCTION PAYLOAD#############
+####:::::#### BEGIN PAYLOAD ####:::::####
 
 #getting the status of the initscript
 initscript_status=$("$initscript_path" short-status);
@@ -577,28 +527,20 @@ else
 echo "$initscript_path not installed or not started" ;
 fi
 
-####################################
+####:::::#### END PAYLOAD ####:::::####
 
 # increasing line number
 line_number=$((line_number+1))
 
-######################CHECKING IF THERE ARE STILL MOUNT POINTS
-
+# reading next mountpoint before next iteration in loop
 # calling another function (above) to fill the mount point at this line number
 mount_point=$(read_mount_point "$line_number")
 
-#########################################################
+done ####:::::#### END MAIN sync_to_disk UNTIL LOOP ####:::::####
 
-###########ENDING OF MAIN LOOP::::::::::::::::::::::::::
-done
+} #### END FUNCTION
 
-}
-
-##################END FUNCTIONS ###########################
-
-#force='false'
-#quiet='false'
-#all_mountpoints='false'
+#########################END MAIN FUNCTIONS###########################
 
 #doing a root check, because folder2ram must be run as root for obvious reasons
 if [ "$(id -u)" -eq 0 ]; then
@@ -610,33 +552,6 @@ fi
 
 action="$1"
 [ -z "$action" ] && print_usage_exit;
-
-#shift
-
-#while [ $# -gt 0 ]; do
-#    case "$1" in
-#        -a)
-#            [ "$mountpoint" != "%%none%%" ] && print_usage_exit
-#            mountpoint=""
-#            ;;
-
-#        -f)
-#            force='true'
-#            ;;
-
-#        -q)
-#            quiet='true'
-#            ;;
-
-#        *)
-#            [ -z "$mountpoint" ] || [ "$mountpoint" != '%%none%%' ] && print_usage_exit
-#            mountpoint="$1"
-#            ;;
-#    esac
-#    shift
-#done
-
-#[ "$mountpoint" = "%%none%%" ] && print_usage_exit
 
 case "$action" in
 -generate)

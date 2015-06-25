@@ -40,13 +40,17 @@ read the configuration file at /etc/folder2ram/folder2ram.etc and generate the i
 stop folder2ram and remove all folder2ram init scripts
 .TP
 \fB-refresh\fP:
-execute a -clean followed by a -generate
+delete and create again folder2ram initscripts, then start them again if they were running
+this is called when updating and when something changes the templates
 .TP
 \fB-status\fP:
 print all mountpoints and their status (mounted or unmounted)
 .TP
+\fB-syncall\fP:
+sync to disk the content of folder2ram's tmpfs folders
+.TP
 \fB-mountall\fP:
-start all folder2ram initscripts
+folder2ram will start all initscripts of all folders in the config file
 .TP
 \fB-mount /folder/path\fP:
 start the init script for that particular folder, if it is in the configuration file.
