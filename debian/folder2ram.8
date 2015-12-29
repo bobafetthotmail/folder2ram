@@ -18,14 +18,12 @@
 .SH NAME
 folder2ram \- automated tmpfs folder management
 .SH SYNOPSIS
-\fBfolder2ram\fP \fIaction\fP \fB\-generate\fP [\fB\-clean\fP] [\fB\-refresh\fP] [\fB\-status\fP] [\fB\-mountall\fP] [\fB\-mount\fP] [\fB\-umountall\fP] [\fB\-umountall\fP] [\fB\-configure\fP] [\fB\-reset\fP]
+\fBfolder2ram\fP \fIaction\fP \fB\-autostartinit\fP [\fB\-autostartsystemd\fP] [\fB\-autostopinit\fP] [\fB\-autostopsystemd\fP] [\fB\-status\fP] [\fB\-syncall\fP] [\fB\-mountall\fP] [\fB\-umountall\fP] [\fB\-configure\fP] [\fB\-reset\fP] [\fB\-clean\fP]
 .PP
 .SH DESCRIPTION
 \fBfolder2ram\fP folder2ram is a script-based utility that relocates the contents of a folder 
-to tmpfs (more options in the future) and on shutdown unmounts it safely synching the data back
-to the permanent storage (more options about when and where to sync in the future).
-\fBfolder2ram\fP is a configuration script that generates init scripts that then do the leg work
-of mounting, unmounting and syncing. 
+to tmpfs (more options in the future) and synching the data back to the permanent storage 
+on command or on shutdown .
 
 .SH OPTIONS
 .TP
@@ -33,15 +31,17 @@ of mounting, unmounting and syncing.
 This option specifies the action to execute. It could be :
 .RS
 .TP .4i
-\fB-generate\fP:
-read the configuration file at /etc/folder2ram/folder2ram.etc and generate the init scripts that are missing
+\fB-autostartinit\fP:
+sets up an appropriate autostart/stop init script
 .TP
-\fB-clean\fP:
-stop folder2ram and remove all folder2ram init scripts
+\fB-autostartsystemd\fP:
+sets up an appropriate autostart/stop systemd service
 .TP
-\fB-refresh\fP:
-delete and create again folder2ram initscripts, then start them again if they were running
-this is called when updating and when something changes the templates
+\fB-autostopinit\fP:
+disables and removes the autostart/stop init script
+.TP
+\fB-autostopsystemd\fP:
+disables and removes the autostart/stop systemd service
 .TP
 \fB-status\fP:
 print all mountpoints and their status (mounted or unmounted)
@@ -50,22 +50,19 @@ print all mountpoints and their status (mounted or unmounted)
 sync to disk the content of folder2ram's tmpfs folders
 .TP
 \fB-mountall\fP:
-folder2ram will start all initscripts of all folders in the config file
-.TP
-\fB-mount /folder/path\fP:
-start the init script for that particular folder, if it is in the configuration file.
-.TP
-\fB\-umount /folder/path\fP
-stop the init script for that particular folder, if it is in the configuration file.
+folder2ram will mount the folders in the config file
 .TP
 \fB\-umountall\fP
-folder2ram will stop all initscripts of all folders in the config file
+folder2ram will sync and unmount all folders in the config file
 .TP
 \fB\-configure\fP
 open the configuration file in a text editor
 .TP
+\fB\-clean\fP
+unmounts all folders then removes any autostart
+.TP
 \fB\-reset\fP
-delete all folder2ram init scripts and restore default config file
+delete folder2ram autostart and restore default config file
 .SH DEFAULTS
 By default, \fBfolder2ram\fP won't make /var/run, /var/lock or /tmp available as
 ram filesystems. Since \fBsysvinit\fP provides a way to achieve this, it is
@@ -80,12 +77,9 @@ operation since if/when a script fails the others are unaffected.
 configuration file,
 .IP "/sbin/folder2ram"
 configuration script
-.IP "/etc/folder2ram/templates/*"
-here you find an init script template and a configuration file template, these are used by the configuration
-script, any modification to the templates may have bad effects
 .IP "/var/folder2ram/*"
-here you will find the bind-mounted folders so you (and the init scripts) can access the original folder in permanent storage to sync the contents of the tmpfs  
+here you will find the bind-mounted folders so you (and folder2ram) can access the original folder in permanent storage to sync the contents of the tmpfs  
 .SH SEE ALSO
-\fBmount\fP(8), \fBtmpfs\fP(5), \fBrcS\fP(5).
+\fBmount\fP(8), \fBtmpfs\fP(5).
 .SH AUTHOR
 the author of folder2ram is Alberto Bursi <starshipeleven@hotmail.it>

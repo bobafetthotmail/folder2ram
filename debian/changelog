@@ -1,3 +1,9 @@
+folder2ram (0.1.6) stable; urgency=low
+
+  * cleaned up and now compatible with systemd
+
+ -- Alberto Bursi <starshipeleven@hotmail.it>  Tue, 8 Dec 2015 13:00:55 +0200 
+
 folder2ram (0.1.5) stable; urgency=low
 
   * now actions calling initscript work properly.

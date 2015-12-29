@@ -1,13 +1,10 @@
-Source: folder2ram
+Package: folder2ram
+Version: 0.1.6
+Architecture: all
+Maintainer: Alberto Bursi <starshipeleven@hotmail.it>
+Installed-Size: 78
+Depends: debconf (>= 0.5) | debconf-2.0
 Section: admin
 Priority: optional
-Maintainer: Alberto Bursi <starshipeleven@hotmail.it>
-Build-Depends: 
-Standards-Version: 3.9.3
-
-Package: folder2ram
-Architecture: all
-Depends: ${misc:Depends}
 Description: script-based utility that relocates the contents of a folder to RAM
  (tmpfs) and on shutdown unmounts it safely synching the data back to the permanent storage.
-

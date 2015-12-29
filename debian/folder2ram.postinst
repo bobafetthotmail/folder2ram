@@ -4,7 +4,24 @@ set -e
 
 case "$1" in
     configure)
-    folder2ram -refresh
+	#generating the config file
+    cat << EOF > "/etc/folder2ram/folder2ram.conf" 
+#############################
+#folder2ram main config file#
+#############################
+#
+#PROTIP: to make /var/lock or /tmp available as ram filesystems, 
+#        it is preferable to set the variables RAMTMP, RAMLOCK
+#        in /etc/default/tmpfs.
+#
+#FILE SYSTEM: only option available is tmpfs, for now
+#
+#OPTIONS: does nothing, will be implemented in the future.
+#
+#<file system>  <mount point>   <options>
+#tmpfs            /var/log        -     <---example entry
+
+EOF
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
