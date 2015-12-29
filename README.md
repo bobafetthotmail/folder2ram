@@ -8,31 +8,39 @@ Designed to be controlled manually for easy integration with other projects.
 
 debian package as I stay mostly in debian environments.
 
-for now I'm focusing on wheezy, will probably do a Jessie/systemd package in the future.
-
 
 READYNESS: Beta testing.
 
 
-DONE:
+DONE (newest first):
 
---implementing the script written by mcortese in 2010
+-- now working with systemd
+
+-- major rework to clean up stuff, now there is only ONE initscript calling the main script
+
+-- added manual sync do disk
+
+-- fixed various bugs about initscripts and checks failing.
+
+-- fixed the folder2ram initscript template file with dos2unix (converted it to Unix) because it was giving weird nonsense syntax errors. and I'm on linux. Never wrote anything on Windows or DOS.
+
+-- write better readme and manual about what happens when folder2ram is run.
+
+-- the initscript template (the one that is used by the configuration script to make the initscripts)
+
+-- the configuration script (the one that gets user input and deploys/removes the initscripts, it's the factotum)
+
+-- implementing the script written by mcortese in 2010
 in this webpage https://www.debian-administration.org/article/661/A_transient_/var/log
 webpage saved and available in docs folder
 much better and safer than fs2ram's own system, as it runs a bind mount before mounting the tmpfs.
 Added check so that if it fails it will safely unmount stuff. Won't leave it borked.
 
---the configuration script (the one that gets user input and deploys/removes the initscripts, it's the factotum)
 
---the initscript template (the one that is used by the configuration script to make the initscripts)
 
---write better readme and manual about what happens when folder2ram is run.
 
---fixed the folder2ram initscript template file with dos2unix (converted it to Unix) because it was giving weird nonsense syntax errors. and I'm on linux. Never wrote anything on Windows or DOS.
 
---fixed various bugs about initscripts and checks failing.
 
--- added manual sync do disk
 
 TODO (additional features for the future, these wait until I'm sure the core is stable):
 
@@ -50,9 +58,7 @@ add optional custom/settable paths where the folders can be synced
 add more options like tmpfs size and mount options
 
 
-TODO2 (this may become top priority or stay in the backburner for ages, depends on how soon I need to switch):
-
-make this work with systemd.
+TODO2 (these may become top priority or stay in the backburner for ages):
 
 add an option to make a squashfs or similar heavily compressed archive either on disk or moved to RAM. 
 it should theoretically increase performance, usually the CPU can decompress faster than the storage system can read.
