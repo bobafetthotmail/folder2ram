@@ -2,7 +2,7 @@ Package: folder2ram
 Version: 0.1.6
 Architecture: all
 Maintainer: Alberto Bursi <starshipeleven@hotmail.it>
-Installed-Size: 78
+Installed-Size: 69
 Depends: debconf (>= 0.5) | debconf-2.0
 Section: admin
 Priority: optional

@@ -377,6 +377,9 @@ done ####:::::#### END MAIN print_status UNTIL LOOP ####:::::####
 
 configure() {
 
+#if there is no folder, we create it
+[ -d "/etc/folder2ram" ] || mkdir "/etc/folder2ram"
+
 #if there is no config file it is generated from the template
 if [ ! -e "/etc/folder2ram/folder2ram.conf" ]; then
 
@@ -421,6 +424,9 @@ Y|y|yes|Yes|YES)
 	#calling the functions that do this job
 	install_remove_autostart init_remove
 	install_remove_autostart systemd_remove
+
+	#if there is no folder, we create it
+	[ -d "/etc/folder2ram" ] || mkdir "/etc/folder2ram"
 
 	#removing current config and making a new one
 	rm -f "/etc/folder2ram/folder2ram.conf" 
