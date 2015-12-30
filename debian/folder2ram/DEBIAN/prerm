@@ -26,7 +26,7 @@ case "$1" in
 
 	[ -f /sbin/folder2ram ] && folder2ram -clean
 
-	[ -f /etc/folder2ram/folder2ram.conf ] && rm -f /etc/folder2ram/folder2ram.conf
+	[ -f /etc/folder2ram/folder2ram.conf ] && rm -rf /etc/folder2ram
     ;;
 
     upgrade|failed-upgrade)
