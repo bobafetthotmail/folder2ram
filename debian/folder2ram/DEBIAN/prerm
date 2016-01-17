@@ -17,16 +17,15 @@ set -e
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
-	#the init scripts are completely independent, so they will be fine.
-	#the config is generated when the user gives a command so it is fine too.
-	#the configuration script is run only when configuring so it is fine.
-
 case "$1" in
     remove|deconfigure)
 
 	[ -f /sbin/folder2ram ] && folder2ram -clean
 
-	[ -f /etc/folder2ram/folder2ram.conf ] && rm -rf /etc/folder2ram
+	[ -d /etc/folder2ram ] && rm -rf /etc/folder2ram
+
+	[ -d /var/folder2ram ] && rm -rf /var/folder2ram
+
     ;;
 
     upgrade|failed-upgrade)

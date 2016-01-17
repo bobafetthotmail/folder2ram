@@ -1,3 +1,10 @@
+folder2ram (0.1.7) stable; urgency=low
+
+  * added safe startup and safe disable commands where changes happen on reboot
+  * changed some names of commands
+
+ -- Alberto Bursi <starshipeleven@hotmail.it>  Sat, 18 Jan 2016 22:45:55 +0200 
+
 folder2ram (0.1.6) stable; urgency=low
 
   * cleaned up and now compatible with systemd

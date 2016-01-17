@@ -31,17 +31,25 @@ on command or on shutdown .
 This option specifies the action to execute. It could be :
 .RS
 .TP .4i
-\fB-autostartinit\fP:
-sets up an appropriate autostart/stop init script
+\fB-enableinit\fP:
+sets up an appropriate autostart/stop init script, does not start it
 .TP
-\fB-autostartsystemd\fP:
-sets up an appropriate autostart/stop systemd service
+\fB-enablesystemd\fP:
+sets up an appropriate autostart/stop systemd service, does not start it
 .TP
-\fB-autostopinit\fP:
-disables and removes the autostart/stop init script
+\fB-disableinit\fP:
+removes the autostart/stop init script and unmounts all mount points
 .TP
-\fB-autostopsystemd\fP:
-disables and removes the autostart/stop systemd service
+\fB-disablesystemd\fP:
+removes the autostart/stop systemd service and unmounts all mount points
+.TP
+\fB-safe-disableinit\fP:
+removes the autostart/stop init script but unmounts only at shutdown (hence safely)
+it also works if folder2ram is unistalled shortly afterwards
+.TP
+\fB-safe-disablesystemd\fP:
+removes the autostart/stop systemd service but unmounts only at shutdown (hence safely)
+it also works if folder2ram is unistalled shortly afterwards
 .TP
 \fB-status\fP:
 print all mountpoints and their status (mounted or unmounted)
