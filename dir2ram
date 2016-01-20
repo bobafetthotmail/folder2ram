@@ -1,0 +1,700 @@
+#!/usr/bin/perl -w
+
+# Unbuffer STDOUT
+$| = 1;
+
+$config_dir = "/etc/dir2ram";
+$config_file = "${config_dir}/dir2ram.conf";
+$init_dir = "/etc/init.d";
+$bind_dir = "/var/dir2ram";
+$lock_dir = "/run/lock";
+$cron_dir = "/etc/cron.daily";
+$cron_file = "${cron_dir}/dir2ram_sync";
+
+# Usage
+$usage = "
+$0 [-h] [-v] [-generate|clean|status|syncall|mountall|mount <name|all>|umountall|umount <name|all>]
+
+SYNOPSIS
+	Cache small and commonly accessed directories in memory to decrease the 
+	wear and tear on the disk and prevents the spinning up of a disk to write 
+	the data.
+
+DESCRIPTION
+	Directories specificed in the configuration file are cached to memory.  
+	Each directory specified has an init script created which is called at 
+	boot and copies/mounts the directory to memory.  At shutdown the process 
+	is reversed and the contents of the memory are written to disk.
+
+OPTIONS
+	-v
+		Verbose
+	-generate
+		Reads the config file and generates the init scripts that are missing.
+                Generates the cron daily synchronization script.
+	-clean
+		Stop dir2ram and delete all dir2ram init scripts.
+                Uninstalls all system init scripts.
+                Removes cron daily synchronization script.
+	-status
+		Display all mountpoints and their status.
+	-syncall
+		Sync to disk the content of dir2ram tmpfs|ramfs directories.
+                Uses the cron script and generates it if it isn't present.
+	-mountall or -mount <name|all>
+		Mounts <name> or all system init scripts in the init directory.
+                Installs specified mounts as system init script.
+                (Only files in the init directory with corresponding entries in
+                the config file will be loaded)
+	-umountall or -umount <name|all>
+                Unmounts <name> or all system init scripts in the init directory.
+		Uninstall specified mounts as system init scripts.
+                (Only files in the init directory with corresponding entries in
+                the config file will be unloaded)
+	-initialize
+		Creates an empty configuration file.
+
+FILES
+	/sbin/dir2ram
+		Main program.
+	$config_file
+		Main configuration file.
+                   Name:  Single word description of this entry.
+                   File System:  Options are tmpfs (typical) or ramfs.
+                      tmpfs:  Can swap to disk, can hard cap space usage.
+                      ramfs:  No disk swapping, no hard limits on space usage.
+                   MB:  Size of your tmpfs|ramfs drive in megabytes.
+                   Log History:  How many old logs to remove.  Set to -1 to disable.
+                      Example, for 5, logs *.log.[5-9][.gz] are deleted.
+                   Dependent Service(s): List of the services that need to be
+                      stopped and then restarted for the directory to be mounted.
+                   Directory to Cache: Directory to be cached in memory.
+	${init_dir}/dir2ram_*
+		Init scripts for each directory in the configuration file.
+	${bind_dir}/*
+		Bind-mounted original folders being cached by the tmpfs|ramfs directories.
+        $cron_file
+                Daily synchronization cron script.
+ 
+";
+
+# Options Handling
+use Getopt::Long;
+$Getopt::Long::ignorecase = 1;
+$Getopt::Long::autoabbrev = 1;
+&GetOptions(
+            "generate"		=> \$generate,
+            "clean"		=> \$clean,
+            "status"		=> \$status,
+            "syncall"		=> \$syncall,
+            "mountall"		=> \$mountall,
+            "mount=s"           => \$mount,
+            "umountall"		=> \$umountall,
+            "umount=s"          => \$umount,
+            "initialize"	=> \$initialize,
+            "h|help"		=> \$help,
+            "v"			=> \$verbose
+            );
+
+if ($help or $help) { print $usage; exit 0; }
+
+unless ($generate or $clean or $status or $syncall or $mountall or $mount or $umountall or $umount or $initialize) 
+{
+    print $usage;
+    exit 0;
+}
+
+$config_template = 
+"#
+# EXAMPLE:
+# Name      FS     MB  LogHist  Dependent_Service(s)   Dir_To_Cache
+# smart     tmpfs  8   5        smartd,smartmontools   /var/lib/smartmontools
+# sickbeard tmpfs  256 5        sickbeard              /var/opt/sickbeard
+# couch     tmpfs  256 5        couchpotato            /home/couchpotato
+# samba     tmpfs  16  5        samba                  /var/cache/samba
+# plex      tmpfs  256 5        plexmediaserver        /media/e5f80c22-2bd8-427b-88f5-cad32e84e464/plexmediaserver/Library/Application Support/Plex Media Server/Logs
+# ntp       tmpfs  8   5        ntp                    /var/lib/ntp
+# minidlna  tmpfs  16  5        minidlna               /var/cache/minidlna
+#
+# Covered by folder2ram:
+# log       tmpfs  256 8        \$syslog                /var/log
+# vartmp    tmpfs  512 5        \$syslog                /var/tmp
+# spool     tmpfs  32  5        postfix                /var/spool
+# rrd       tmpfs  8   5        rrdcached              /var/lib/openmediavault/rrd
+# rrdcached tmpfs  256 5        rrdcached              /var/lib/rrdcached
+# monit     tmpfs  8   5        monit                  /var/lib/monit
+# php       tmpfs  8   5        php5-fpm               /var/lib/php5
+
+";
+
+$cron_template = 
+"#!/bin/sh
+#
+# Synchronize dir2ram tmpfs|ramfs directories daily.
+#
+
+set -e
+
+for NAME in NAME_LIST; do
+
+	[ -x /etc/init.d/\${NAME} ] || exit 0
+	[ -f /run/lock/\${NAME}.lock ] || exit 0
+	/etc/init.d/\${NAME} reload
+	
+done
+";
+
+$init_template =
+"#! /bin/sh
+### BEGIN INIT INFO
+# Provides: SERVICE_NAME
+# X-Start-Before:	DEPENDENT_SERVICE
+# X-Stop-After:		DEPENDENT_SERVICE
+# X-Interactive:	yes
+# Required-Start:
+# Required-Stop:
+# Default-Start:	2 3 4 5
+# Default-Stop:		0 1 6
+# Short-Description:	Caches directory in memory
+# Description: Moves the contents of the directory to memory during boot
+#              and keeps it there until shutdown/reboot, when it copies 
+#              the contents back to permanent storage.
+### END INIT INFO
+
+NAME=SERVICE_NAME
+DIR=\"DIRECTORY\"
+SIZE=MEMORY_SIZE
+
+DIRTRUE=\"${bind_dir}/\${NAME}\"
+LOCKFILE=\"${lock_dir}/\${NAME}.lock\"
+FS=FILE_SYSTEM
+
+do_start()
+{
+        # Return
+        #   0 if transient log has been started
+        #   1 if transient log was already running
+        #   2 if transient log could not be started
+
+        [ -f \"\$LOCKFILE\" ] && return 1
+        [ `id -u` -eq 0 ] || return 2
+        [ -d \"\$DIR\" ] || return 2
+
+        # unmounting it if it was a tmpfs|ramfs already
+        umount -l -t \$FS \"\$DIR\" 2> /dev/null
+
+        [ -d \"\$DIRTRUE\" ] || mkdir -p \"\$DIRTRUE\" || return 2
+
+        mount --bind \"\$DIR\" \"\$DIRTRUE\"
+        mount -t \$FS -o nosuid,noexec,nodev,mode=0755,size=\$SIZE \$NAME \"\$DIR\"
+        if [ \$? -eq 0 ]; then
+		if cp -rfp \"\$DIRTRUE\" -T \"\$DIR\"; then
+			touch \"\$LOCKFILE\"
+			return 0
+		fi
+		# Rollback the mount
+		umount -l \"\$DIR\"
+	fi
+        # Rollback the directory mangling
+        umount -l \"\$DIRTRUE\"
+        return 2
+}
+
+do_stop() {
+        # Return
+        #   0 if transient log has been stopped
+        #   1 if transient log was already stopped
+        #   2 if transient log could not be stopped
+        #   other if a failure occurred
+
+        [ -f \"\$LOCKFILE\" ] || return 1
+
+        # Check if I am root
+        [ `id -u` -eq 0 ] || return 2
+
+        # Merge back to permanent storage
+        cp -rfup \"\$DIR\" -T \"\$DIRTRUE\"
+
+        umount -l \"\$DIR\"
+        umount -l \"\$DIRTRUE\"
+        rm -r \"\$LOCKFILE\"
+        return 0
+}
+
+do_reload() {
+        # Return
+        #   0 if transient log has been reloaded
+        #   1 if transient log was not running
+        #   2 if transient log could not be reloaded
+
+        [ -f \"\$LOCKFILE\" ] || return 1
+
+        # Check if I am root
+        [ `id -u` -eq 0 ] || return 2
+
+        # Cleanup Old Logs (Optional)
+        DISABLE_CLEANUPfind \"\$DIR\" -type f -name \"*.log.[LOG_HISTORY-9]\" -exec rm -f {} \\;
+        DISABLE_CLEANUPfind \"\$DIR\" -type f -name \"*.log.[LOG_HISTORY-9].gz\" -exec rm -f {} \\;
+        DISABLE_CLEANUPfind \"\$DIRTRUE\" -type f -name \"*.log.[LOG_HISTORY-9]\" -exec rm -f {} \\;
+        DISABLE_CLEANUPfind \"\$DIRTRUE\" -type f -name \"*.log.[LOG_HISTORY-9].gz\" -exec rm -f {} \\;
+
+        # Merge back to permanent storage
+        cp -rfup \"\$DIR\" -T \"\$DIRTRUE\"
+        touch \"\$LOCKFILE\"
+        return 0
+}
+
+case \"\$1\" in
+  start)
+        echo \"Starting \$NAME\"
+        do_start
+  ;;
+  stop)
+        echo \"Stopping \$NAME\"
+        do_stop
+  ;;
+  status)
+        if [ -f \"\$LOCKFILE\" ]; then
+                echo \"\$NAME is running\"
+        else
+                echo \"\$NAME is stopped\"
+                exit 1
+        fi
+  ;;
+  reload)
+        do_reload
+  ;;
+  *)
+        echo \"Usage: \$0 {start|stop|status|reload}\" >&2
+        exit 3
+  ;;
+esac
+
+exit
+";
+
+%config_settings = ();
+
+%mounts_binding = ();
+%mounts_dir2ram = ();
+%mounts_type = ();
+
+$mount ||= ($mountall) ? "all" : "";
+$umount ||= ($umountall or $clean) ? "all" : "";
+$mount_or_unmount = $mount || $umount;
+
+&initialize();
+
+&read_configuration() unless ($initialize);
+
+if ($generate) 
+{
+    &create_init();
+
+    &create_cron();
+    
+    exit 0;
+}
+
+if ($mount_or_unmount)
+{
+    # Figure out what directories I'm working with
+    @list_of_directories = &resolve_directories_to_process($mount_or_unmount);
+
+    if ($mount) 
+    {
+        &mount_directories(@list_of_directories);
+        
+        exit 0;
+    }
+    
+    if ($umount)
+    {
+        &umount_directories(@list_of_directories);
+        
+        if ($clean) 
+        {
+            print "-I- Removing init.d files: \"${init_dir}/dir2ram_*\".\n";
+            unlink glob "${init_dir}/dir2ram_*";
+            print "-I- Removing cron file: \"$cron_file\".\n";
+            unlink $cron_file;
+        }
+    }
+
+    exit 0;
+}
+
+if ($syncall) 
+{
+    &create_cron() unless (-e $cron_file);
+
+    print "Calling $cron_file...\n";
+    system($cron_file);
+
+    exit 0;
+}
+
+if ($status) 
+{
+    &print_mounts();
+
+    exit 0;
+}
+
+
+
+
+
+sub print_mounts 
+{
+    printf("\n%-9s %-9s %-5s  %-30s %-40s\n", "Name", "Space", "FileS", "Real Directory", "Mounted tmpfs|ramfs");
+    printf("%-9s %-9s %-5s  %-30s %-40s\n", "====", "=====", "=====", "==============", "===================");
+    foreach $name (keys %mounts_dir2ram) 
+    {
+        my $real_dir = (exists $mounts_binding{$name}) ? $mounts_binding{$name} : "Missing";
+        my $space_actual = $config_settings{$mounts_dir2ram{$name}}{'ACTUAL_SIZE'};
+        my $space_total = $config_settings{$mounts_dir2ram{$name}}{'MEMORY_SIZE'};
+        my $space = "$space_actual/$space_total";
+        my $mounted_tmpfs = $mounts_dir2ram{$name};
+        my $fs = $mounts_type{$name};
+
+        printf("%-9s %-9s %-5s  %-30s %-40s\n", $name, $space, $fs, $real_dir, $mounted_tmpfs);
+    }
+    print "\n";
+}
+
+sub read_mounts 
+{
+    foreach $line (`mount`) 
+    {
+        if (my ($bind_mount, $bind_name) = $line =~ /^\S+\s+on\s+(\/var\/dir2ram\/dir2ram_(\S+))\s+/) 
+        {
+            $mounts_binding{$bind_name} = $bind_mount;
+            print "-I- Found binding mount $bind_name => $bind_mount\n" if ($verbose);
+        }
+
+        if (my ($dir2ram_name, $dir2ram_mount, $dir2ram_type) = $line =~ /^dir2ram_(\S+)\s+on\s+(\S+)\s+type\s+(tmpfs|ramfs)\s+/) 
+        {
+            $mounts_dir2ram{$dir2ram_name} = $dir2ram_mount;
+            $mounts_type{$dir2ram_name} = $dir2ram_type;
+            print "-I- Found dir2ram mount $dir2ram_name => $dir2ram_mount ($dir2ram_type)\n" if ($verbose);
+        }
+    }
+}
+
+sub umount_directories 
+{
+    foreach $dir (@_) 
+    {
+        # Don't try to unmount an already unmounted directory
+        my $original_name = $config_settings{$dir}{'ORIGINAL_NAME'};  
+        unless (exists $mounts_dir2ram{$original_name}) 
+        {
+            print "-W- Skipping unmounting of $original_name, the mount doesn't exist.\n";
+            next;
+        }
+
+        my $service_to_stop = $config_settings{$dir}{'SERVICE_NAME'};
+
+        # Check to make sure lines in the config file match with files in the init directory.
+        unless (-e "${init_dir}/${service_to_stop}") 
+        {
+            print "-W- Skipping unmounting of $original_name, it's file (${init_dir}/${service_to_stop}) doesn't exist.\n";
+            next;
+        }
+        
+        my @dependent_services = split(" ",$config_settings{$dir}{'DEPENDENT_SERVICE'});
+        
+        # Stop Dependent Services
+        &manipulate_services("stop", @dependent_services);
+        
+        # Stop the dir2ram service
+        &manipulate_services("stop", $service_to_stop);        
+        
+        # Uninstall as a system service at boot
+        system("insserv -r $service_to_stop");
+        
+        # Start Dependent Services
+        &manipulate_services("start", @dependent_services);
+    } 
+}
+
+sub mount_directories
+{
+    foreach $dir (@_) 
+    {
+        # Don't try to mount an already mounted directory
+        my $original_name = $config_settings{$dir}{'ORIGINAL_NAME'};  
+        if (exists $mounts_dir2ram{$original_name})
+        {
+            print "-W- Skipping mounting of $original_name, the mount already exists.\n";
+            next;
+        }
+
+        my $service_to_start = $config_settings{$dir}{'SERVICE_NAME'};
+        
+        # Check to make sure lines in the config file match with files in the init directory.
+        unless (-e "${init_dir}/${service_to_start}")
+        {
+            print "-W- Skipping mounting of $original_name, it's file (${init_dir}/${service_to_start}) doesn't exist.\n";
+            next;
+        }
+      
+        my @dependent_services = split(" ",$config_settings{$dir}{'DEPENDENT_SERVICE'});
+
+        # Stop Dependent Services
+        &manipulate_services("stop", @dependent_services);
+        
+        # Uninstall as a system service at boot
+        system("insserv $service_to_start");
+
+        # Stop the dir2ram service
+        &manipulate_services("start", $service_to_start);        
+        
+        # Start Dependent Services
+        &manipulate_services("start", @dependent_services);
+    }
+}
+
+sub manipulate_services 
+{
+    my $action = shift @_;
+    my @services = @_;
+    
+    foreach $dependent_service (@services) 
+    {
+        # Don't try to stop system services which start with '$'.  Example '$syslog'.
+        next if ($dependent_service =~ /^\$/);
+        
+        my $command = "service $dependent_service $action";
+        print "-I- Executing: " . $command . "\n";
+        system($command);
+    }
+}
+
+sub create_init 
+{
+    foreach $dir (keys %config_settings) 
+    {
+        # Assign the template to a local variable
+        my $current_init = $init_template;
+
+        # Construct the name of the init file being created.
+        my $service_name = $config_settings{$dir}{'SERVICE_NAME'};
+        my $current_init_file = $init_dir . '/' . $service_name;
+
+        # Don't overwrite an existing file or one that is mounted.
+        # Potential issues if it is changed without being unmounted properly.
+        my $original_name = $config_settings{$dir}{'ORIGINAL_NAME'};
+        if (-e $current_init_file and exists $mounts_dir2ram{$original_name})
+        {
+            print "-W- Skipping creation of $current_init_file, it exists and is mounted.  Please unmount before regenerating.\n";
+            next;
+        }
+        
+        # Make the substitutions into the local template file.
+        $current_init =~ s/DIRECTORY/$dir/g;
+        $current_init =~ s/SERVICE_NAME/$service_name/g;
+        $current_init =~ s/DEPENDENT_SERVICE/$config_settings{$dir}{'DEPENDENT_SERVICE'}/g;
+        $current_init =~ s/MEMORY_SIZE/$config_settings{$dir}{'MEMORY_SIZE'}/g;
+        $current_init =~ s/LOG_HISTORY/$config_settings{$dir}{'LOG_HISTORY'}/g;
+        $current_init =~ s/FILE_SYSTEM/$config_settings{$dir}{'FILE_SYSTEM'}/g;
+        $current_init =~ s/DISABLE_CLEANUP/$config_settings{$dir}{'DISABLE_CLEANUP'}/g;
+
+        # Write the init file.
+        open(INIT_FILE, ">$current_init_file") or die "-F- Cannot open $current_init_file\n";
+        print INIT_FILE $current_init;
+        close INIT_FILE;
+        system("chmod a+x $current_init_file");
+
+        print "-I- Created \"$current_init_file\" ($original_name).\n";
+    }
+}
+
+sub create_cron 
+{
+    # Assign the template to a local variable.
+    my $current_cron = $cron_template;
+
+    # List of dir2ram_* services that will be refreshed.
+    my @name_list;
+
+    # Assemble the list of services.
+    foreach $dir (keys %config_settings) 
+    {
+        push(@name_list, '"' . $config_settings{$dir}{'SERVICE_NAME'} . '"');
+    }
+
+    # Make changes to the local variable cron template.
+    $current_cron =~ s/NAME_LIST/@name_list/g;
+
+    # Write the cron file and change permissions.
+    open(CRON_FILE, ">$cron_file") or die "-F- Unable to open $cron_file.\n";
+    print CRON_FILE $current_cron;
+    close CRON_FILE;
+    system("chmod a+x $cron_file");
+
+    print "-I- Created daily cron file \"$cron_file\".\n";
+}
+
+sub initialize
+{
+    # Create the directory if it doesn't exist.
+    mkdir $config_dir unless (-d $config_dir);
+
+    # Create the config file if it doesn't exist.
+    unless (-e $config_file) 
+    {
+        open(CONFIG_FILE, ">$config_file") or die "-F- Cannot create $config_file\n";
+        print CONFIG_FILE $config_template;
+        close CONFIG_FILE;
+        print "Created configuration file template: $config_file\n" if ($verbose or $configuration);
+    }
+
+    # Exit if the configuration option was selected.  Nothing more to do.
+    exit 0 if ($configuration);
+}
+
+sub read_configuration 
+{
+    # Read in the current mounts to understand if items in the config file already exist
+    &read_mounts();
+
+    open(CONFIG_FILE, $config_file) or die "-F- Cannot open $config_file\n";
+
+    while (<CONFIG_FILE>) 
+    {
+        # Skip lines that begin with '#'
+        next if (/^\s*\#/);
+        chomp;
+
+        # Keep going unless I find a properly formatted line
+        next unless (my ($name, $fs, $size, $log_hist, $services, $dir) =
+                     $_ =~ /^\s*(\S+)\s+(tmpfs|ramfs)\s+(\d+)\s*(?:m|M|MB|mb)?\s+(-?\d+)\s+([^\/]+)\s+(\/.*)\s*$/);
+
+        # Cleanup the input.  Convert ',' to ' ' and get rid of multiple spaces.
+        $services =~ s/,/ /g;
+        $services =~ s/\s+/ /g;
+
+        if ($verbose) 
+        {
+            print "-I- Read Line ($config_file):\n";
+            printf("%15s %-9s %20s %-25s\n", "Name:", $name, "Directory:", $dir);
+            printf("%15s %-9s %20s %-25s\n", "Size:", $size . " MB", "Log History:", $log_hist);
+            printf("%15s %-9s %20s %-25s\n", "Filesystem:", $fs, "Service Dependency:", $services );
+        }
+
+        #
+        # Perform Checks of the input
+        #
+
+        # Don't check for these items if the directory is already mounted.
+        unless (exists $mounts_dir2ram{$name}) 
+        {
+            #   Check to see if the directly exists
+            unless (-d $dir) 
+            {
+                print "-W- Directory doesn't exist: \'$dir\'.  Skipping directory: $name.\n"
+                    if ($generate or $verbose);
+                next;
+            }
+
+            #   Check to see if specified services actually exist
+            my $skip_for_service_error = 0;
+            foreach $service_name (split(" ", $services)) 
+            {
+                # Don't check system services which start with '$'.  Example '$syslog'.
+                next if ($service_name =~ /^\$/);
+                
+                unless (-e "${init_dir}/${service_name}") 
+                {
+                    print "-W- Specified service doesn't exist: $service_name.  Skipping directory: $name.\n"
+                        if ($generate or $verbose);
+                    $skip_for_service_error = 1;
+                }
+            }
+            next if ($skip_for_service_error);
+        }
+        
+        #   Check the directory size against the requested size.
+        my $actual_size = `du $dir -m -s`;
+        ($actual_size) = split(" ", $actual_size);
+        if ($actual_size > $size) 
+        {
+            print "-W- Specified size (${size}M) is too small vs. actual directory size (${actual_size}M): $name.\n"
+                if ($generate or $verbose);
+        }
+
+        #   Skip if the name isn't unique (repeat).
+        if (exists $config_settings{$dir}) 
+        {
+            print "-W- Specified directory ($dir) is a repeat.  Skipping directory: $name.\n" if ($generate or $verbose);
+            next;
+        }
+
+        #   Log History is limited to 9
+        if ($log_hist > 9) 
+        {
+            print "-W- Log history cannot be greater than 9 (setting it to 9).\n" if ($generate or $verbose);
+            $log_hist = 9;
+        }
+
+        #   Check for -1 to disable cleanup
+        $disable_cleanup = "";
+        if ($log_hist < 0)
+        {
+            $log_hist = 9;
+            $disable_cleanup = '#';
+        }
+        
+        # Record the settings
+        $config_settings{$dir}{'FILE_SYSTEM'} = $fs;
+        $config_settings{$dir}{'SERVICE_NAME'} = 'dir2ram_' . $name;
+        $config_settings{$dir}{'ORIGINAL_NAME'} = $name;
+        $config_settings{$dir}{'MEMORY_SIZE'} = $size . "M";
+        $config_settings{$dir}{'ACTUAL_SIZE'} = $actual_size . "M";
+        $config_settings{$dir}{'LOG_HISTORY'} = $log_hist;
+        $config_settings{$dir}{'DEPENDENT_SERVICE'} = $services;
+        $config_settings{$dir}{'DISABLE_CLEANUP'} = $disable_cleanup;
+    }
+
+    close CONFIG_FILE;
+
+    #   Check if the configuration file is empty
+    unless (keys %config_settings) 
+    {
+        print "-E- The configuration file ($config_file) has no valid lines.\n";
+
+        exit 1;
+    }
+
+}
+
+sub resolve_directories_to_process 
+{
+    #
+    # Populate the directories to be processed
+    #
+
+    my @list_of_directories = ();
+
+    if ($_[0] =~ /all/) 
+    {
+        # Populate with all items in the configuration file
+        @list_of_directories = keys %config_settings;
+    }
+    else 
+    {
+        # Find the item in the configuration file that matches the service name.
+        foreach $dir (keys %config_settings) 
+        {
+            if ($config_settings{$dir}{'ORIGINAL_NAME'} eq $_[0]) 
+            {
+                @list_of_directories = $dir;
+                last;
+            }
+        }
+    }
+
+    return @list_of_directories;
+}
