@@ -699,9 +699,9 @@ Description=folder2ram systemd service
 
 [Service]
 Type=oneshot
+RemainAfterExit=yes
 ExecStart=/sbin/folder2ram -mountall
 ExecStop=/sbin/folder2ram -umountall
-RemainAfterExit=yes
 
 [Install]
 WantedBy=local-fs.target﻿
@@ -770,12 +770,14 @@ Description=temporary folder2ram systemd service
 
 [Service]
 Type=oneshot
-ExecStart=/sbin/folder2ram_temporary &> /dev/null
+RemainAfterExit=yes
+ExecStart=/bin/true
 ExecStop=/sbin/folder2ram_temporary -umountall
 ExecStop=/bin/rm -f /sbin/folder2ram_temporary
-ExecStop=/bin/rm -f /etcfolder2ram_temporary.service
+ExecStop=/bin/rm -f /etc/folder2ram_temporary.service
 ExecStop=/bin/rm -f /lib/systemd/system/local-fs.target.wants/folder2ram.service
-RemainAfterExit=yes
+ExecStop=/bin/rm -f /lib/systemd/system/local-fs.target.wants/folder2ram_temporary.service
+
 
 [Install]
 WantedBy=local-fs.target﻿
@@ -791,10 +793,11 @@ EOF
 		systemctl daemon-reload 
 
 		#starting it up so systemd knows it must be shut down
-		systemtcl start folder2ram_temporary.service
+		systemctl start folder2ram_temporary.service
 
 
 	;;
+
 
 esac
 

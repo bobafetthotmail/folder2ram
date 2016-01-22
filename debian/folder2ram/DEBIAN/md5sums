@@ -1,6 +1,6 @@
-3eace92081fc7de1ce29fde57cc80a8d  sbin/folder2ram
+3922e8613650d24ec04dc0fdb1e29354  sbin/folder2ram
 1e5f13d5fab71c3cf795d27b72acd899  usr/share/doc/folder2ram/README.Debian
-522e07d460c51b2119bf9fa495fcb962  usr/share/doc/folder2ram/changelog.gz
+34d56881bb54dc56bb6664f9a27cc1cb  usr/share/doc/folder2ram/changelog.gz
 4018a7d81d267d924685501f8b39b4ab  usr/share/doc/folder2ram/copyright
 f715864c75f8862207e79949d12904d9  usr/share/lintian/overrides/folder2ram
-7cde186786e13cd029aa327385b6b59d  usr/share/man/man8/folder2ram.8.gz
+537cfdd69f5d85a4ec4db01eb1941e3b  usr/share/man/man8/folder2ram.8.gz

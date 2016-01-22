@@ -20,7 +20,9 @@ set -e
 case "$1" in
     remove|deconfigure)
 
-	[ -f /sbin/folder2ram ] && folder2ram -clean
+	[ -f /sbin/folder2ram ] && folder2ram -safe-disableinit > /dev/null
+	
+	[ -f /sbin/folder2ram ] && folder2ram -safe-disablesystemd > /dev/null
 
 	[ -d /etc/folder2ram ] && rm -rf /etc/folder2ram
 
