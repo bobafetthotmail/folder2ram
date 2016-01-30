@@ -7,7 +7,8 @@ Standards-Version: 3.9.3
 
 Package: folder2ram
 Architecture: all
-Depends: ${misc:Depends}
-Description: script-based utility that relocates the contents of a folder to RAM
- (tmpfs) and on shutdown unmounts it safely synching the data back to the permanent storage.
+Depends: ${misc:Depends}, rsync
+Description: script-based utility to manage tmpfs folders
+ It syncs data on power up, on shutdown, and on request.
+ Mostly useful for long-term usage of flash drives as system drive.
 

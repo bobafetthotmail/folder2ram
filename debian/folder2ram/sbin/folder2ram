@@ -6,7 +6,7 @@
 #
 # Copyright:
 #
-#     Alberto Bursi 2015
+#     Alberto Bursi 2015-2016
 #
 # License:
 #
@@ -134,7 +134,8 @@ read_mount_point() {
 line_number=$1 
 
 # remove blank and commented lines with sed, get variable form outside in awk, and use it to print line at $line_number
-mount_point=$( sed '/^[[:space:]]*$/d' /etc/folder2ram/folder2ram.conf | sed '/^#/d' | awk -v line="$line_number" 'NR == line {print $2}' )
+# then removing trailing //// with sed
+mount_point=$( sed '/^[[:space:]]*$/d' /etc/folder2ram/folder2ram.conf | sed '/^#/d' | awk -v line="$line_number" 'NR == line {print $2}' | sed 's:/*$::' )
 
 # checking if mount point variable is empty, and if it is returning a keyword
 if [ "x$mount_point" != "x" ]; then 
@@ -156,10 +157,11 @@ mount_point=$1
 # mount_type is hardcoded for now, will be set by something else if/when I implement more folder2ram options
 mount_type="tmpfs" 
 
+# removing trailing slashes with sed then let awk handle this
 # field separator is set as "/" then the record separator is set as "-" , the loop prints one by one the fields
 # (because I could not find a better way to get the damn "-" to be inserted properly) 
 # then disables the record separators and prints the variable "mount_type" coming from outside awk (see the -v option)
-clean_mount_point=$(echo "$mount_point" | awk -v mount_type="$mount_type" -F '/' '{ORS="-"; out=$1; for(i=1;i<=NF;i++){out=$i; print out}; ORS=""; print mount_type}' )
+clean_mount_point=$(echo "$mount_point" | sed 's:/*$::'  | awk -v mount_type="$mount_type" -F '/' '{ORS="-"; out=$1; for(i=1;i<=NF;i++){out=$i; print out}; ORS=""; print mount_type}')
 
 # generating the name, will look like this "folder2ram-this-is-a-path-mount_type"
 clean_name="f2r$clean_mount_point"
@@ -168,6 +170,111 @@ clean_name="f2r$clean_mount_point"
 echo "$clean_name"
 
 } #### END FUNCTION
+
+cleaner_script_generic(){
+
+# this function generates a generic cleaner script
+
+cat <<'EOF' > "/sbin/folder2ram_cleaner"
+
+# CLEANER SCRIPT DESIGNED TO UNMOUNT ALL ON SHUTDOWN THEN SELF-DESTRUCT 
+
+read_mount_point() {
+# this reads config file at a predetemined line and extracts mount point 
+# $line_number must come from outside
+# blank lines and commented lines are ignored, so line_number refers only to actual mount points
+# a similar function can be used to extract additional options in the future
+
+line_number=$1 
+
+# remove blank and commented lines with sed, get variable form outside in awk, and use it to print line at $line_number
+# then remove trailing ///// with sed
+mount_point=$( sed '/^[[:space:]]*$/d' /etc/folder2ram_cleaner.conf | sed '/^#/d' | awk -v line="$line_number" 'NR == line {print $2}' | | sed 's:/*$::' )
+
+# checking if mount point variable is empty, and if it is returning a keyword
+if [ "x$mount_point" != "x" ]; then 
+echo "$mount_point";
+else
+echo "no_more_mount_points";
+fi
+
+} #### END read_mount_point
+
+
+############# MAIN PART ##################
+
+# initializing variables    
+line_number=1 
+start_or_stop="stop"
+
+echo "will now $start_or_stop all mountpoints for the last time"
+
+# reading first mountpoint
+# calling another function (above) to fill the mount point at this line number
+mount_point=$(read_mount_point "$line_number")
+
+####:::::#### BEGIN MAIN mount_umount_all UNTIL LOOP ####:::::####
+
+until [ "$mount_point" = "no_more_mount_points" ] ;  do
+
+####:::::#### BEGIN PAYLOAD ####:::::####
+
+#Setting up common variables
+
+DIR="$mount_point"
+LOCKFILE="/run/lock/$NAME.lock"
+TYPE="tmpfs"
+
+# DIRPERM is the bind mount to the directory in permanent storage
+# DIR is the directory we are working with
+
+#setting the place where all this stuff will be bind-mounted
+DIRPERM="/var/folder2ram$DIR"
+
+
+# unmounting stuff
+
+	output_flag=0
+# output_flag values:
+	#   0 if all went well
+	#   1 if it was unmounted already
+
+	[ -f "$LOCKFILE" ] || output_flag=1
+
+	case $output_flag in
+
+		0) 0) # Merge back to permanent storage with 
+		      #rsync preserve-ACLs preserve-owner preserve-group preserve-extended-attributes quiet recursive links time --delete SOURCE ---> DESTINATION
+			if rsync -o -g -A -X -q -r -l -t --delete "$DIR"'/' "$DIRPERM"; then
+				# Success!
+				rm "$LOCKFILE"
+				umount -l "$DIR"
+				umount -l "$DIRPERM"
+			else
+				echo "could not merge back to permanent storage"
+			fi
+		;;
+
+		1) # already unmounted
+			echo "$DIR already unmounted"
+		;;
+	esac
+
+####:::::#### END PAYLOAD ####:::::####
+
+# increasing line number
+line_number=$((line_number+1))
+
+# reading next mountpoint before next iteration in loop
+# calling another function (above) to fill the mount point at this line number
+mount_point=$(read_mount_point "$line_number")
+
+done ####:::::#### END OF mount_umount_all UNTIL LOOP ####:::::####
+
+EOF
+
+
+} #### END cleaner script
 
 
 ########################## PRIMARY FUNCTIONS ################################
@@ -247,8 +354,9 @@ case "$start_or_stop" in
 			# original line, allows to accept options, a feature that I hope to add in the future.
 			mount -t "$TYPE" "folder2ram" "$DIR"
 
-			# Populate the tmpfs
-			if cp -rfp "$DIRPERM" -T "$DIR"; then
+			# Populate the tmpfs with 
+			#rsync preserve-ACLs preserve-owner preserve-group preserve-extended-attributes quiet recursive links time --delete SOURCE ---> DESTINATION
+			if rsync -o -g -A -X -q -r -l -t --delete "$DIRPERM"'/' "$DIR"; then
 				# Success!
 				touch "$LOCKFILE"
 			else
@@ -285,8 +393,9 @@ case "$start_or_stop" in
 
 	case $output_flag in
 
-		0) # Merge back to permanent storage
-			if cp -rfup "$DIR" -T "$DIRPERM"; then
+		0) # Merge back to permanent storage with 
+		   #rsync preserve-ACLs preserve-owner preserve-group preserve-extended-attributes quiet recursive links time --delete SOURCE ---> DESTINATION
+			if rsync -o -g -A -X -r -l -t --delete "$DIR"'/' "$DIRPERM"; then
 				# Success!
 				rm "$LOCKFILE"
 				umount -l "$DIR"
@@ -301,9 +410,7 @@ case "$start_or_stop" in
 		;;
 	esac
 ;;
-
 #################
-
 esac
 
 ####:::::#### END PAYLOAD ####:::::####
@@ -319,28 +426,7 @@ done ####:::::#### END OF mount_umount_all UNTIL LOOP ####:::::####
 
 } ##### END OF function
 
-
-
-###########THIS MIGHT BE DONE IN THE FUTURE
-
-# mount_umount_mountpoint() {
-
-# initializing variables    
-#specified_mount_point=$1
-#start_or_stop=$2
-
-#echo "will $start_or_stop the $specified_mount_point folder if it is in the list"
-
-####:::::#### BEGIN PAYLOAD ####:::::####
-
-####:::::#### END PAYLOAD ####:::::####
-
-# } #### END FUNCTION
-
-
 print_status() {
-
-echo "checking what folders are mounted and what are unmounted"
 
 #prints the status of all mounted folders
 
@@ -361,7 +447,6 @@ until [ "$mount_point" = "no_more_mount_points" ] ;  do
 #generating lockfile mountname for this mount point
 
 NAME=$(generate_mount_name "$mount_point")
-
 LOCKFILE="/run/lock/$NAME.lock"
 
 #checking if this lockfile exists
@@ -385,93 +470,6 @@ done ####:::::#### END MAIN print_status UNTIL LOOP ####:::::####
 
 } #### END FUNCTION
 
-configure() {
-
-#if there is no folder, we create it
-[ -d "/etc/folder2ram" ] || mkdir "/etc/folder2ram"
-
-#if there is no config file it is generated from the template
-if [ ! -e "/etc/folder2ram/folder2ram.conf" ]; then
-
-cat << EOF > "/etc/folder2ram/folder2ram.conf" 
-#############################
-#folder2ram main config file#
-#############################
-#
-#PROTIP: to make /var/lock or /tmp available as ram filesystems, 
-#        it is preferable to set the variables RAMTMP, RAMLOCK
-#        in /etc/default/tmpfs.
-#
-#FILE SYSTEM: only option available is tmpfs, for now
-#
-#OPTIONS: does nothing, will be implemented in the future.
-#
-#<file system>  <mount point>   <options>
-#tmpfs            /var/log        -     <---example entry
-
-EOF
-
-fi
-
-#will now ask for what text editor to use and then open it
-echo "will now open the configuration file with your favourite text editor"
-echo "write its name and press enter (nano, vim, gedit are the most common)"
-read -r editor
-
-"$editor" "/etc/folder2ram/folder2ram.conf" 
-
-} #### END FUNCTION
-
-reset_config() {
-
-echo "will now delete folder2ram startup and revert all changes of folder2ram.conf"
-echo "you sure you want to do that (y or n)"
-read -r choice
-
-case "$choice" in
-
-Y|y|yes|Yes|YES)
-	#calling the functions that do this job
-	install_remove_autostart init_remove
-	install_remove_autostart systemd_remove
-
-	#if there is no folder, we create it
-	[ -d "/etc/folder2ram" ] || mkdir "/etc/folder2ram"
-
-	#removing current config and making a new one
-	rm -f "/etc/folder2ram/folder2ram.conf" 
-	cat << 'EOF' > "/etc/folder2ram/folder2ram.conf" 
-#############################
-#folder2ram main config file#
-#############################
-#
-#PROTIP: to make /var/lock or /tmp available as ram filesystems, 
-#        it is preferable to set the variables RAMTMP, RAMLOCK
-#        in /etc/default/tmpfs.
-#
-#FILE SYSTEM: only option available is tmpfs, for now
-#
-#OPTIONS: does nothing, will be implemented in the future.
-#
-#<file system>  <mount point>   <options>
-#tmpfs            /var/log        -     <---example entry
-
-EOF
-
-;;
-
-N|n|no|No|NO)
-	echo "ok, nevermind then"
-	exit
-;;
-
-*)
-	echo "please write y for yes or n for no"
-;;
-
-esac
-
-} #### END FUNCTION
 
 sync_to_disk() {
 
@@ -487,7 +485,6 @@ mount_point=$(read_mount_point "$line_number")
 ####:::::#### BEGIN MAIN sync_to_disk UNTIL LOOP ####:::::####
 
 until [ "$mount_point" = "no_more_mount_points" ] ;  do
-
 
 ####:::::#### BEGIN PAYLOAD ####:::::####
 
@@ -517,14 +514,12 @@ output_flag=0
 
 	case $output_flag in
 
-		0) # Merge back to permanent storage
-			if cp -rfup "$DIR" -T "$DIRPERM"; then
-				# Success!
-				rm "$LOCKFILE"
-				umount -l "$DIR"
-				umount -l "$DIRPERM"
+		0) # Merge back to permanent storage with
+		   #rsync preserve-ACLs preserve-owner preserve-group preserve-extended-attributes quiet recursive links time --delete SOURCE ---> DESTINATION
+			if rsync -o -g -A -X -q -r -l -t --delete "$DIR"'/' "$DIRPERM"; then
+				echo "sync of $DIR successful!"
 			else
-				echo "could not merge back to permanent storage"
+				echo "could not sync $DIR"
 			fi
 		;;
 
@@ -532,8 +527,6 @@ output_flag=0
 			echo "$DIR unmounted, cannot comply"
 		;;
 	esac
-
-
 ####:::::#### END PAYLOAD ####:::::####
 
 # increasing line number
@@ -548,7 +541,6 @@ done ####:::::#### END MAIN sync_to_disk UNTIL LOOP ####:::::####
 } #### END FUNCTION
 
 
-
 setup_autostart() {
 
 # initializing variables    
@@ -556,7 +548,6 @@ setup=$1
 
 # Deciding if we want init script or systemd module
 # Also deciding if we want to enable or disable NOW, or if we want to enable/disable on reboot.
-
 case "$setup" in
 
 	init_install)
@@ -598,13 +589,10 @@ case "$1" in
   *)
 	echo "Usage: {start|stop}" 
   ;;
-
 esac
 
 exit 0
-
 EOF
-
 		#making it executable
 
 		chmod +x "/etc/init.d/folder2ram"
@@ -612,9 +600,7 @@ EOF
 		#activating it in init
 
 		insserv folder2ram 
-	
 	;;
-	
 	init_remove)
 		
 		#stopping everything first
@@ -625,7 +611,6 @@ EOF
 
 		rm -f "/etc/init.d/folder2ram" #to delete the script
 	;;
-
 	init_safe_remove)
 		
 		# to remove from init script
@@ -633,13 +618,27 @@ EOF
 
 		rm -f "/etc/init.d/folder2ram" #to delete the script
 
-		# now we clone folder2ram's main script to have this work when folder2ram package is removed too
 
-		cp "/sbin/folder2ram"  "/sbin/folder2ram_temporary"
+		#making dedicated cleanup script by calling function first
+
+		make_cleaner_script_generic
+
+		#adding the init-specific self-destruct
+		cat <<'EOF' >> "/sbin/folder2ram_cleaner"
+rm -f "/etc/init.d/folder2ram_cleaner"
+rm -f "/sbin/folder2ram_cleaner.conf"
+rm -f "/sbin/folder2ram_cleaner"
+
+exit
+EOF
+		# now we clone folder2ram's config file
+
+		cp "/etc/folder2ram/folder2ram.conf"  "/etc/folder2ram_cleaner.conf"
 		
-		# and we make it executable
+		# and we make the cleaner script executable
 		
-		chmod +x "/sbin/folder2ram_temporary"
+		chmod +x "/sbin/folder2ram_cleaner"
+
 		
 		# now we need to place a one-shot initscript and activate it
 
@@ -669,33 +668,67 @@ PATH="/sbin:/bin:/usr/sbin:/usr/bin"
 
 case "$1" in
   start)
-	rm "/sbin/folder2ram_temporary" # removing the temporary folder2ram
-	rm "/etc/init.d/folder2ram_temporary" # removing this script on startup
+	## nothing
   ;;
   stop)
 	echo "Stopping folder2ram for the last time"
-	/sbin/folder2ram_temporary -umountall
+	/sbin/folder2ram_cleaner
   ;;
   *)
 	echo "Usage: {start|stop}" 
   ;;
-
 esac
 
 exit 0
-
 EOF
+	#activating it in init
+	insserv folder2ram 
 
-
-	#looks like we are done here, next point please.
 	;;
-
 	systemd_install)
 		#writing a tiny amount of stuff to have systemd do the same thing as above.
 		#clear symptom that systemd is master race.
+
+		#doing a trick where the first service file is a dummy so I can "start" it
+		#so systemd will restart this stuff on reboot
+
 		cat <<'EOF' > "/etc/folder2ram/folder2ram.service"	
 [Unit]
 Description=folder2ram systemd service
+After=local-fs.target
+Before=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/true
+
+[Install]
+WantedBy=local-fs.target﻿
+EOF
+		# enabling the service, will be started on reboot
+		
+		# this stupid thing refuses to enable the service for unknown reasons, and it does not even tell me why
+		# starting it or stopping it works fine.
+		# I'll have to symlink manually the damn thing
+		# systemctl -f enable /etc/folder2ram/folder2ram.service
+		
+		# making manual symlink to the correct folder to do what systemctl refuses to do. path to file, path to symlink.
+		ln -s "/etc/folder2ram/folder2ram.service" "/lib/systemd/system/local-fs.target.wants/folder2ram.service"
+
+		#reloading the configs
+		systemctl daemon-reload 
+
+		#starting the dummy service so it will be "started" for systemd without starting folder2ram
+		systemctl start folder2ram
+
+		#now that it is active, swapping the service file with the real one
+
+		cat <<'EOF' > "/etc/folder2ram/folder2ram.service"	
+[Unit]
+Description=folder2ram systemd service
+After=local-fs.target
+Before=network.target
 
 [Service]
 Type=oneshot
@@ -706,24 +739,7 @@ ExecStop=/sbin/folder2ram -umountall
 [Install]
 WantedBy=local-fs.target﻿
 EOF
-
-
-		# enabling the service, will be started on reboot
-		
-		# this stupid thing refuses to enable the service for unknown reasons, and it does not even tell me why
-		# starting it or stopping it works fine.
-		# I'll have to symlink manually the damn thing
-		# systemctl -f enable /etc/folder2ram/folder2ram.service
-		
-		# making manual symlink to the correct folder to do what systemctl refuses to do. path to file, path to symlink.
-		ln -s /etc/folder2ram/folder2ram.service /lib/systemd/system/local-fs.target.wants/folder2ram.service
-
-		#reloading the configs
-		systemctl daemon-reload 
-
-
 	;;
-
 	systemd_remove)
 
 		#stopping everything first
@@ -733,77 +749,85 @@ EOF
 		#systemctl disable /lib/systemd/system/folder2ram.service
 
 		# disabling service manually
-		rm -f /lib/systemd/system/local-fs.target.wants/folder2ram.service
+		rm -f "/lib/systemd/system/local-fs.target.wants/folder2ram.service"
 
 		#removing the service file
-		rm -f /etc/folder2ram/folder2ram.service
-	;;
+		rm -f "/etc/folder2ram/folder2ram.service"
 
+		#removing another service file
+		rm -f "/etc/systemd/system/folder2ram.service"
+	;;
 	systemd_safe_remove)
 		
 		#disabling the service (which systemctl fails to do)
 		#systemctl disable /lib/systemd/system/folder2ram.service
 
 		# disabling service manually
-		rm -f /lib/systemd/system/local-fs.target.wants/folder2ram.service
+		rm -f "/lib/systemd/system/local-fs.target.wants/folder2ram.service"
 
 		#removing the service file
-		rm -f /etc/folder2ram/folder2ram.service
+		rm -f "/etc/folder2ram/folder2ram.service"
+
+		#removing another service file
+		rm -f "/etc/systemd/system/folder2ram.service"
 
 		#now we pull the same trick as with the initscript above, but modified to work with systemd
-		
-		# now we clone folder2ram's main script to have this work when folder2ram package is removed too
-
-		cp "/sbin/folder2ram"  "/sbin/folder2ram_temporary"
-		
-		# and we make it executable
-		
-		chmod +x "/sbin/folder2ram_temporary"
 
 
-		#making a new service pointing to a temporary folder2ram
+		#making dedicated cleanup script by calling function first
+
+		make_cleaner_script_generic
+
+		#adding the systemd-specific self-destruct
+
+		cat <<'EOF' >> "/etc/folder2ram/folder2ram_cleaner.service"
+rm -f "/etc/folder2ram_cleaner.service"
+rm -f "/etc/systemd/system/folder2ram_cleaner.service"
+rm -f "/lib/systemd/system/local-fs.target.wants/folder2ram_temporary.service"
+rm -f "/sbin/folder2ram_cleaner.conf"
+rm -f "/sbin/folder2ram_cleaner"
+EOF
+		# now we clone folder2ram's config file
+
+		cp "/etc/folder2ram/folder2ram.conf"  "/etc/folder2ram_cleaner.conf"
+		
+		# and we make the cleaner script executable
+		
+		chmod +x "/sbin/folder2ram_cleaner"
+
+
+		#making a new service pointing to a the cleaner script
 		#asking to delete all the stuff we are leaving behind after we are done with the safe shutdown
 
-cat <<'EOF' > "/etc/folder2ram_temporary.service"	
+cat <<'EOF' > "/etc/folder2ram_cleaner.service"	
 [Unit]
 Description=temporary folder2ram systemd service
+After=local-fs.target
+Before=network.target
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
 ExecStart=/bin/true
-ExecStop=/sbin/folder2ram_temporary -umountall
-ExecStop=/bin/rm -f /sbin/folder2ram_temporary
-ExecStop=/bin/rm -f /etc/folder2ram_temporary.service
-ExecStop=/bin/rm -f /lib/systemd/system/local-fs.target.wants/folder2ram.service
-ExecStop=/bin/rm -f /lib/systemd/system/local-fs.target.wants/folder2ram_temporary.service
-
+ExecStop=/sbin/folder2ram_cleaner
 
 [Install]
 WantedBy=local-fs.target﻿
 EOF
-
-
 		# enabling the service.
 				
 		# making manual symlink to the correct folder to do what systemctl refuses to do. path to file, path to symlink.
-		ln -s /etc/folder2ram_temporary.service /lib/systemd/system/local-fs.target.wants/folder2ram_temporary.service
+		ln -s "/etc/folder2ram_cleaner.service" "/lib/systemd/system/local-fs.target.wants/folder2ram_cleaner.service"
 
 		#reloading the configs
 		systemctl daemon-reload 
 
 		#starting it up so systemd knows it must be shut down
-		systemctl start folder2ram_temporary.service
-
-
+		systemctl start folder2ram_cleaner.service
 	;;
-
-
 esac
 
 } ####END FUNCTION
-
-
 
 clean(){
 
@@ -815,9 +839,85 @@ setup_autostart systemd_remove
 
 } #### END FUNCTION
 
+################ CONFIGURATION FILE MANIPULATION FUNCTIONS ######################
+
+write_config_file(){
+cat << EOF > "/etc/folder2ram/folder2ram.conf" 
+#############################
+#folder2ram main config file#
+#############################
+#
+#PROTIP: to make /var/lock or /tmp available as ram filesystems, 
+#        it is preferable to set the variables RAMTMP, RAMLOCK
+#        in /etc/default/tmpfs.
+#
+#FILE SYSTEM: only option available is tmpfs, for now
+#
+#OPTIONS: does nothing, will be implemented in the future.
+#
+#<file system>  <mount point>   <options>
+#tmpfs            /var/log        -     <---example entry
+EOF
+}
+
+configure() {
+
+#if there is no folder, we create it
+[ -d "/etc/folder2ram" ] || mkdir "/etc/folder2ram"
+
+#if there is no config file it is generated from the template
+if [ ! -e "/etc/folder2ram/folder2ram.conf" ]; then
+	# calling the function to write the config file	
+	write_config_file
+fi
+
+#will now ask for what text editor to use and then open it
+echo "will now open the configuration file with your favourite text editor"
+echo "write its name and press enter (nano, vim, gedit are the most common)"
+read -r editor
+
+"$editor" "/etc/folder2ram/folder2ram.conf" 
+
+} #### END FUNCTION
+
+reset_config() {
+
+echo "will now delete folder2ram startup and revert all changes of folder2ram.conf"
+echo "you sure you want to do that (y or n)"
+read -r choice
+
+case "$choice" in
+
+Y|y|yes|Yes|YES)
+	#calling the functions that do this job
+	install_remove_autostart init_remove
+	install_remove_autostart systemd_remove
+
+	#if there is no folder, we create it
+	[ -d "/etc/folder2ram" ] || mkdir "/etc/folder2ram"
+
+	#removing current config and making a new one
+	rm -f "/etc/folder2ram/folder2ram.conf" 	
+	# calling the function to write the config file	
+	write_config_file
+
+;;
+
+N|n|no|No|NO)
+	echo "ok, nevermind then"
+	exit
+;;
+
+*)
+	echo "please write y for yes or n for no"
+;;
+
+esac
+
+} #### END FUNCTION
+
 
 #########################END MAIN FUNCTIONS###########################
-
 
 
 #####################--BEGIN MAIN PROGRAM--################################
