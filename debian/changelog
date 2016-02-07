@@ -1,3 +1,10 @@
+folder2ram (0.2.0) stable; urgency=low
+
+  * rollback to using cp on startup for performance reasons
+  * fixed the systemd issue with a new systemd service file, thanks subzero79
+  * cleanup and restructuring code
+
+ -- Alberto Bursi <starshipeleven@hotmail.it>  Sat, 30 Jan 2016 19:51:36 +0200 
 folder2ram (0.1.9) stable; urgency=low
 
   * using rsync instead of cp for better syncing and deleting deleted files
