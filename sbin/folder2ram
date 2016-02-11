@@ -277,7 +277,7 @@ line_number=$1
 
 # remove blank and commented lines with sed, get variable form outside in awk, and use it to print line at $line_number
 # then remove trailing ///// with sed
-mount_point=$( sed '/^[[:space:]]*$/d' /etc/folder2ram_cleaner.conf | sed '/^#/d' | awk -v line="$line_number" 'NR == line {print $2}' | | sed 's:/*$::' )
+mount_point=$( sed '/^[[:space:]]*$/d' /etc/folder2ram_cleaner.conf | sed '/^#/d' | awk -v line="$line_number" 'NR == line {print $2}' | sed 's:/*$::' )
 
 # checking if mount point variable is empty, and if it is returning a keyword
 if [ "x$mount_point" != "x" ]; then 
