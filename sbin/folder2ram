@@ -217,7 +217,6 @@ write_systemd_service(){
 		cat <<'EOF' > "/lib/systemd/system/folder2ram.service"	
 [Unit]
 Description=folder2ram systemd service
-DefaultDependencies=no
 After=local-fs.target
 Before=basic.target
 
@@ -240,7 +239,6 @@ write_systemd_service_cleanup(){
 cat <<'EOF' > "/lib/systemd/system/folder2ram_cleaner.service"	
 [Unit]
 Description=temporary folder2ram systemd service
-DefaultDependencies=no
 After=basic.target
 Before=network.target
 
