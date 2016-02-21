@@ -210,24 +210,45 @@ EOF
 } #### END write_cleanup_initscript
 
 
-write_systemd_service(){
+write_systemd_startup_service(){
 
 #writing a tiny amount of stuff to have systemd do the same thing as above.
 #clear symptom that systemd is master race.
-		cat <<'EOF' > "/lib/systemd/system/folder2ram.service"	
+		cat <<'EOF' > "/lib/systemd/system/folder2ram_startup.service"	
 [Unit]
 Description=folder2ram systemd service
 After=local-fs.target
 Before=basic.target
+DefaultDependencies=no
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
 ExecStart=/sbin/folder2ram -mountall
-ExecStop=/sbin/folder2ram -umountall
 
 [Install]
 WantedBy=basic.target
+EOF
+
+} #### END write_systemd_service
+
+write_systemd_shutdown_service(){
+
+#writing a tiny amount of stuff to have systemd do the same thing as above.
+#clear symptom that systemd is master race.
+		cat <<'EOF' > "/lib/systemd/system/folder2ram_shutdown.service"	
+[Unit]
+Description=folder2ram systemd service
+Before=shutdown.target reboot.target halt.target
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/sbin/folder2ram -umountall
+
+[Install]
+WantedBy=shutdown.target reboot.target halt.target
 EOF
 
 } #### END write_systemd_service
@@ -784,10 +805,18 @@ case "$setup" in
 	systemd_install)
 		
 		#calling the function that writes the systemd service file
-		write_systemd_service
+		write_systemd_startup_service
 
 		# enabling the service, will be started on reboot
-		systemctl enable "/lib/systemd/system/folder2ram.service"
+		systemctl enable "/lib/systemd/system/folder2ram_startup.service"
+
+		#calling the function that writes the systemd service file
+		write_systemd_shutdown_service
+
+		# enabling the service, will be started on reboot
+		systemctl enable "/lib/systemd/system/folder2ram_shutdown.service"
+
+
 	;;
 	systemd_remove)
 

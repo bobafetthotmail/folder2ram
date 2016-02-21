@@ -1,8 +1,15 @@
+folder2ram (0.2.3) stable; urgency=low
+
+  * split startup and shutdown systemd service files to make sure folder2ram is
+  * called at the right moment
+
+ -- Alberto Bursi <starshipeleven@outlook.com>  Sun, 21 Feb 2016 15:35:20 +0200
+
 folder2ram (0.2.2) stable; urgency=low
 
   * fixed issue 4 (fixed systemd service files)
 
- -- Alberto Bursi <starshipeleven@outlook.com> Wed, 17 Feb 2016 16:45:12 +0200
+ -- Alberto Bursi <starshipeleven@outlook.com>  Wed, 17 Feb 2016 16:45:12 +0200
 
 folder2ram (0.2.1) stable; urgency=low
 
@@ -12,6 +19,7 @@ folder2ram (0.2.1) stable; urgency=low
   * fixed issue 3 (double pipe in cleaner script)
 
  -- Alberto Bursi <starshipeleven@hotmail.it>  Sat, 30 Jan 2016 19:51:36 +0200 
+
 folder2ram (0.1.9) stable; urgency=low
 
   * using rsync instead of cp for better syncing and deleting deleted files

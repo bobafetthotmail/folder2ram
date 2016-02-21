@@ -1,8 +1,8 @@
 Package: folder2ram
-Version: 0.2.0
+Version: 0.2.3
 Architecture: all
 Maintainer: Alberto Bursi <starshipeleven@hotmail.it>
-Installed-Size: 75
+Installed-Size: 76
 Depends: debconf (>= 0.5) | debconf-2.0, rsync
 Section: admin
 Priority: optional
