@@ -840,7 +840,7 @@ case "$setup" in
 
 		#making dedicated cleanup script by calling function first
 		#adding the systemd-specific self-destruct
-		make_cleaner_script_generic systemd
+		cleaner_script_generic systemd
 
 		# now we clone folder2ram's config file
 		cp "/etc/folder2ram/folder2ram.conf"  "/etc/folder2ram_cleaner.conf"
