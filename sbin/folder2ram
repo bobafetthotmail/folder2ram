@@ -48,9 +48,12 @@
 
 #If you edit it, please comment HEAVILY what you are doing, you will thank me later.
 
+VERSION="0.2.4"
+
 ############### USER INTERFACE FUNCTIONS ########################
 
 print_usage() {
+	echo "Welcome to folder2ram version $VERSION !"
 	echo "folder2ram is a script-based utility that relocates the contents of a folder to RAM"
 	echo "and on shutdown unmounts it safely synching the data back to the permanent storage."
 	echo ""
@@ -824,12 +827,14 @@ case "$setup" in
 		mount_umount_all stop
 
 		#disabling the service
-		systemctl disable "/lib/systemd/system/folder2ram.service"
+		systemctl disable "/lib/systemd/system/folder2ram_startup.service"
+		systemctl disable "/lib/systemd/system/folder2ram_shutdown.service"
 	;;
 	systemd_safe_remove)
 		
 		#disabling the service 
-		systemctl disable "/lib/systemd/system/folder2ram.service"
+		systemctl disable "/lib/systemd/system/folder2ram_startup.service"
+		systemctl disable "/lib/systemd/system/folder2ram_shutdown.service"
 
 		#now we pull the same trick as with the initscript above, but modified to work with systemd
 

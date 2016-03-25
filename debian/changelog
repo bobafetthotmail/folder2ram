@@ -1,3 +1,10 @@
+folder2ram (0.2.4) stable; urgency=low
+
+  * fixed a fail-to-disable-folder2ram issue
+  * version is now shown in the help
+
+ -- Alberto Bursi <starshipeleven@outlook.com>  Fri, 25 Mar 2016 08:17:20 +0200
+
 folder2ram (0.2.3) stable; urgency=low
 
   * split startup and shutdown systemd service files to make sure folder2ram is
