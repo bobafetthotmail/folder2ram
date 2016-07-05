@@ -1,7 +1,0 @@
-# The folder2ram init.d script should be a part of the virtual $local_fs facility
-# It can't depend on it.
-folder2ram binary: init.d-script-should-depend-on-virtual-facility
-
-# The operating system must not unmount some parts of the local filesystem in
-# the single user mode.
-folder2ram binary: init.d-script-possible-missing-stop

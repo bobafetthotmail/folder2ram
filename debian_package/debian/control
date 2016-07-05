@@ -1,11 +1,14 @@
-Package: folder2ram
-Version: 0.2.4
-Architecture: all
-Maintainer: Alberto Bursi <starshipeleven@hotmail.it>
-Installed-Size: 76
-Depends: debconf (>= 0.5) | debconf-2.0, rsync
+Source: folder2ram
 Section: admin
 Priority: optional
+Maintainer: Alberto Bursi <starshipeleven@outlook.com>
+Build-Depends: 
+Standards-Version: 3.9.3
+
+Package: folder2ram
+Architecture: all
+Depends: ${misc:Depends}, rsync, gawk, 
 Description: script-based utility to manage tmpfs folders
  It syncs data on power up, on shutdown, and on request.
  Mostly useful for long-term usage of flash drives as system drive.
+

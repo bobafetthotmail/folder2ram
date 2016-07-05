@@ -1,20 +1,30 @@
 # folder2ram
 
-a rewrite of fs2ram that aims to be simpler, faster, safer.
-
 A script that moves a folder to RAM (tmpfs) and can sync it to disk any time thanks to bind mounts.
 
-Designed to be controlled manually for easy integration with other projects.
+Designed to be self-contained and controlled manually for easy integration with other projects.
 
-debian package as I stay mostly in debian environments.
+Packed as a debian package as I stay mostly in debian environments.
+Will also make a openSUSE package after I fully migrated to that.
 
+READYNESS: stable (finally)
 
-READYNESS: Beta testing.
+FEATURES:
+
+-can move a folder (and its contents) to a tmpfs mount in ram, then move it back to permanent storage at shutdown
+-can sync the contents at any time
+-can be set to autostart
+-supports natively SysV init 
+-supports natively Systemd init
 
 
 DONE (newest first):
 
--- now working with systemd
+-- the repo has been rearranged in preparation for an openSUSE package
+
+-- folders created by folder2ram are inheriting the user, group and permissions of the nearest parent folder in their path
+
+-- working with systemd
 
 -- major rework to clean up stuff, now there is only ONE initscript calling the main script
 
@@ -22,7 +32,7 @@ DONE (newest first):
 
 -- fixed various bugs about initscripts and checks failing.
 
--- fixed the folder2ram initscript template file with dos2unix (converted it to Unix) because it was giving weird nonsense syntax errors. and I'm on linux. Never wrote anything on Windows or DOS.
+-- fixed the folder2ram initscript template file with dos2unix (converted it to Unix) because it was giving weird nonsense syntax errors. And I'm on linux. Never wrote on folder2ram from Windows.
 
 -- write better readme and manual about what happens when folder2ram is run.
 
