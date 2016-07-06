@@ -573,13 +573,13 @@ echo "will now $start_or_stop all mountpoints"
 
 # reading first mountpoint
 
-# calling another function (above) to fill the type at this line number
+echo "calling another function (above) to fill the type at this line number"
 TYPE=$(read_type "$line_number")
 
-# calling another function (above) to fill the mount point at this line number
+echo "calling another function (above) to fill the mount point at this line number"
 mount_point=$(read_mount_point "$line_number")
 
-# calling another function (above) to fill the options at this line number
+echo "calling another function (above) to fill the options at this line number"
 options=$(read_options "$line_number")
 
 ####:::::#### BEGIN MAIN mount_umount_all UNTIL LOOP ####:::::####
@@ -597,13 +597,15 @@ LOCKFILE="/run/lock/$NAME.lock"
 #TYPE="tmpfs"
 
 #loading the mode of the parent directory
-MODE='0'$(env stat -c "%a " "$DIR")
+MODE=$(env stat -c "%a " "$DIR")
+echo $MODE
 
 # DIRPERM is the bind mount to the directory in permanent storage
 # DIR is the directory we are working with
 
 #setting the place where all this stuff will be bind-mounted
 DIRPERM="/var/folder2ram$DIR"
+echo $DIRPERM
 
 #Deciding if mounting or unmounting stuff
 case "$start_or_stop" in
@@ -627,11 +629,17 @@ case "$start_or_stop" in
 	#[ -d "$DIRPERM" ] || mkdir -p "$DIRPERM" || output_flag=2
 	[ -d "$DIRPERM" ] || generate_folder_with_same_permission "$DIRPERM" || output_flag=2
 
+echo "done dirperm folder"
+
 	# options either does not exist (first invocation)
 	# or is empty (left from previous invocation).
 	# 
 	#[ -d "$options" ] || mkdir -p "$options" || output_flag=2
-	[ -d "$options" ] || generate_folder_with_same_permission "$options" || output_flag=2
+	#if ( $options == "no_options" ) then
+	#[ -d "$options" ] || generate_folder_with_same_permission "$options" || output_flag=2
+	#fi
+
+echo "done option folder"
 
 	case $output_flag in
 
@@ -659,9 +667,14 @@ case "$start_or_stop" in
 					mount --bind --make-private "$DIR" "$DIRPERM"
 
 					#here we generate/mount a tmpfs over it
-					mount -t "tmpfs" -o nosuid,noexec,nodev,mode="$MODE" "folder2ram" "$DIR"
+					mount -t "tmpfs" -o nosuid,noexec,nodev "folder2ram" "$DIR"
+					echo "mount -t "tmpfs" -o nosuid,noexec,nodev "folder2ram" "$DIR""
 
-					#changing owner and groups to be the same as original					
+					#changing permissions, owner and groups to be the same as original
+
+					#chmodding recursively all folder path with same permissions as existing parent
+					chmod -R --reference="$DIRPERM" "$DIR"
+					
 					#chowning recursively all folder path with same permissions as existing parent
 					chown -R --reference="$DIRPERM" "$DIR"
 
@@ -755,11 +768,7 @@ case "$start_or_stop" in
 							fi
 					;;
 
-					bind-local-dir)
-					#nothing to do here
-
-					;;
-					sync-local-dir)
+					localdir)
 							# Merge back to permanent storage with 
 							#rsync preserve-ACLs preserve-owner preserve-group preserve-extended-attributes quiet recursive links time --delete 
 							#SOURCE ---> DESTINATION
@@ -771,7 +780,6 @@ case "$start_or_stop" in
 							else
 								echo "could not merge back to permanent storage"
 							fi
-					
 					;;
 			esac
 		;;
