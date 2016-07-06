@@ -12,9 +12,13 @@ READYNESS: stable (finally)
 FEATURES:
 
 -can move a folder (and its contents) to a tmpfs mount in ram, then move it back to permanent storage at shutdown
+
 -can sync the contents at any time
+
 -can be set to autostart
+
 -supports natively SysV init 
+
 -supports natively Systemd init
 
 
@@ -47,28 +51,22 @@ much better and safer than fs2ram's own system, as it runs a bind mount before m
 Added check so that if it fails it will safely unmount stuff. Won't leave it borked.
 
 
-
-
-
-
+------------------------------------------
 
 TODO (additional features for the future, these wait until I'm sure the core is stable):
 
-add safety checks to avoid trying to mount things as tmpfs when the folder is too big to fit into RAM
+-add safety checks to avoid trying to mount things as tmpfs when the folder is too big to fit into RAM
 (mostly to notify the user during configuration, the initscript fails safely already, no broken things in any case)
 
-add optional names for mount points (easier to remember/faster to write than full path when calling folder2ram)
+-add optional names for mount points (easier to remember/faster to write than full path when calling folder2ram)
 
-add optional periodic sync to disk
+-add optional periodic sync to disk
 
-add optional remote sync
+-add optional remote sync
 
-add optional custom/settable paths where the folders can be synced
+-add optional custom/settable paths where the folders can be synced
 
-add more options like tmpfs size and mount options
+-add more options like tmpfs size and mount options
 
-
-TODO2 (these may become top priority or stay in the backburner for ages):
-
-add an option to make a squashfs or similar heavily compressed archive either on disk or moved to RAM. 
+-add an option to make a squashfs or similar heavily compressed archive either on disk or moved to RAM. 
 it should theoretically increase performance, usually the CPU can decompress faster than the storage system can read.
