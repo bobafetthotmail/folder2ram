@@ -652,19 +652,19 @@ case "$start_or_stop" in
 	#[ -d "$DIRPERM" ] || mkdir -p "$DIRPERM" || output_flag=2
 	[ -d "$DIRPERM" ] || generate_folder_with_same_permission "$DIRPERM" || output_flag=2
 
-echo "done dirperm folder"
+#echo "done dirperm folder"
 
 	# options either does not exist (first invocation)
 	# or is empty (left from previous invocation).
 	#
 	#[ -d "$options" ] || mkdir -p "$options" || output_flag=2
 
-echo $options
+#echo $options
 
 	[ $options != *"no_options"* ] || [ -d "$options" ] || generate_folder_with_same_permission "$options" || output_flag=2
 
 
-echo "done option folder"
+#echo "done option folder"
 
 	case $output_flag in
 
@@ -693,7 +693,7 @@ echo "done option folder"
 
 					#here we generate/mount a tmpfs over it
 					mount -t "tmpfs" -o nosuid,noexec,nodev "folder2ram" "$DIR"
-					echo "mount -t "tmpfs" -o nosuid,noexec,nodev "folder2ram" "$DIR""
+					#echo "mount -t "tmpfs" -o nosuid,noexec,nodev "folder2ram" "$DIR""
 
 					#changing permissions, owner and groups to be the same as original
 
