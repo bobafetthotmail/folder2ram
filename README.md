@@ -4,10 +4,13 @@ A script that moves a folder to RAM (tmpfs) and can sync it to disk any time tha
 
 Designed to be self-contained and controlled manually for easy integration with other projects.
 
-Packed as a debian package as I stay mostly in debian environments.
-Will also make a openSUSE package after I fully migrated to that.
+Packed as a debian package as it is made for OpenMediaVault that is a Debian-based distro.
 
-READYNESS: stable (finally)
+The script itself is self-contained though, to use it in another distro just copy it from /debian_package/sbin into the /sbin of your system, chmod +x it to make it executable and you are ready to go.
+
+There is a gentoo ebuild in https://github.com/comio/comio-overlay (not mantained by me).
+
+READYNESS: stable
 
 FEATURES:
 
@@ -23,6 +26,8 @@ FEATURES:
 
 
 DONE (newest first):
+
+-- all files and the script itself now are not created world-writable nor world-executable anymore
 
 -- the repo has been rearranged in preparation for an openSUSE package
 
