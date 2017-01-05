@@ -919,7 +919,7 @@ LOCKFILE="/run/lock/$NAME.lock"
 case $TYPE in
 
 	tmpfs)
-	destination="/var/folder2ram$DIR"
+	destination="/var/folder2ram$source"
 	;;
 
 	localdir)
