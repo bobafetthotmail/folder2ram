@@ -1,3 +1,9 @@
+folder2ram (0.2.7) stable; urgency=low
+
+  * fixed typo that was breaking syncall command, thanks Kotove!
+
+ -- Alberto Bursi <starshipeleven@outlook.com>  Sat, 7 Gen 2017 13:23:10 +0200
+  
 folder2ram (0.2.6) stable; urgency=low
 
   * all files and script aren't world-writable nor world-executable anymore
@@ -5,7 +11,6 @@ folder2ram (0.2.6) stable; urgency=low
   * fixed clean() function to not post confusing error messages
   * automatic detection of the right place for systemd files
   * tested and works in both Debian and OpenSUSE
-
 
  -- Alberto Bursi <starshipeleven@outlook.com>  Fri, 1 Jul 2016 16:30:40 +0200
 
