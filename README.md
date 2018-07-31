@@ -12,7 +12,7 @@ There is a gentoo ebuild in https://github.com/comio/comio-overlay (not mantaine
 
 READYNESS: stable
 
-FEATURES:
+### FEATURES:
 
 -can move a folder (and its contents) to a tmpfs mount in ram, then move it back to permanent storage at shutdown
 
@@ -25,7 +25,7 @@ FEATURES:
 -supports natively Systemd init
 
 
-DONE (newest first):
+### DONE (newest first):
 
 -- all files and the script itself now are not created world-writable nor world-executable anymore
 
@@ -58,10 +58,10 @@ Added check so that if it fails it will safely unmount stuff. Won't leave it bor
 
 ------------------------------------------
 
-TODO (additional features for the future, these wait until I'm sure the core is stable):
+Things I never got around to implement:
 
 -add safety checks to avoid trying to mount things as tmpfs when the folder is too big to fit into RAM
-(mostly to notify the user during configuration, the initscript fails safely already, no broken things in any case)
+(mostly to notify the user during configuration, folder2ram fails safely already, no broken things in any case)
 
 -add optional names for mount points (easier to remember/faster to write than full path when calling folder2ram)
 
@@ -75,3 +75,140 @@ TODO (additional features for the future, these wait until I'm sure the core is 
 
 -add an option to make a squashfs or similar heavily compressed archive either on disk or moved to RAM. 
 it should theoretically increase performance, usually the CPU can decompress faster than the storage system can read.
+
+## INSTALLATION
+
+Run the following commands as root or with sudo:
+
+Download the script from this github repo directly and place it in /sbin with this command
+**wget -O /sbin/folder2ram https://raw.githubusercontent.com/bobafetthotmail/folder2ram/master/debian_package/sbin/folder2ram**
+
+Then make it executable
+**chmod +x /sbin/folder2ram**
+
+Then execute it (still as root) to see the help.
+**folder2ram**
+
+and you will see the following help text
+```
+
+Welcome to folder2ram version 0.2.8  !
+folder2ram is a script-based utility that relocates the contents of a folder to RAM
+and on shutdown unmounts it safely synching the data back to the permanent storage.
+
+There are four main components of folder2ram system:
+--the init script in /etc/init.d or the systemd service in /etc/folder2ram that calls this main script on boot and shutdown
+--the main script in /etc/sbin/folder2ram
+--the configuration file in /etc/folder2ram/folder2ram.conf
+--the folders in /var/folder2ram, the bind-mounted folders
+  they allow easy access to the original folder in permanent storage
+  since if you mount folder A on folder B you lose access to folder B
+  this trick allows access to B, allowing synching with the tmpfs at will
+
+for first startup use -configure action, edit the mount points as you wish, then -mountall
+
+list of actions (only one at a time):
+
+-enableinit
+::::::::::sets up an appropriate autostart/stop init script, does not start it
+
+-enablesystemd
+::::::::::sets up an appropriate autostart/stop systemd service, does not start it
+
+-disableinit
+::::::::::removes the autostart/stop init script and unmounts all mount points
+
+-disablesystemd
+::::::::::removes the autostart/stop systemd service and unmounts all mount points
+
+-safe-disableinit
+::::::::::removes the autostart/stop init script but unmounts only at shutdown (hence safely)
+::::::::::it also works if folder2ram is unistalled shortly afterwards
+
+-safe-disablesystemd
+::::::::::removes the autostart/stop systemd service but unmounts only at shutdown (hence safely)
+::::::::::it also works if folder2ram is unistalled shortly afterwards
+
+-status
+::::::::::print all mountpoints and their status (mounted or unmounted)
+
+-sync X
+::::::::::sync to disk the content of folder2ram's tmpfs folder number X (start counting from top entry in the config file)
+
+-syncall
+::::::::::sync to disk the content of folder2ram's tmpfs folders
+
+-mountall
+::::::::::folder2ram will mount all folders in the config file
+
+-umountall
+::::::::::folder2ram will unmount all folders in the config file
+
+-configure
+::::::::::folder2ram will open the configuration file in a text editor
+
+-reset
+::::::::::restore default config file
+
+-clean
+::::::::::unmounts all folders then removes any autostart
+::::::::::WARNING: this might break programs that are using files in the tmpfs
+::::::::::if you have programs using the tmpfs please use -safe-disableinit or
+::::::::::-safe-disablesystemd, and then reboot the system
+```
+
+
+As mentioned in the help, 
+"for first startup use -configure action, edit the mount points as you wish, then -mountall"
+
+So do a 
+
+**folder2ram -configure** 
+
+and it will generate the default config file and then ask you what is your favourite text editor to open it.
+
+Edit that file to add your folders and then you can start it with a 
+**folder2ram -mountall** 
+
+If you want to start it on boot, you will probably need to create and enable the systemd service or init script. Execute only ONE of the two commands, depending on what you are using.
+
+A normal Debian 8 or 9 system is using systemd for services so you will need to write 
+
+**folder2ram -enablesystemd**
+
+If your Debian is using init scripts instead (this is NOT the default Debian install), then write 
+
+**folder2ram -enableinit**
+
+## Which directories are recommended
+
+In Openmediavault (Debian) this script is using this configuration file 
+
+https://github.com/OpenMediaVault-Plugin-Developers/openmediavault-flashmemory/blob/master/usr/share/openmediavault/mkconf/flashmemory
+
+```
+#################################################################################
+#folder2ram main config file, autogenerated by openmediavault flashmemory plugin#
+#################################################################################
+#
+#PROTIP: to make /var/lock or /tmp available as ram filesystems,
+#        it is preferable to set the variables RAMTMP, RAMLOCK
+#        in /etc/default/tmpfs.
+#
+#FILE SYSTEM: does nothing, will be implemented in the future. (everything goes to tmpfs for now)
+#OPTIONS: does nothing, will be implemented in the future.
+#
+#<file system>  <mount point>                 <options>
+#tmpfs           /var/cache                 #this folder will be activated later after testing is completed
+tmpfs           /var/log
+tmpfs           /var/tmp
+tmpfs           /var/lib/openmediavault/rrd
+tmpfs           /var/spool
+tmpfs           /var/lib/rrdcached/
+tmpfs           /var/lib/monit
+tmpfs           /var/lib/php                #keep_folder_structure   folder2ram does not have an equivalent yet
+tmpfs           /var/lib/netatalk/CNID
+tmpfs           /var/cache/samba
+```
+
+In this post on OpenMediavault forum I explain how you can track down additional folders that are seeing many writes (as you may have installed other applications) https://forum.openmediavault.org/index.php/Thread/6438-Tutorial-Experimental-Third-party-Plugin-available-Reducing-OMV-s-disk-writes-al/
