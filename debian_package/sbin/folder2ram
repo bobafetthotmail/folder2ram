@@ -6,7 +6,7 @@
 #
 # Copyright:
 #
-#     Alberto Bursi 2015-2016
+#     Alberto Bursi 2015-2018
 #
 # License:
 #
@@ -48,7 +48,7 @@
 
 #If you edit it, please comment HEAVILY what you are doing, you will thank me later.
 
-VERSION="0.2.7"
+VERSION="0.2.8"
 
 ############### USER INTERFACE FUNCTIONS ########################
 
@@ -92,6 +92,9 @@ print_usage () {
 	echo ""
 	echo "-status"
 	echo "::::::::::print all mountpoints and their status (mounted or unmounted)"
+	echo ""
+	echo "-sync X"
+	echo "::::::::::sync to disk the content of folder2ram's tmpfs folder number X (start counting from top entry in the config file)"
 	echo ""
 	echo "-syncall"
 	echo "::::::::::sync to disk the content of folder2ram's tmpfs folders"
@@ -881,11 +884,17 @@ done ####:::::#### END MAIN print_status UNTIL LOOP ####:::::####
 
 sync_to_disk () {
 
+#used to allow selective sync of some folder
+choice="$1"
+
 # initializing variables
 line_number=1
 
-echo "will now sync all mountpoints"
-
+if [ "$choice" = "0" ] ; then
+    echo "will now sync all mountpoints"
+else
+    echo "will sync only mountpoint $choice"
+fi
 # reading first mountpoint
 
 # calling another function (above) to fill the type at this line number
@@ -901,74 +910,83 @@ options=$(read_options "$line_number")
 
 until [ "$mount_point" = "no_more_mount_points" ] ;  do
 
-####:::::#### BEGIN PAYLOAD ####:::::####
 
-#Setting up common variables
-NAME=$(generate_mount_name "$mount_point")
-source="$mount_point"
-LOCKFILE="/run/lock/$NAME.lock"
-#SIZE=16M this can be interesting for later, for now it stays disabled
-#TYPE="tmpfs"
-#MODE=0755
+    if [ "$choice" = "0" ] || [ "$choice" = "$line_number" ]; then
 
-# DIRPERM is the bind mount to the directory in permanent storage
-# DIR is the directory we are working with
+        ####:::::#### BEGIN PAYLOAD ####:::::####
 
-#setting the place where all this stuff will be bind-mounted
+        #Setting up common variables
+        NAME=$(generate_mount_name "$mount_point")
+        source="$mount_point"
+        LOCKFILE="/run/lock/$NAME.lock"
+        #SIZE=16M this can be interesting for later, for now it stays disabled
+        #TYPE="tmpfs"
+        #MODE=0755
 
-case $TYPE in
+        # DIRPERM is the bind mount to the directory in permanent storage
+        # DIR is the directory we are working with
 
-	tmpfs)
-	destination="/var/folder2ram$source"
-	;;
+        #setting the place where all this stuff will be bind-mounted
 
-	localdir)
-	destination="$options"
-	;;
+        case $TYPE in
 
-esac
+            tmpfs)
+            destination="/var/folder2ram$source"
+            ;;
 
-# synching to disk
+            localdir)
+            destination="$options"
+            ;;
 
-output_flag=0
-# output_flag values:
-	#   0 if all went well
-	#   1 if it was unmounted already
+        esac
 
-	[ -f "$LOCKFILE" ] || output_flag=1
+        # synching to disk
 
-	case $output_flag in
+        output_flag=0
+        # output_flag values:
+            #   0 if all went well
+            #   1 if it was unmounted already
 
-		0) # Merge back to permanent storage with
-		   #rsync preserve-ACLs preserve-owner preserve-group preserve-extended-attributes quiet recursive links time --delete SOURCE ---> DESTINATION
-			if rsync -o -g -A -X -q -r -l -t --delete "$source"'/' "$destination"; then
-				echo "sync of $source successful!"
-			else
-				echo "could not sync $source"
-			fi
-		;;
+            [ -f "$LOCKFILE" ] || output_flag=1
 
-		1) # already unmounted
-			echo "$source unmounted, cannot comply"
-		;;
-	esac
-####:::::#### END PAYLOAD ####:::::####
+            case $output_flag in
 
-# increasing line number
-line_number=$((line_number+1))
+                0) # Merge back to permanent storage with
+                #rsync preserve-ACLs preserve-owner preserve-group preserve-extended-attributes quiet recursive links time --delete SOURCE ---> DESTINATION
+                    if rsync -o -g -A -X -q -r -l -t --delete "$source"'/' "$destination"; then
+                        echo "sync of $source successful!"
+                    else
+                        echo "could not sync $source"
+                    fi
+                ;;
 
-# reading next mountpoint before next iteration in loop
+                1) # already unmounted
+                    echo "$source unmounted, cannot comply"
+                ;;
+            esac
+        ####:::::#### END PAYLOAD ####:::::####
 
-# calling another function (above) to fill the type at this line number
-TYPE=$(read_type "$line_number")
+    fi
 
-# calling another function (above) to fill the mount point at this line number
-mount_point=$(read_mount_point "$line_number")
+    # increasing line number
+    line_number=$((line_number+1))
 
-# calling another function (above) to fill the options at this line number
-options=$(read_options "$line_number")
+    # reading next mountpoint before next iteration in loop
+
+    # calling another function (above) to fill the type at this line number
+    TYPE=$(read_type "$line_number")
+
+    # calling another function (above) to fill the mount point at this line number
+    mount_point=$(read_mount_point "$line_number")
+
+    # calling another function (above) to fill the options at this line number
+    options=$(read_options "$line_number")
 
 done ####:::::#### END MAIN sync_to_disk UNTIL LOOP ####:::::####
+
+if [ "$choice" -ge "$line_number" ] && [ "$choice" != "0" ] ; then
+    echo "mountpoint $choice does not exist"
+fi
 
 } #### END sync_to_disk
 
@@ -1213,8 +1231,11 @@ case "$action" in
 -reset)
     	reset_config
     	;;
+-sync)
+    sync_to_disk "$2"
+    ;;
 -syncall)
-	sync_to_disk
+	sync_to_disk "0"
 	;;
 -clean)
 	clean

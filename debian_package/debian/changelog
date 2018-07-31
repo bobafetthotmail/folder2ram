@@ -1,3 +1,8 @@
+folder2ram (0.2.8) stable; urgency=low
+
+  * added -sync X commmand to sync only a single folder and not all.
+
+ -- Alberto Bursi <starshipeleven@outlook.com>  Sat, 31 Jul 2018 16:03:42 +0200
 folder2ram (0.2.7) stable; urgency=low
 
   * fixed typo that was breaking syncall command, thanks Kotove!
