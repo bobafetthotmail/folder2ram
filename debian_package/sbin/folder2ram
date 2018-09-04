@@ -552,7 +552,8 @@ mount_type="tmpfs"
 # field separator is set as "/" then the record separator is set as "-" , the loop prints one by one the fields
 # (because I could not find a better way to get the damn "-" to be inserted properly)
 # then disables the record separators and prints the variable "mount_type" coming from outside awk (see the -v option)
-clean_mount_point=$(echo "$mount_point" | sed 's:/*$::'  | awk -v mount_type="$mount_type" -F '/' '{ORS="-"; out=$1; for(i=1;i<=NF;i++){out=$i; print out}; ORS=""; print mount_type}')
+#then replaces spaces in the names with "-"
+clean_mount_point=$(echo "$mount_point" | sed 's:/*$::'  | awk -v mount_type="$mount_type" -F '/' '{ORS="-"; out=$1; for(i=1;i<=NF;i++){out=$i; print out}; ORS=""; print mount_type}' | tr ' ' '-' )
 
 # generating the name, will look like this "folder2ram-this-is-a-path-mount_type"
 clean_name="f2r$clean_mount_point"
