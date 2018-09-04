@@ -1,21 +1,28 @@
+folder2ram (0.3.0) stable; urgency=low
+
+  * hotfix for Debian, it was not parsing path names with spaces while on
+    OpenSUSE it was all fine
+
+ -- Alberto Bursi <starshipeleven@outlook.com>  Tue, 04 Sep 2018 21:56:25 +0200
+
 folder2ram (0.2.9) stable; urgency=low
 
   * now the script can work with path names that have spaces in them.
 
- -- Alberto Bursi <starshipeleven@outlook.com>  Sat, 04 Sep 2018 12:31:36 +0200
+ -- Alberto Bursi <starshipeleven@outlook.com>  Tue, 04 Sep 2018 12:31:36 +0200
 
 folder2ram (0.2.8) stable; urgency=low
 
   * added -sync X commmand to sync only a single folder and not all.
 
  -- Alberto Bursi <starshipeleven@outlook.com>  Sat, 31 Jul 2018 16:03:42 +0200
- 
+
 folder2ram (0.2.7) stable; urgency=low
 
   * fixed typo that was breaking syncall command, thanks Kotove!
 
  -- Alberto Bursi <starshipeleven@outlook.com>  Sat, 7 Gen 2017 13:23:10 +0200
-  
+
 folder2ram (0.2.6) stable; urgency=low
 
   * all files and script aren't world-writable nor world-executable anymore

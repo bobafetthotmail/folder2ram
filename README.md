@@ -20,7 +20,7 @@ READYNESS: stable
 
 -can be set to autostart
 
--supports natively SysV init 
+-supports natively SysV init
 
 -supports natively Systemd init
 
@@ -73,7 +73,7 @@ Things I never got around to implement:
 
 -add more options like tmpfs size and mount options
 
--add an option to make a squashfs or similar heavily compressed archive either on disk or moved to RAM. 
+-add an option to make a squashfs or similar heavily compressed archive either on disk or moved to RAM.
 it should theoretically increase performance, usually the CPU can decompress faster than the storage system can read.
 
 ## INSTALLATION
@@ -81,6 +81,7 @@ it should theoretically increase performance, usually the CPU can decompress fas
 Run the following commands as root or with sudo:
 
 Download the script from this github repo directly and place it in /sbin with this command
+
 **wget -O /sbin/folder2ram https://raw.githubusercontent.com/bobafetthotmail/folder2ram/master/debian_package/sbin/folder2ram**
 
 Then make it executable
@@ -92,7 +93,7 @@ Then execute it (still as root) to see the help.
 and you will see the following help text
 ```
 
-Welcome to folder2ram version 0.2.8  !
+Welcome to folder2ram version 0.3.0  !
 folder2ram is a script-based utility that relocates the contents of a folder to RAM
 and on shutdown unmounts it safely synching the data back to the permanent storage.
 
@@ -158,31 +159,31 @@ list of actions (only one at a time):
 ```
 
 
-As mentioned in the help, 
+As mentioned in the help,
 "for first startup use -configure action, edit the mount points as you wish, then -mountall"
 
-So do a 
+So do a
 
-**folder2ram -configure** 
+**folder2ram -configure**
 
 and it will generate the default config file and then ask you what is your favourite text editor to open it.
 
-Edit that file to add your folders and then you can start it with a 
-**folder2ram -mountall** 
+Edit that file to add your folders and then you can start it with a
+**folder2ram -mountall**
 
 If you want to start it on boot, you will probably need to create and enable the systemd service or init script. Execute only ONE of the two commands, depending on what you are using.
 
-A normal Debian 8 or 9 system is using systemd for services so you will need to write 
+A normal Debian 8 or 9 system is using systemd for services so you will need to write
 
 **folder2ram -enablesystemd**
 
-If your Debian is using init scripts instead (this is NOT the default Debian install), then write 
+If your Debian is using init scripts instead (this is NOT the default Debian install), then write
 
 **folder2ram -enableinit**
 
 ## Which directories are recommended
 
-In Openmediavault (Debian) this script is using this configuration file 
+In Openmediavault (Debian) this script is using this configuration file
 
 https://github.com/OpenMediaVault-Plugin-Developers/openmediavault-flashmemory/blob/master/usr/share/openmediavault/mkconf/flashmemory
 
@@ -199,16 +200,18 @@ https://github.com/OpenMediaVault-Plugin-Developers/openmediavault-flashmemory/b
 #OPTIONS: does nothing, will be implemented in the future.
 #
 #<file system>  <mount point>                 <options>
-#tmpfs           /var/cache                 #this folder will be activated later after testing is completed
-tmpfs           /var/log
-tmpfs           /var/tmp
-tmpfs           /var/lib/openmediavault/rrd
-tmpfs           /var/spool
-tmpfs           /var/lib/rrdcached/
-tmpfs           /var/lib/monit
-tmpfs           /var/lib/php                #keep_folder_structure   folder2ram does not have an equivalent yet
-tmpfs           /var/lib/netatalk/CNID
-tmpfs           /var/cache/samba
+#tmpfs		/var/cache                 #this folder will be activated later after testing is completed
+tmpfs		/var/log
+tmpfs		/var/tmp
+tmpfs		/var/lib/openmediavault/rrd
+tmpfs		/var/spool
+tmpfs		/var/lib/rrdcached/
+tmpfs		/var/lib/monit
+tmpfs		/var/lib/php                #keep_folder_structure   folder2ram does not have an equivalent yet
+tmpfs		/var/lib/netatalk/CNID
+tmpfs		/var/cache/samba
 ```
 
-In this post on OpenMediavault forum I explain how you can track down additional folders that are seeing many writes (as you may have installed other applications) https://forum.openmediavault.org/index.php/Thread/6438-Tutorial-Experimental-Third-party-Plugin-available-Reducing-OMV-s-disk-writes-al/
+In this post on OpenMediavault forum I explain how you can track down additional folders that are seeing many writes (as you may have installed other applications)
+
+https://forum.openmediavault.org/index.php/Thread/6438-Tutorial-Experimental-Third-party-Plugin-available-Reducing-OMV-s-disk-writes-al/
