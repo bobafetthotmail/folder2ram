@@ -48,7 +48,7 @@
 
 #If you edit it, please comment HEAVILY what you are doing, you will thank me later.
 
-VERSION="0.2.8"
+VERSION="0.2.9"
 
 ############### USER INTERFACE FUNCTIONS ########################
 
@@ -440,6 +440,8 @@ cat << EOF > "/etc/folder2ram/folder2ram.conf"
 #
 #OPTIONS: ignored for tmpfs, path to local dir for localdir entries.
 #
+#IMPORTANT: use 2 Tabs to separate "type" from "mount point" from "options", the script needs them to read correctly the configuration.
+#
 #<type>		<mount point>			<options>
 #tmpfs		/var/log
 EOF
@@ -504,7 +506,7 @@ line_number=$1
 
 # remove blank and commented lines with sed, get variable from outside in awk, and use it to print line at $line_number
 # then removing trailing //// with sed
-mount_point=$( sed '/^[[:space:]]*$/d' /etc/folder2ram/folder2ram.conf | sed '/^#/d' | awk -v line="$line_number" 'NR == line {print $2}' | sed 's:/*$::' )
+local mount_point=$( sed '/^[[:space:]]*$/d' /etc/folder2ram/folder2ram.conf | sed '/^#/d' | awk -v line="$line_number" 'NR == line {print $0}' | awk -F'\t\t' '{print $2}' | sed 's:/*$::' | tr -d '\t' )
 
 # checking if mount point variable is empty, and if it is returning a keyword
 if [ "x$mount_point" != "x" ]; then
@@ -603,7 +605,7 @@ echo "will now $start_or_stop all mountpoints"
 TYPE=$(read_type "$line_number")
 
 # calling another function (above) to fill the mount point at this line number
-mount_point=$(read_mount_point "$line_number")
+mount_point="$(read_mount_point "$line_number")"
 
 # calling another function (above) to fill the options at this line number
 options=$(read_options "$line_number")
@@ -611,6 +613,8 @@ options=$(read_options "$line_number")
 ####:::::#### BEGIN MAIN mount_umount_all UNTIL LOOP ####:::::####
 
 until [ "$mount_point" = "no_more_mount_points" ] ;  do
+
+echo "$start_or_stop" "$mount_point"
 
 ####:::::#### BEGIN PAYLOAD ####:::::####
 
