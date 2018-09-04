@@ -657,8 +657,8 @@ case "$start_or_stop" in
 	# DIRPERM either does not exist (first invocation)
 	# or is empty (left from previous invocation).
 	#
-	#[ -d "$DIRPERM" ] || mkdir -p "$DIRPERM" || output_flag=2
-	[ -d "$DIRPERM" ] || generate_folder_with_same_permission "$DIRPERM" || output_flag=2
+	[ -d "$DIRPERM" ] || mkdir -p "$DIRPERM" || output_flag=2
+	#[ -d "$DIRPERM" ] || generate_folder_with_same_permission "$DIRPERM" || output_flag=2
 
 #echo "done dirperm folder"
 
