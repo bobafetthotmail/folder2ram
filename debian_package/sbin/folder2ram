@@ -48,7 +48,7 @@
 
 #If you edit it, please comment HEAVILY what you are doing, you will thank me later.
 
-VERSION="0.2.9"
+VERSION="0.3.1"
 
 ############### USER INTERFACE FUNCTIONS ########################
 
@@ -367,8 +367,8 @@ DIRPERM="/var/folder2ram$DIR"
 	case $output_flag in
 
 		0) # Merge back to permanent storage with
-		      #rsync preserve-ACLs preserve-owner preserve-group preserve-extended-attributes quiet recursive links time --delete SOURCE ---> DESTINATION
-			if rsync -o -g -A -X -q -r -l -t --delete "$DIR"'/' "$DIRPERM"; then
+		      #rsync preserve-ACLs preserve-owner preserve-group preserve-extended-attributes quiet recursive links time archive --delete SOURCE ---> DESTINATION
+			if rsync -o -g -A -X -q -r -l -t -a --delete "$DIR"'/' "$DIRPERM"; then
 				# Success!
 				rm "$LOCKFILE"
 				umount -l "$DIR"
@@ -789,9 +789,9 @@ case "$start_or_stop" in
 
 					tmpfs)
 							# Merge back to permanent storage with
-							#rsync preserve-ACLs preserve-owner preserve-group preserve-extended-attributes quiet recursive links time --delete
+							#rsync preserve-ACLs preserve-owner preserve-group preserve-extended-attributes quiet recursive links time archive --delete
 							#SOURCE ---> DESTINATION
-							if rsync -o -g -A -X -r -l -t --delete "$DIR"'/' "$DIRPERM"; then
+							if rsync -o -g -A -X -r -l -t -a --delete "$DIR"'/' "$DIRPERM"; then
 								# Success!
 								rm "$LOCKFILE"
 								umount -l "$DIR"
@@ -803,9 +803,9 @@ case "$start_or_stop" in
 
 					localdir)
 							# Merge back to permanent storage with
-							#rsync preserve-ACLs preserve-owner preserve-group preserve-extended-attributes quiet recursive links time --delete
+							#rsync preserve-ACLs preserve-owner preserve-group preserve-extended-attributes quiet recursive links time archive --delete
 							#SOURCE ---> DESTINATION
-							if rsync -o -g -A -X -r -l -t --delete "$options"'/' "$DIRPERM"; then
+							if rsync -o -g -A -X -r -l -t -a --delete "$options"'/' "$DIRPERM"; then
 								# Success!
 								rm "$LOCKFILE"
 								umount -l "$options"
@@ -957,8 +957,8 @@ until [ "$mount_point" = "no_more_mount_points" ] ;  do
             case $output_flag in
 
                 0) # Merge back to permanent storage with
-                #rsync preserve-ACLs preserve-owner preserve-group preserve-extended-attributes quiet recursive links time --delete SOURCE ---> DESTINATION
-                    if rsync -o -g -A -X -q -r -l -t --delete "$source"'/' "$destination"; then
+                #rsync preserve-ACLs preserve-owner preserve-group preserve-extended-attributes quiet recursive links time archive --delete SOURCE ---> DESTINATION
+                    if rsync -o -g -A -X -q -r -l -t -a --delete "$source"'/' "$destination"; then
                         echo "sync of $source successful!"
                     else
                         echo "could not sync $source"
