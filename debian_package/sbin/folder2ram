@@ -48,7 +48,7 @@
 
 #If you edit it, please comment HEAVILY what you are doing, you will thank me later.
 
-VERSION="0.3.1"
+VERSION="0.3.2"
 
 ############### USER INTERFACE FUNCTIONS ########################
 
@@ -99,17 +99,9 @@ print_usage () {
 	echo "-syncall"
 	echo "::::::::::sync to disk the content of folder2ram's tmpfs folders"
 	echo ""
-	#echo "-mount /folder/path" #this is for future, maybe
-	#echo "::::::::::folder2ram will start the init script for that particular folder,"
-	#echo "::::::::::if it is in the configuration file."
-	#echo ""
 	echo "-mountall"
 	echo "::::::::::folder2ram will mount all folders in the config file"
 	echo ""
-	#echo "-umount /folder/path"
-	#echo "::::::::::folder2ram will stop the init script for that particular folder,"
-	#echo "::::::::::if it is in the configuration file."
-	#echo ""
 	echo "-umountall"
 	echo "::::::::::folder2ram will unmount all folders in the config file"
 	echo ""
@@ -438,17 +430,13 @@ cat << EOF > "/etc/folder2ram/folder2ram.conf"
 #
 #TYPE: options available are "tmpfs" (for a ram folder)
 #
-#OPTIONS: ignored for tmpfs, path to local dir for localdir entries.
+#OPTIONS: mount option (will be passed as options to mount)
 #
 #IMPORTANT: use 2 Tabs to separate "type" from "mount point" from "options", the script needs them to read correctly the configuration.
 #
 #<type>		<mount point>			<options>
 #tmpfs		/var/log
 EOF
-
-#unavailable option for now
-#and "localdir" (for another local folder)
-#localdir	/some/folder/to/move	/the/folder/we/want/it/in
 
 #chmodding the config to be root/group-writable
 chmod 664 "/etc/folder2ram/folder2ram.conf"
@@ -532,7 +520,7 @@ options=$( sed '/^[[:space:]]*$/d' /etc/folder2ram/folder2ram.conf | sed '/^#/d'
 if [ "x$options" != "x" ]; then
 echo "$options";
 else
-echo "no_options";
+echo "defaults";
 fi
 
 } #### END read_options
@@ -623,9 +611,6 @@ echo "$start_or_stop" "$mount_point"
 NAME=$(generate_mount_name "$mount_point")
 DIR="$mount_point"
 LOCKFILE="/run/lock/$NAME.lock"
-#SIZE=16M this can be interesting for later, for now it stays disabled
-
-#TYPE="tmpfs"
 
 #loading the mode of the parent directory
 MODE=$(env stat -c "%a " "$DIR")
@@ -662,18 +647,6 @@ case "$start_or_stop" in
 
 #echo "done dirperm folder"
 
-	# options either does not exist (first invocation)
-	# or is empty (left from previous invocation).
-	#
-	#[ -d "$options" ] || mkdir -p "$options" || output_flag=2
-
-#echo $options
-
-	[ $options != *"no_options"* ] || [ -d "$options" ] || generate_folder_with_same_permission "$options" || output_flag=2
-
-
-#echo "done option folder"
-
 	case $output_flag in
 
 		0)
@@ -700,8 +673,8 @@ case "$start_or_stop" in
 					mount --bind --make-private "$DIR" "$DIRPERM"
 
 					#here we generate/mount a tmpfs over it
-					mount -t "tmpfs" -o nosuid,noexec,nodev "folder2ram" "$DIR"
-					#echo "mount -t "tmpfs" -o nosuid,noexec,nodev "folder2ram" "$DIR""
+					mount -t "tmpfs" -o "$options" "folder2ram" "$DIR"
+					#echo "mount -t "tmpfs" -o "$options" "folder2ram" "$DIR""
 
 					#changing permissions, owner and groups to be the same as original
 
@@ -722,37 +695,6 @@ case "$start_or_stop" in
 						umount -l "$DIRPERM"
 					fi
 
-				;;
-
-				bind-local-dir)
-					# bind mount stuff and we call it a day.
-					mount --bind --make-private "$DIR" "$options"
-
-					#here we mount the local dir over it with move (folderwithfiles - willbeshownfromhere)
-					#mount --move --make-private "$options" "$DIR"
-
-					# Populate the tmpfs with a simple cp that will not overwrite files if source is not newer
-					if ( diff -r -q "$DIR" "$options" ); then
-						# Success!
-						touch "$LOCKFILE"
-					else
-						echo "copy files to $options failure, rolling back the mount"
-						umount -l "$options"
-					fi
-				;;
-
-				sync-local-dir)
-
-					# Populate the tmpfs with a simple cp that will not overwrite files if source is not newer
-					if ( cp -rpu "$DIR" -T "$options" ); then
-						# Success!
-						touch "$LOCKFILE"
-					else
-						echo "copy files to $options failure, rolling back the mount"
-						umount -l "$options"
-						# Rollback the directory mangling
-						umount -l "$DIRPERM"
-					fi
 				;;
 
 			esac
@@ -801,19 +743,6 @@ case "$start_or_stop" in
 							fi
 					;;
 
-					localdir)
-							# Merge back to permanent storage with
-							#rsync preserve-ACLs preserve-owner preserve-group preserve-extended-attributes quiet recursive links time archive --delete
-							#SOURCE ---> DESTINATION
-							if rsync -o -g -A -X -r -l -t -a --delete "$options"'/' "$DIRPERM"; then
-								# Success!
-								rm "$LOCKFILE"
-								umount -l "$options"
-								umount -l "$DIRPERM"
-							else
-								echo "could not merge back to permanent storage"
-							fi
-					;;
 			esac
 		;;
 
@@ -937,10 +866,6 @@ until [ "$mount_point" = "no_more_mount_points" ] ;  do
 
             tmpfs)
             destination="/var/folder2ram$source"
-            ;;
-
-            localdir)
-            destination="$options"
             ;;
 
         esac
@@ -1199,18 +1124,8 @@ case "$action" in
 -mountall)
 	mount_umount_all start
     	;;
-###################DISABLED FOR NOW
-# -mount)
-#	read mountpoint
-#	mount_umount_mountpoint "$mountpoint" start
-#        ;;
-# -umount)
-#	read mountpoint
-#        mount_umount_mountpoint "$mountpoint" stop
-#        ;;
-#######################
 -umountall)
-    	mount_umount_all stop
+   	mount_umount_all stop
 	;;
 -enableinit)
 	setup_autostart init_install
