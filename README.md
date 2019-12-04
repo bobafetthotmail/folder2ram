@@ -27,6 +27,8 @@ READYNESS: stable
 
 ### DONE (newest first):
 
+-- option fields of config file will specify mount options (if left empty, default mount option will be "defaults").
+
 -- all files and the script itself now are not created world-writable nor world-executable anymore
 
 -- the repo has been rearranged in preparation for an openSUSE package
@@ -54,8 +56,6 @@ in this webpage https://www.debian-administration.org/article/661/A_transient_/v
 webpage saved and available in docs folder
 much better and safer than fs2ram's own system, as it runs a bind mount before mounting the tmpfs.
 Added check so that if it fails it will safely unmount stuff. Won't leave it borked.
-
--- use option fields of config file to specify mount options (now default mount option in "defaults" instead of "nosuid,noexec,nodev").
 
 ------------------------------------------
 
