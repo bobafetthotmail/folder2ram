@@ -1,3 +1,11 @@
+folder2ram (0.3.2) stable; urgency=low
+
+  * added support for mount options
+  * code cleanups to remove dead and experimental parts that were never used
+
+ -- Alberto Bursi <alberto.bursi@outlook.com>  Tue, 4 Dic 2019 11:09:10 +0200
+
+
 folder2ram (0.3.1) stable; urgency=low
 
   * Fixed isse with rsync not copying over socket files
