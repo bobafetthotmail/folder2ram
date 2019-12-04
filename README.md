@@ -55,6 +55,7 @@ webpage saved and available in docs folder
 much better and safer than fs2ram's own system, as it runs a bind mount before mounting the tmpfs.
 Added check so that if it fails it will safely unmount stuff. Won't leave it borked.
 
+-- use option fields of config file to specify mount options (now default mount option in "defaults" instead of "nosuid,noexec,nodev").
 
 ------------------------------------------
 
@@ -70,8 +71,6 @@ Things I never got around to implement:
 -add optional remote sync
 
 -add optional custom/settable paths where the folders can be synced
-
--add more options like tmpfs size and mount options
 
 -add an option to make a squashfs or similar heavily compressed archive either on disk or moved to RAM.
 it should theoretically increase performance, usually the CPU can decompress faster than the storage system can read.
