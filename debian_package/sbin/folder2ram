@@ -430,7 +430,7 @@ cat << EOF > "/etc/folder2ram/folder2ram.conf"
 #
 #TYPE: options available are "tmpfs" (for a ram folder)
 #
-#OPTIONS: mount option (will be passed as options to mount)
+#OPTIONS: mount option (will be passed as options to mount), if left blank "defaults" will be used
 #
 #IMPORTANT: use 2 Tabs to separate "type" from "mount point" from "options", the script needs them to read correctly the configuration.
 #
