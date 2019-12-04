@@ -1,7 +1,7 @@
 Source: folder2ram
 Section: admin
 Priority: optional
-Maintainer: Alberto Bursi <starshipeleven@outlook.com>
+Maintainer: Alberto Bursi <alberto.bursi@outlook.it>
 Build-Depends: 
 Standards-Version: 3.9.3
 
