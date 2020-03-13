@@ -2,7 +2,7 @@ folder2ram (0.3.3) stable; urgency=low
 
   * fixed debian package uninstall script for systemd
 
- -- Alberto Bursi <alberto.bursi@outlook.it>  Tue, 4 Dec 2019 11:09:10 +0200
+ -- Alberto Bursi <alberto.bursi@outlook.it>  Tue, 13 Apr 2020 13:09:10 +0200
 
 
 folder2ram (0.3.2) stable; urgency=low
