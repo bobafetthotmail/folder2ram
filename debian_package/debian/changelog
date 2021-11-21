@@ -1,3 +1,17 @@
+folder2ram (0.3.5) stable; urgency=low
+
+  * fixed umount issue in OpenMediaVault 
+  * added configurable timeout feature
+  * some better descriptions for -enablesystemd option
+
+ -- Alberto Bursi <alberto.bursi@outlook.it>  Tue, 21 Nov 2021 17:00:00 +0200
+
+folder2ram (0.3.4) stable; urgency=low
+
+  * fixed systemd shutdown unit to wait for sync to finish before unmount
+
+ -- Alberto Bursi <alberto.bursi@outlook.it>  Tue, 19 Nov 2021 18:00:00 +0200
+
 folder2ram (0.3.3) stable; urgency=low
 
   * fixed debian package uninstall script for systemd

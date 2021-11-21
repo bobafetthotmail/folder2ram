@@ -6,7 +6,7 @@
 #
 # Copyright:
 #
-#     Alberto Bursi 2015-2020
+#     Alberto Bursi 2015-2021
 #
 # License:
 #
@@ -48,7 +48,7 @@
 
 #If you edit it, please comment HEAVILY what you are doing, you will thank me later.
 
-VERSION="0.3.2"
+VERSION="0.3.5"
 
 ############### USER INTERFACE FUNCTIONS ########################
 
@@ -122,6 +122,7 @@ print_usage () {
 #################### FUNCTIONS THAT WRITE FILES AND CONFIGS #################################
 
 write_initscript (){
+
 #writing a ridicolous amount of boilerplate initscript to ask for a simple line to be called on startup and shutdown
 	cat <<'EOF' > "/etc/init.d/folder2ram"
 #! /bin/sh
@@ -144,6 +145,22 @@ write_initscript (){
 
 PATH="/sbin:/bin:/usr/sbin:/usr/bin"
 
+Timeout=$(cat /etc/folder2ram/folder2ram.conf | grep "TIMEOUT" | awk -F'=' '{print $2}' | sed 's/min/m/g')
+
+if [ "$Timeout" = '' ] ; then
+       Timeout=2m
+fi
+
+function timeout_monitor() {
+   sleep "$Timeout"
+   kill "$1"
+}
+
+# start the timeout monitor in 
+# background and pass the PID:
+timeout_monitor "$$" &
+Timeout_monitor_pid=$!
+
 case "$1" in
   start)
 	echo "Starting folder2ram"
@@ -157,6 +174,10 @@ case "$1" in
 	echo "Usage: {start|stop}"
   ;;
 esac
+
+# kill timeout monitor when terminating:
+kill "$Timeout_monitor_pid"
+
 exit 0
 EOF
 
@@ -211,12 +232,15 @@ chmod 774 "/etc/init.d/folder2ram_temporary"
 
 } #### END write_cleanup_initscript
 
-
 write_systemd_startup_service (){
+
+if [ "$timeout_setting" != '' ] ; then
+        timeout_line="TimeoutSec=$timeout_setting"
+fi
 
 #writing a tiny amount of stuff to have systemd do the same thing as above.
 #clear symptom that systemd is master race.
-		cat <<'EOF' > "$systemd_startup_service_file"
+		cat <<EOF > "$systemd_startup_service_file"
 [Unit]
 Description=folder2ram systemd service
 After=local-fs.target
@@ -227,6 +251,7 @@ DefaultDependencies=no
 Type=oneshot
 RemainAfterExit=yes
 ExecStart=/sbin/folder2ram -mountall
+$timeout_line
 
 [Install]
 WantedBy=basic.target
@@ -239,21 +264,27 @@ chmod 664 "$systemd_startup_service_file"
 
 write_systemd_shutdown_service (){
 
+if [ "$timeout_setting" != '' ] ; then
+	timeout_line="TimeoutSec=$timeout_setting"
+fi
+
+
 #writing a tiny amount of stuff to have systemd do the same thing as above.
 #clear symptom that systemd is master race.
-		cat <<'EOF' > "$systemd_shutdown_service_file"
+
+		cat <<EOF > "$systemd_shutdown_service_file"
 [Unit]
 Description=folder2ram systemd service
-Before=shutdown.target reboot.target halt.target
-DefaultDependencies=no
+After=blk-availability.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/sbin/folder2ram -umountall
+ExecStop=/sbin/folder2ram -umountall
+$timeout_line
 
 [Install]
-WantedBy=shutdown.target reboot.target halt.target
+WantedBy=multi-user.target
 EOF
 
 #chmodding this file to make it only root/group-writable
@@ -268,17 +299,16 @@ write_systemd_service_cleanup (){
 cat <<'EOF' > "$systemd_service_cleanup_file"
 [Unit]
 Description=temporary folder2ram systemd service
-After=basic.target
-Before=network.target
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
 ExecStart=/bin/true
 ExecStop=/sbin/folder2ram_cleaner
+TimeoutSec=30m
 
 [Install]
-WantedBy=basic.target
+WantedBy=multi-user.target
 EOF
 
 #chmodding this file to make it only root/group-writable
@@ -295,7 +325,7 @@ systemd_or_init=$1
 
 cat <<'EOF' > "/sbin/folder2ram_cleaner"
 
-# CLEANER SCRIPT DESIGNED TO UNMOUNT ALL ON SHUTDOWN THEN SELF-DESTRUCT
+# CLEANER SCRIPT DESIGNED TO UNMOUNT ALL ON SHUTDOWN THEN DELETE ITSELF
 
 read_mount_point () {
 # this reads config file at a predetemined line and extracts mount point
@@ -431,6 +461,11 @@ cat << EOF > "/etc/folder2ram/folder2ram.conf"
 #TYPE: options available are "tmpfs" (for a ram folder)
 #
 #OPTIONS: mount option (will be passed as options to mount), if left blank "defaults" will be used
+#
+#TIMEOUT=2m #write here the timeout limit for folder2ram service activity
+#           #(the time specified here must cover the mount/unmount time of all folders)
+#           #if you are using systemd init, when you change this value you must run
+#           #folder2ram -enablesystemd again to update the systemd service units with the new value 
 #
 #IMPORTANT: use 2 Tabs to separate "type" from "mount point" from "options", the script needs them to read correctly the configuration.
 #
@@ -951,6 +986,9 @@ if [ -f "/usr/lib/systemd/systemd"  ] ; then
 fi
 
 
+#reading timeout setting
+timeout_setting=$(cat /etc/folder2ram/folder2ram.conf | grep "TIMEOUT" | awk -F'=' '{print $2}')
+
 # Deciding if we want init script or systemd module
 # Also deciding if we want to enable or disable NOW, or if we want to enable/disable on reboot.
 case "$setup" in
@@ -1047,7 +1085,7 @@ esac
 
 } ####END setup_autostart
 
-clean (){
+clean () {
 
 #this stops folder2ram and removes autostarts
 #it asks other functions to do the leg work
@@ -1058,7 +1096,8 @@ clean (){
 if [ -f "/etc/init.d/folder2ram" ]; then
     setup_autostart init_remove
 
-else if [ -f "$systemd_startup_service_file" ] || [ -f "$systemd_shutdown_service_file" ]; then
+else
+     if [ -f "$systemd_startup_service_file" ] || [ -f "$systemd_shutdown_service_file" ]; then
         setup_autostart systemd_remove
      else
       mount_umount_all stop
@@ -1132,6 +1171,10 @@ case "$action" in
 	;;
 -enablesystemd)
 	setup_autostart systemd_install
+	echo "systemd services enabled but not started, it is recommended to reboot for a cleaner transition to tmpfs folders"
+	echo "otherwise you can start them now (both services are needed) with "
+	echo "systemctl start folder2ram_startup.service"
+	echo "systemctl start folder2ram_shutdown.service"
 	;;
 -disableinit)
 	setup_autostart init_remove
