@@ -244,6 +244,7 @@ fi
 [Unit]
 Description=folder2ram systemd service
 After=local-fs.target
+After=blk-availability.service
 Before=basic.target
 DefaultDependencies=no
 
@@ -276,6 +277,7 @@ fi
 [Unit]
 Description=folder2ram systemd service
 After=blk-availability.service
+BindsTo=blk-availability.service
 
 [Service]
 Type=oneshot
