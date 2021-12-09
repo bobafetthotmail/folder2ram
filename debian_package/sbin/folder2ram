@@ -48,7 +48,7 @@
 
 #If you edit it, please comment HEAVILY what you are doing, you will thank me later.
 
-VERSION="0.3.6"
+VERSION="0.3.7"
 
 ############### USER INTERFACE FUNCTIONS ########################
 
@@ -245,7 +245,6 @@ fi
 Description=folder2ram systemd service
 After=local-fs.target
 After=blk-availability.service
-Before=basic.target
 DefaultDependencies=no
 
 [Service]
