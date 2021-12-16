@@ -59,7 +59,7 @@ print_usage () {
 	echo ""
 	echo "There are four main components of folder2ram system:"
 	echo "--the init script in /etc/init.d or the systemd service in /etc/folder2ram that calls this main script on boot and shutdown"
-	echo "--the main script in /etc/sbin/folder2ram"
+	echo "--the main script in /sbin/folder2ram"
 	echo "--the configuration file in /etc/folder2ram/folder2ram.conf"
 	echo "--the folders in /var/folder2ram, the bind-mounted folders"
 	echo "  they allow easy access to the original folder in permanent storage"
