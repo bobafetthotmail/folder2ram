@@ -180,6 +180,10 @@ If your Debian is using init scripts instead (this is NOT the default Debian ins
 
 **folder2ram -enableinit**
 
+You can check which system is in use via
+
+**ps --no-headers -o comm 1**
+
 ## Which directories are recommended
 
 In Openmediavault (Debian) this script is using this configuration file
