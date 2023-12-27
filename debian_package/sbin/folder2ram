@@ -48,7 +48,7 @@
 
 #If you edit it, please comment HEAVILY what you are doing, you will thank me later.
 
-VERSION="0.3.7"
+VERSION="0.3.8"
 
 ############### USER INTERFACE FUNCTIONS ########################
 
@@ -118,6 +118,11 @@ print_usage () {
     echo "::::::::::-safe-disablesystemd, and then reboot the system"
 	echo ""
 } #### END print_usage
+
+
+echo_with_timestamp() {
+    echo "$(date --iso-8601=seconds) $*"
+}
 
 #################### FUNCTIONS THAT WRITE FILES AND CONFIGS #################################
 
@@ -854,6 +859,7 @@ done ####:::::#### END MAIN print_status UNTIL LOOP ####:::::####
 
 sync_to_disk () {
 
+echo "-----------------------------------------"
 #used to allow selective sync of some folder
 choice="$1"
 
@@ -861,9 +867,9 @@ choice="$1"
 line_number=1
 
 if [ "$choice" = "0" ] ; then
-    echo "will now sync all mountpoints"
+    echo_with_timestamp "will now sync all mountpoints"
 else
-    echo "will sync only mountpoint $choice"
+    echo_with_timestamp "will sync only mountpoint $choice"
 fi
 # reading first mountpoint
 
@@ -920,14 +926,14 @@ until [ "$mount_point" = "no_more_mount_points" ] ;  do
                 0) # Merge back to permanent storage with
                 #rsync preserve-ACLs preserve-owner preserve-group preserve-extended-attributes quiet recursive links time archive --delete SOURCE ---> DESTINATION
                     if rsync -o -g -A -X -q -r -l -t -a --delete "$source"'/' "$destination"; then
-                        echo "sync of $source successful!"
+                        echo_with_timestamp "sync of $source successful!"
                     else
-                        echo "could not sync $source"
+                        echo_with_timestamp "could not sync $source"
                     fi
                 ;;
 
                 1) # already unmounted
-                    echo "$source unmounted, cannot comply"
+                    echo_with_timestamp "$source unmounted, cannot comply"
                 ;;
             esac
         ####:::::#### END PAYLOAD ####:::::####
@@ -951,7 +957,7 @@ until [ "$mount_point" = "no_more_mount_points" ] ;  do
 done ####:::::#### END MAIN sync_to_disk UNTIL LOOP ####:::::####
 
 if [ "$choice" -ge "$line_number" ] && [ "$choice" != "0" ] ; then
-    echo "mountpoint $choice does not exist"
+    echo_with_timestamp "mountpoint $choice does not exist"
 fi
 
 } #### END sync_to_disk
