@@ -336,7 +336,7 @@ line_number=$1
 
 # remove blank and commented lines with sed, get variable form outside in awk, and use it to print line at $line_number
 # then remove trailing ///// with sed
-mount_point=$( sed '/^[[:space:]]*$/d' /etc/folder2ram_cleaner.conf | sed '/^#/d' | awk -v line="$line_number" 'NR == line {print $2}' | sed 's:/*$::' )
+mount_point=$( sed '/^[[:space:]]*$/d' /etc/folder2ram_cleaner.conf | sed '/^#/d' | awk -v line="$line_number" 'NR == line {print $2}' | sed 's:/*$::' | grep -vE 'TYPE|OPTIONS|TIMEOUT' )
 
 # checking if mount point variable is empty, and if it is returning a keyword
 if [ "x$mount_point" != "x" ]; then
@@ -452,10 +452,12 @@ write_config_file() {
 #folder2ram main config file#
 #############################
 #
-#PROTIP: to make /var/lock or /tmp available as ram filesystems,
+#Protip: to make /var/lock or /tmp available as ram filesystems,
 #        it is preferable to set the variables RAMTMP, RAMLOCK
 #        in /etc/default/tmpfs.
+##############################
 #
+#Important: leave the # in front of these 3 settings:
 #TYPE: options available are "tmpfs" (for a ram folder)
 #
 #OPTIONS: mount option (will be passed as options to mount), if left blank "defaults" will be used
@@ -465,7 +467,8 @@ write_config_file() {
 #           #if you are using systemd init, when you change this value you must run
 #           #folder2ram -enablesystemd again to update the systemd service units with the new value
 #
-#IMPORTANT: use 2 Tabs to separate "type" from "mount point" from "options", the script needs them to read correctly the configuration.
+#############################
+#Important: use 2 Tabs to separate "type" from "mount point" from "options", the script needs them to read correctly the configuration.
 #
 #<type>		<mount point>			<options>
 #tmpfs		/var/log
@@ -507,7 +510,7 @@ read_type() {
 
   # remove blank and commented lines with sed, get variable from outside in awk, and use it to print line at $line_number
   # then removing trailing //// with sed
-  type=$(sed '/^[[:space:]]*$/d' /etc/folder2ram/folder2ram.conf | sed '/^#/d' | awk -v line="$line_number" 'NR == line {print $1}' | sed 's:/*$::')
+  type=$(sed '/^[[:space:]]*$/d' /etc/folder2ram/folder2ram.conf | sed '/^#/d' | awk -v line="$line_number" 'NR == line {print $1}' | sed 's:/*$::' | grep -vE 'TYPE|OPTIONS|TIMEOUT')
 
   # checking if filesystem variable is empty, and if it is returning a keyword
   if [ "x$type" != "x" ]; then
@@ -527,7 +530,7 @@ read_mount_point() {
 
   # remove blank and commented lines with sed, get variable from outside in awk, and use it to print line at $line_number
   # then removing trailing //// with sed
-  local mount_point="$(sed '/^[[:space:]]*$/d' /etc/folder2ram/folder2ram.conf | sed '/^#/d' | awk -v line="$line_number" 'NR == line {print $0}' | awk -F'\t\t' '{print $2}' | sed 's:/*$::' | tr -d '\t')"
+  local mount_point="$(sed '/^[[:space:]]*$/d' /etc/folder2ram/folder2ram.conf | sed '/^#/d' | awk -v line="$line_number" 'NR == line {print $0}' | awk -F'\t\t' '{print $2}' | sed 's:/*$::' | tr -d '\t' | grep -vE 'TYPE|OPTIONS|TIMEOUT')"
 
   # checking if mount point variable is empty, and if it is returning a keyword
   if [ "x$mount_point" != "x" ]; then
