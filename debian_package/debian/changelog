@@ -1,3 +1,12 @@
+folder2ram (0.3.9) stable; urgency=low
+
+  * ADD timestamps to sync command for logging/debugging
+  * FORMATTING prettify code for legibility #minor
+  * FIX be more lenient if someone uncomments #TYPE or #OPTIONS or #TIMEOUT
+  * ADD single folder mount/umount
+
+ -- Alberto Bursi <alberto.bursi@outlook.it>  Tue, 24 Jan 2024 10:00:00 +0200
+
 folder2ram (0.3.7) stable; urgency=low
 
   * fix startup issue on proxmox
