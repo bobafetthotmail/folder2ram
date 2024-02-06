@@ -45,7 +45,10 @@
 
 #If you edit it, please comment HEAVILY what you are doing, you will thank me later.
 
-VERSION="0.3.9"
+VERSION="0.3.10"
+
+# my real location, shoud be inside PATH environment
+binFILE="$(realpath -e ${0})"
 
 ############### USER INTERFACE FUNCTIONS ########################
 
@@ -130,13 +133,17 @@ echo_with_timestamp() {
 
 write_initscript() {
 
+  #read timeout from configuration file
+  local timeOUT=$(read_config_file | grep "^TIMEOUT" | awk -F'=' '{print $2}')
+  [ "${timeOUT}" != "" ] || timeOUT=120
+
   #writing a ridicolous amount of boilerplate initscript to ask for a simple line to be called on startup and shutdown
-  cat <<'EOF' >"/etc/init.d/folder2ram"
+  cat <<EOF >"/etc/init.d/folder2ram"
 #! /bin/sh
 ### BEGIN INIT INFO
 # Provides: folder2ram
-# X-Start-Before:	$syslog
-# X-Stop-After:		$syslog
+# X-Start-Before:	\$syslog
+# X-Stop-After:		\$syslog
 # X-Interactive:	yes
 # Required-Start:
 # Required-Stop:
@@ -152,30 +159,24 @@ write_initscript() {
 
 PATH="/sbin:/bin:/usr/sbin:/usr/bin"
 
-Timeout=$(cat /etc/folder2ram/folder2ram.conf | grep "TIMEOUT" | awk -F'=' '{print $2}' | sed 's/min/m/g')
-
-if [ "$Timeout" = '' ] ; then
-       Timeout=2m
-fi
-
 function timeout_monitor() {
-   sleep "$Timeout"
-   kill "$1"
+   sleep "${timeOUT}"
+   kill "\$1"
 }
 
 # start the timeout monitor in
 # background and pass the PID:
-timeout_monitor "$$" &
-Timeout_monitor_pid=$!
+timeout_monitor "\$\$" &
+Timeout_monitor_pid=\$!
 
-case "$1" in
+case "\$1" in
   start)
   echo "Starting folder2ram"
-  /sbin/folder2ram -mountall
+  ${binFILE} -mountall
   ;;
   stop)
   echo "Stopping folder2ram"
-  /sbin/folder2ram -umountall
+  ${binFILE} -umountall
   ;;
   *)
   echo "Usage: {start|stop}"
@@ -183,13 +184,13 @@ case "$1" in
 esac
 
 # kill timeout monitor when terminating:
-kill "$Timeout_monitor_pid"
+kill "\$Timeout_monitor_pid"
 
 exit 0
 EOF
 
   #chmodding this script to make it only root/group-writable and root/group-executable
-  chmod 774 "/etc/init.d/folder2ram"
+  chmod 755 "/etc/init.d/folder2ram"
 
 } #### END write_initscript
 
@@ -234,15 +235,15 @@ exit
 EOF
 
   #chmodding this script to make it only root/group-writable and root/group-executable
-  chmod 774 "/etc/init.d/folder2ram_temporary"
+  chmod 755 "/etc/init.d/folder2ram_temporary"
 
 } #### END write_cleanup_initscript
 
 write_systemd_startup_service() {
 
-  if [ "$timeout_setting" != '' ]; then
-    timeout_line="TimeoutSec=$timeout_setting"
-  fi
+  #read timeout from configuration file
+  local timeOUT=$(read_config_file | grep "^TIMEOUT" | awk -F'=' '{print $2}')
+  [ "${timeOUT}" != "" ] || timeOUT=120
 
   #writing a tiny amount of stuff to have systemd do the same thing as above.
   #clear symptom that systemd is master race.
@@ -250,51 +251,24 @@ write_systemd_startup_service() {
 [Unit]
 Description=folder2ram systemd service
 After=local-fs.target
-After=blk-availability.service
-DefaultDependencies=no
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/sbin/folder2ram -mountall
-$timeout_line
+ExecStart=$(which journalctl) --relinquish-var
+ExecStart=-${binFILE} -mountall
+ExecStart=$(which journalctl) --flush
+ExecStop=$(which journalctl) --relinquish-var
+ExecStop=-${binFILE} -umountall
+ExecStop=$(which journalctl) --flush
+TimeoutSec=${timeOUT}
 
 [Install]
 WantedBy=basic.target
 EOF
 
   #chmodding this file to make it only root/group-writable
-  chmod 664 "$systemd_startup_service_file"
-
-} #### END write_systemd_service
-
-write_systemd_shutdown_service() {
-
-  if [ "$timeout_setting" != '' ]; then
-    timeout_line="TimeoutSec=$timeout_setting"
-  fi
-
-  #writing a tiny amount of stuff to have systemd do the same thing as above.
-  #clear symptom that systemd is master race.
-
-  cat <<EOF >"$systemd_shutdown_service_file"
-[Unit]
-Description=folder2ram systemd service
-After=blk-availability.service
-BindsTo=blk-availability.service
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStop=/sbin/folder2ram -umountall
-$timeout_line
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-  #chmodding this file to make it only root/group-writable
-  chmod 664 "$systemd_shutdown_service_file"
+  chmod 644 "$systemd_startup_service_file"
 
 } #### END write_systemd_service
 
@@ -310,14 +284,14 @@ Type=oneshot
 RemainAfterExit=yes
 ExecStart=/bin/true
 ExecStop=/sbin/folder2ram_cleaner
-TimeoutSec=30m
+TimeoutSec=180
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
   #chmodding this file to make it only root/group-writable
-  chmod 664 "$systemd_service_cleanup_file"
+  chmod 644 "$systemd_service_cleanup_file"
 
 } #### END write_systemd_service_cleanup
 
@@ -329,30 +303,62 @@ cleaner_script_generic() {
   #possible values: init systemd
 
   cat <<'EOF' >"/sbin/folder2ram_cleaner"
+#!/usr/bin/sh
 
 # CLEANER SCRIPT DESIGNED TO UNMOUNT ALL ON SHUTDOWN THEN DELETE ITSELF
 
-read_mount_point () {
-# this reads config file at a predetemined line and extracts mount point
-# $line_number must come from outside
-# blank lines and commented lines are ignored, so line_number refers only to actual mount points
-# a similar function can be used to extract additional options in the future
+read_config_file() {
+  # read config, remove all behind '#'; blank at line end; empty lines
+  cat "/etc/folder2ram/folder2ram.conf" | sed -e 's/#.*//g; s/[[:blank:]]*$//g; /^$/d'
+} #### END read_config_file
 
-line_number=$1
+read_mount_point() {
+  # this reads config file at a predetemined line and extracts mount point
+  # $line_number must come from outside
+  # blank lines and commented lines are ignored, so line_number refers only to actual mount points
 
-# remove blank and commented lines with sed, get variable form outside in awk, and use it to print line at $line_number
-# then remove trailing ///// with sed
-mount_point=$( sed '/^[[:space:]]*$/d' /etc/folder2ram_cleaner.conf | sed '/^#/d' | awk -v line="$line_number" 'NR == line {print $2}' | sed 's:/*$::' | grep -vE 'TYPE|OPTIONS|TIMEOUT' )
+  line_number=$1
 
-# checking if mount point variable is empty, and if it is returning a keyword
-if [ "x$mount_point" != "x" ]; then
-echo "$mount_point";
-else
-echo "no_more_mount_points";
-fi
+  # read (cleaned up) config file,
+  # ignore 'TYPE|OPTIONS|TIMEOUT',
+  # take line #line_number and print 2nd entry,
+  # remove trailing '/'
+  mount_point=$(read_config_file | grep -viE 'TYPE|OPTIONS|TIMEOUT' | awk -v line="${line_number}" 'NR == line {print $2}' | sed 's:/*$::')
+
+  # checking if mount point variable is empty, and if it is returning a keyword
+  if [ "x$mount_point" != "x" ]; then
+    echo "$mount_point"
+  else
+    echo "no_more_mount_points"
+  fi
 
 } #### END read_mount_point
 
+generate_mount_name() {
+
+  # cleaning the mount point string to generate a name that won't break anything
+  # basically turning /this/is/a/path + mount type into -this-is-a-path-mount_type
+
+  #initializing variables
+  mount_point=$1
+
+  # mount_type is hardcoded for now, will be set by something else if/when I implement more folder2ram options
+  mount_type="tmpfs"
+
+  # removing trailing slashes with sed then let awk handle this
+  # field separator is set as "/" then the record separator is set as "-" , the loop prints one by one the fields
+  # (because I could not find a better way to get the damn "-" to be inserted properly)
+  # then disables the record separators and prints the variable "mount_type" coming from outside awk (see the -v option)
+  #then replaces spaces in the names with "-"
+  clean_mount_point=$(echo "$mount_point" | sed 's:/*$::' | awk -v mount_type="$mount_type" -F '/' '{ORS="-"; out=$1; for(i=1;i<=NF;i++){out=$i; print out}; ORS=""; print mount_type}' | tr ' ' '-')
+
+  # generating the name, will look like this "folder2ram-this-is-a-path-mount_type"
+  clean_name="f2r$clean_mount_point"
+
+  #outputting the result
+  echo "$clean_name"
+
+} #### END generate_mount_name
 
 ############# MAIN PART ##################
 
@@ -373,6 +379,7 @@ until [ "$mount_point" = "no_more_mount_points" ] ;  do
 ####:::::#### BEGIN PAYLOAD ####:::::####
 
 #Setting up common variables
+NAME=$(generate_mount_name "$mount_point")
 DIR="$mount_point"
 LOCKFILE="/run/lock/$NAME.lock"
 TYPE="tmpfs"
@@ -446,11 +453,16 @@ EOF
   esac
 
   #chmodding this script to make it only root/group-writable and root/group-executable
-  chmod 774 "/sbin/folder2ram_cleaner"
+  chmod 755 "/sbin/folder2ram_cleaner"
 
 } #### END cleaner_script_generic
 
 ################ CONFIGURATION FILE MANIPULATION FUNCTIONS ######################
+
+read_config_file() {
+    # read config, remove all behind '#'; blank at line end; empty lines
+    cat "/etc/folder2ram/folder2ram.conf" | sed -e 's/#.*//g; s/[[:blank:]]*$//g; /^$/d'
+} #### END read_config_file
 
 write_config_file() {
   cat <<EOF >"/etc/folder2ram/folder2ram.conf"
@@ -468,14 +480,16 @@ write_config_file() {
 #
 #OPTIONS: mount option (will be passed as options to mount), if left blank "defaults" will be used
 #
-#TIMEOUT=2m #write here the timeout limit for folder2ram service activity
+#TIMEOUT:   #the timeout limit for folder2ram service activity (default 120 seconds)
 #           #(the time specified here must cover the mount/unmount time of all folders)
 #           #if you are using systemd init, when you change this value you must run
 #           #folder2ram -enablesystemd again to update the systemd service units with the new value
 #
 #############################
+
+# TIMEOUT=120
+
 #Important: use 2 Tabs to separate "type" from "mount point" from "options", the script needs them to read correctly the configuration.
-#
 #<type>		<mount point>			<options>
 #tmpfs		/var/log
 EOF
@@ -514,9 +528,10 @@ read_type() {
 
   line_number=$1
 
-  # remove blank and commented lines with sed, get variable from outside in awk, and use it to print line at $line_number
-  # then removing trailing //// with sed
-  type=$(sed '/^[[:space:]]*$/d' /etc/folder2ram/folder2ram.conf | sed '/^#/d' | awk -v line="$line_number" 'NR == line {print $1}' | sed 's:/*$::' | grep -vE 'TYPE|OPTIONS|TIMEOUT')
+  # read (cleaned up) config file,
+  # ignore 'TYPE|OPTIONS|TIMEOUT',
+  # take line #line_number and print 1st entry of line
+  type=$(read_config_file | grep -viE 'TYPE|OPTIONS|TIMEOUT' | awk -v line="${line_number}" 'NR == line {print $1}')
 
   # checking if filesystem variable is empty, and if it is returning a keyword
   if [ "x$type" != "x" ]; then
@@ -534,9 +549,11 @@ read_mount_point() {
 
   line_number=$1
 
-  # remove blank and commented lines with sed, get variable from outside in awk, and use it to print line at $line_number
-  # then removing trailing //// with sed
-  local mount_point="$(sed '/^[[:space:]]*$/d' /etc/folder2ram/folder2ram.conf | sed '/^#/d' | awk -v line="$line_number" 'NR == line {print $0}' | awk -F'\t\t' '{print $2}' | sed 's:/*$::' | tr -d '\t' | grep -vE 'TYPE|OPTIONS|TIMEOUT')"
+  # read (cleaned up) config file,
+  # ignore 'TYPE|OPTIONS|TIMEOUT',
+  # take line #line_number and print 2nd entry,
+  # remove trailing '/'
+  mount_point=$(read_config_file | grep -viE 'TYPE|OPTIONS|TIMEOUT' | awk -v line="${line_number}" 'NR == line {print $2}' | sed 's:/*$::')
 
   # checking if mount point variable is empty, and if it is returning a keyword
   if [ "x$mount_point" != "x" ]; then
@@ -554,9 +571,11 @@ read_options() {
 
   line_number=$1
 
-  # remove blank and commented lines with sed, get variable from outside in awk, and use it to print line at $line_number
-  # then removing trailing //// with sed
-  options=$(sed '/^[[:space:]]*$/d' /etc/folder2ram/folder2ram.conf | sed '/^#/d' | awk -v line="$line_number" 'NR == line {print $0}' | awk -F'\t\t' '{print $3}' | sed 's:/*$::' | tr -d '\t')
+  # read (cleaned up) config file,
+  # ignore 'TYPE|OPTIONS|TIMEOUT',
+  # take line #line_number and print 3rd entry,
+  # remove trailing ','
+  options=$(read_config_file | grep -viE 'TYPE|OPTIONS|TIMEOUT' | awk -v line="${line_number}" 'NR == line {print $3}' | sed 's:,*$::')
 
   # checking if options variable is empty, and if it is returning a keyword
   if [ "x$options" != "x" ]; then
@@ -980,7 +999,6 @@ setup_autostart() {
   if [ -f "/lib/systemd/systemd" ]; then
 
     systemd_startup_service_file="/lib/systemd/system/folder2ram_startup.service"
-    systemd_shutdown_service_file="/lib/systemd/system/folder2ram_shutdown.service"
     systemd_service_cleanup_file="/lib/systemd/system/folder2ram_cleaner.service"
 
   fi
@@ -988,7 +1006,6 @@ setup_autostart() {
   if [ -f "/usr/lib/systemd/systemd" ]; then
 
     systemd_startup_service_file="/usr/lib/systemd/system/folder2ram_startup.service"
-    systemd_shutdown_service_file="/usr/lib/systemd/system/folder2ram_shutdown.service"
     systemd_service_cleanup_file="/usr/lib/systemd/system/folder2ram_cleaner.service"
 
   fi
@@ -1049,12 +1066,6 @@ setup_autostart() {
     # enabling the service, will be started on reboot
     systemctl enable "$systemd_startup_service_file"
 
-    #calling the function that writes the systemd service file and sets permissions
-    write_systemd_shutdown_service
-
-    # enabling the service, will be started on reboot
-    systemctl enable "$systemd_shutdown_service_file"
-
     ;;
   systemd_remove)
 
@@ -1063,13 +1074,11 @@ setup_autostart() {
 
     #disabling the service
     systemctl disable "$systemd_startup_service_file"
-    systemctl disable "$systemd_shutdown_service_file"
     ;;
   systemd_safe_remove)
 
     #disabling the service
     systemctl disable "$systemd_startup_service_file"
-    systemctl disable "$systemd_shutdown_service_file"
 
     #now we pull the same trick as with the initscript above, but modified to work with systemd
 
@@ -1102,7 +1111,7 @@ clean() {
     setup_autostart init_remove
 
   else
-    if [ -f "$systemd_startup_service_file" ] || [ -f "$systemd_shutdown_service_file" ]; then
+    if [ -f "$systemd_startup_service_file" ]; then
       setup_autostart systemd_remove
     else
       mount_umount_all stop
@@ -1183,7 +1192,6 @@ case "$action" in
   echo "systemd services enabled but not started, it is recommended to reboot for a cleaner transition to tmpfs folders"
   echo "otherwise you can start them now (both services are needed) with "
   echo "systemctl start folder2ram_startup.service"
-  echo "systemctl start folder2ram_shutdown.service"
   ;;
 -disableinit)
   setup_autostart init_remove
