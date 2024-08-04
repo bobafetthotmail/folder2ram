@@ -39,13 +39,10 @@
 # www.tremende.com/ramlog/index.htm
 
 #This script is HEAVILY commented, for the sake of easy understanding and mainteneance
-#Don't think I'm patronizing, it's first and foremost because I'm sure I will forget
-#some of its arcane spells and I don't feel like wasting hours trying to understand what
-#I wrote an unspecified amount of time ago. -Alberto Bursi
 
-#If you edit it, please comment HEAVILY what you are doing, you will thank me later.
+#If you edit it, please comment what you are doing
 
-VERSION="0.3.9"
+VERSION="0.4.0"
 
 ############### USER INTERFACE FUNCTIONS ########################
 
@@ -619,6 +616,35 @@ generate_folder_with_same_permission() {
 
 } #### END generate_folder_with_same_permission
 
+rsyslog_logrotate(){
+#The following hack (forcing a logrotate) is done only for systemd's journald and rsyslog
+#because they are system services and it's too complex to move the service priority around journald
+
+#moving system logs from syslog while the files are open will mean logging will go on to the same log
+#files until they are rotated.
+#so we have to force the logrotate of this after the move is done
+logrotate_test=$( logrotate --version > /dev/null 2>&1  ; echo $? )
+if [ "$journalctl_test" -eq 0 ]; then
+  logrotate --force /etc/logrotate.conf
+fi
+}
+
+journald_logrotate(){
+  #The following hack (forcing a logrotate) is done only for systemd's journald and rsyslog
+  #because they are system services and it's too complex to move the service priority around journald
+
+  #moving journald's log folders can break the binary log files in /var/log/journal
+  #so before we run the mount or unmount logic we force journald to logrotate
+  #the old logs to a static file that can be moved safely
+
+  journalctl_test=$( journalctl --version > /dev/null 2>&1  ; echo $? )
+
+  if [ "$journalctl_test" -eq 0 ]; then
+  journalctl --rotate
+  fi
+}
+
+
 ########################## FILE AND MOUNT FUNCTIONS ################################
 
 mount_umount_all() {
@@ -699,6 +725,9 @@ mount_umount_all() {
 
         0)
 
+          #logrotate journald logs to preserve the current logged events
+          journald_logrotate
+
           #switching mount operation depending on type of mount point
           case $TYPE in
 
@@ -746,6 +775,9 @@ mount_umount_all() {
 
           esac
 
+          #logrotate syslog logs to force the use of the new folder
+          rsyslog_logrotate
+
           ;;
 
         1) # already mounted
@@ -763,6 +795,7 @@ mount_umount_all() {
         #################
 
       stop)
+
         output_flag=0
         # output_flag values:
         #   0 if all went well
@@ -773,6 +806,10 @@ mount_umount_all() {
         case $output_flag in
 
         0)
+
+          #logrotate journald logs to preserve the current logged events
+          journald_logrotate
+
           case $TYPE in
 
           tmpfs)
@@ -790,11 +827,15 @@ mount_umount_all() {
             ;;
 
           esac
+
+          #logrotate syslog logs to force the use of the new folder
+          rsyslog_logrotate
+
           ;;
 
         1) # already unmounted
           echo "$DIR already unmounted"
-          ;;
+        ;;
         esac
         ;;
       #################
@@ -885,6 +926,9 @@ sync_to_disk() {
 
   # calling another function (above) to fill the options at this line number
   options=$(read_options "$line_number")
+
+  #logrotate journald logs to preserve the current logged events
+  journald_logrotate
 
   ####:::::#### BEGIN MAIN sync_to_disk UNTIL LOOP ####:::::####
 
@@ -1148,6 +1192,8 @@ reset_config() {
 
 #####################--START MAIN PROGRAM--################################
 
+action="$1"
+
 #doing a root check, because folder2ram must be run as root for obvious reasons
 if [ "$(id -u)" -eq 0 ]; then
   echo
@@ -1156,7 +1202,24 @@ else
   exit
 fi
 
-action="$1"
+#checking that crucial tools are installed
+
+for tool in cp rsync mount umount rm chown chmod mkdir sed tr; do
+
+  tool_test=$( $tool --version > /dev/null 2>&1  ; echo $? )
+  if [ "$tool_test" -ne 0 ]; then
+    echo ERROR: $tool tool not found, please install it. Quitting
+    exit 1
+  fi
+
+done
+
+#awk is different so it gets its own checker
+  tool_test=$( awk -W version > /dev/null 2>&1  ; echo $? )
+  if [ "$tool_test" -ne 0 ]; then
+    echo ERROR: awk tool not found, please install it. Quitting
+    exit 1
+  fi
 
 case "$action" in
 

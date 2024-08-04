@@ -1,3 +1,13 @@
+folder2ram (0.4.0) stable; urgency=low
+
+  * FIX force a syslog logrotate as part of the folder2ram mount logic
+  * the above ensures syslog logs are not still written to disk until next logrotate
+  * FIX force a journald logrotate as part of the folder2ram mount logic
+  * the above ensure no systemd logs are corrupted and lost when switching folders
+  * ADD checking for necessary tools are installed and quit if missing
+
+ -- Alberto Bursi <alberto.bursi@outlook.it>  Tue, 05 Aug 2024 10:00:00 +0200
+
 folder2ram (0.3.9) stable; urgency=low
 
   * ADD timestamps to sync command for logging/debugging
@@ -21,7 +31,7 @@ folder2ram (0.3.6) stable; urgency=low
 
 folder2ram (0.3.5) stable; urgency=low
 
-  * fixed umount issue in OpenMediaVault 
+  * fixed umount issue in OpenMediaVault
   * added configurable timeout feature
   * some better descriptions for -enablesystemd option
 
