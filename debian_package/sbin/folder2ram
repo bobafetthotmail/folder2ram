@@ -149,7 +149,7 @@ write_initscript() {
 
 PATH="/sbin:/bin:/usr/sbin:/usr/bin"
 
-Timeout=$(cat /etc/folder2ram/folder2ram.conf | grep "TIMEOUT" | awk -F'=' '{print $2}' | sed 's/min/m/g')
+Timeout=$(grep "^\s*#\s*TIMEOUT\s*=\s*[0-9]\+\s*m" /etc/folder2ram/folder2ram.conf | tail -n1 | sed -e 's/.*=//' -e 's/min/m/' -e 's/#.*//' -e 's/\s*//g')
 
 if [ "$Timeout" = '' ] ; then
        Timeout=2m
@@ -1038,7 +1038,7 @@ setup_autostart() {
   fi
 
   #reading timeout setting
-  timeout_setting=$(cat /etc/folder2ram/folder2ram.conf | grep "TIMEOUT" | awk -F'=' '{print $2}')
+  timeout_setting=$(grep "^\s*#\s*TIMEOUT\s*=\s*[0-9]\+\s*m" /etc/folder2ram/folder2ram.conf | tail -n1 | sed -e 's/.*=//' -e 's/min/m/' -e 's/#.*//' -e 's/\s*//g')
 
   # Deciding if we want init script or systemd module
   # Also deciding if we want to enable or disable NOW, or if we want to enable/disable on reboot.
