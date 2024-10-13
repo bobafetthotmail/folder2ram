@@ -42,7 +42,7 @@
 
 #If you edit it, please comment what you are doing
 
-VERSION="0.4.0"
+VERSION="0.4.1"
 
 ############### USER INTERFACE FUNCTIONS ########################
 
