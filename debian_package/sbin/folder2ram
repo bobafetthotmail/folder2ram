@@ -155,7 +155,7 @@ if [ "$Timeout" = '' ] ; then
        Timeout=2m
 fi
 
-function timeout_monitor() {
+timeout_monitor() {
    sleep "$Timeout"
    kill "$1"
 }
